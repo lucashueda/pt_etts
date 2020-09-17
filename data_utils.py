@@ -38,7 +38,7 @@ class TextMelLoader(torch.utils.data.Dataset):
         if not self.load_mel_from_disk:
             audio, sampling_rate = load_wav_to_torch(filename)
             
-            print(sampling_rate.shape, self.sftf.sampling_rate.shape)
+            print(sampling_rate, self.sftf.sampling_rate)
 
             if sampling_rate != self.stft.sampling_rate:
                 raise ValueError("{} {} SR doesn't match target {} SR".format(
