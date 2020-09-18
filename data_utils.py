@@ -207,7 +207,6 @@ class TextMelEmbCollate():
         embedds = torch.LongTensor(len(batch), 1)
         for i in range(len(ids_sorted_decreasing)):
             emb = batch[ids_sorted_decreasing[i]][2]
-            print(emb)
             embedds[i] = emb
 
 
