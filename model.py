@@ -538,7 +538,7 @@ class Tacotron2(nn.Module):
 # Tacotron with speaker embedding
 class Tacotron2SE(nn.Module):
     def __init__(self, hparams):
-        super(Tacotron2, self).__init__()
+        super(Tacotron2SE, self).__init__()
         self.mask_padding = hparams.mask_padding
         self.fp16_run = hparams.fp16_run
         self.n_mel_channels = hparams.n_mel_channels
@@ -605,6 +605,7 @@ class Tacotron2SE(nn.Module):
             output_lengths)
 
     def inference(self, inputs):
+        speaker_embedd_input = self.speaker_embedding(embedd)
         embedded_inputs = self.embedding(inputs).transpose(1, 2)
         encoder_outputs = self.encoder.inference(embedded_inputs)
         mel_outputs, gate_outputs, alignments = self.decoder.inference(
