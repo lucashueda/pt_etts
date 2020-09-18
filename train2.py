@@ -151,8 +151,8 @@ def init_distributed(hparams, n_gpus, rank, group_name):
 
 def prepare_dataloaders(hparams):
     # Get data, data loaders and collate function ready
-    trainset = TextMelEmbLoader(hparams.training_files, hparams)
-    valset = TextMelEmbLoader(hparams.validation_files, hparams)
+    trainset = TextMelEmbLoader(hparams.training_files, hparams, speaker_dict)
+    valset = TextMelEmbLoader(hparams.validation_files, hparams, speaker_dict)
     collate_fn = TextMelEmbCollate(hparams.n_frames_per_step)
 
     if hparams.distributed_run:
@@ -181,7 +181,7 @@ def prepare_directories_and_logger(output_directory, log_directory, rank):
 
 
 def load_model(hparams):
-    model = Tacotron2SE(hparams, speaker_dict).cuda()
+    model = Tacotron2SE(hparams).cuda()
     if hparams.fp16_run:
         model.decoder.attention_layer.score_mask_value = finfo('float16').min
 
