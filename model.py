@@ -590,7 +590,7 @@ class Tacotron2SE(nn.Module):
 
         embedded_inputs = self.embedding(text_inputs).transpose(1, 2)
         
-        print(speaker_embedd_input.shape, embedded_input.shape)
+        print(speaker_embedd_input.shape, embedded_inputs.shape)
 
         encoder_outputs = self.encoder(embedded_inputs, text_lengths)
 
