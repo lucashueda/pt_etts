@@ -168,7 +168,7 @@ class TextMelEmbLoader(torch.utils.data.Dataset):
         return text_norm
 
     def get_emb(self, emb):
-        emb_norm = torch.IntTensor(self.emb_dict[emb])
+        emb_norm = torch.tensor(self.emb_dict[emb])
         return emb_norm
 
     def __getitem__(self, index):
@@ -203,10 +203,11 @@ class TextMelEmbCollate():
             text_padded[i, :text.size(0)] = text
 
         # All one-hot embedded, since it is just a integer we dont need to pad
-        print(batch[:][2])
+        
         embedds = torch.LongTensor(len(batch), 1)
         for i in range(len(ids_sorted_decreasing)):
             emb = batch[ids_sorted_decreasing[i]][2]
+            print(emb)
             embedds[i] = emb
 
 
