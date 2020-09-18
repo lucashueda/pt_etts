@@ -586,7 +586,7 @@ class Tacotron2SE(nn.Module):
         text_inputs, text_lengths, mels, max_len, output_lengths, embedds = inputs
         text_lengths, output_lengths = text_lengths.data, output_lengths.data
 
-        speaker_embedd_input = self.speaker_embedding(embedd)
+        speaker_embedd_input = self.speaker_embedding(embedds)
 
         embedded_inputs = self.embedding(text_inputs).transpose(1, 2)
         
