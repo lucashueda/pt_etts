@@ -177,7 +177,7 @@ class Encoder(nn.Module):
         x = x.transpose(1, 2)
 
         # pytorch tensor are not reversible, hence the conversion
-        input_lengths = input_lengths.cpu().numpy()
+        # input_lengths = input_lengths.cpu().numpy()
         x = nn.utils.rnn.pack_padded_sequence(
             x, input_lengths, batch_first=True)
 
