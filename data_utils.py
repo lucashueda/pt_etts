@@ -140,7 +140,7 @@ class TextMelEmbLoader(torch.utils.data.Dataset):
         audiopath, text, emb = audiopath_and_text[0], audiopath_and_text[1], audiopath_and_text[2]
         text = self.get_text(text)
         mel = self.get_mel(audiopath)
-        emb = self.get_embed(emb)
+        emb = self.get_emb(emb)
         return (text, mel, emb)
 
     def get_mel(self, filename):
