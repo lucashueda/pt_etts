@@ -203,6 +203,7 @@ class TextMelEmbCollate():
             text_padded[i, :text.size(0)] = text
 
         # All one-hot embedded, since it is just a integer we dont need to pad
+        print(batch[:][2])
         embedds = torch.LongTensor(len(batch), 1)
         for i in range(len(ids_sorted_decreasing)):
             emb = batch[ids_sorted_decreasing[i]][2]
