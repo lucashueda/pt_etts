@@ -1,3 +1,4 @@
 data/LJSpeech/
 data/VCTK/
 processed_data/
+pre_trained/
