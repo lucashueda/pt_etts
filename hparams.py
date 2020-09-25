@@ -88,7 +88,7 @@ def create_hparams(hparams_string=None, verbose=False):
             # Speaker Embedding Hyperparameters #
             ################################
 
-            max_emb_size = 108,
+            max_emb_size = 109,
             speaker_embedding_dim = 512 
         )
 
