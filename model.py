@@ -608,7 +608,7 @@ class Tacotron2SE(nn.Module):
             [mel_outputs, mel_outputs_postnet, gate_outputs, alignments],
             output_lengths)
 
-    def inference(self, inputs):
+    def inference(self, inputs, embedd):
         speaker_embedd_input = self.speaker_embedding(embedd)
         embedded_inputs = self.embedding(inputs).transpose(1, 2)
         embedded_inputs = speaker_embedd_input.permute(0,2,1).expand(-1,-1, embedded_inputs.size(2)) + embedded_inputs
