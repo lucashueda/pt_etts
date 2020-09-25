@@ -589,11 +589,11 @@ class Tacotron2SE(nn.Module):
         text_inputs, text_lengths, mels, max_len, output_lengths, embedds = inputs
         text_lengths, output_lengths = text_lengths.data, output_lengths.data
 
-        # speaker_embedd_input = self.speaker_embedding(embedds)
+        speaker_embedd_input = self.speaker_embedding(embedds)
 
         embedded_inputs = self.embedding(text_inputs).transpose(1, 2)
         
-        # embedded_inputs = speaker_embedd_input.permute(0,2,1).expand(-1,-1, embedded_inputs.size(2)) + embedded_inputs
+        embedded_inputs = speaker_embedd_input.permute(0,2,1).expand(-1,-1, embedded_inputs.size(2)) + embedded_inputs
 
         encoder_outputs = self.encoder(embedded_inputs, text_lengths)
 
@@ -609,8 +609,9 @@ class Tacotron2SE(nn.Module):
             output_lengths)
 
     def inference(self, inputs):
-        # speaker_embedd_input = self.speaker_embedding(embedd)
+        speaker_embedd_input = self.speaker_embedding(embedd)
         embedded_inputs = self.embedding(inputs).transpose(1, 2)
+        embedded_inputs = speaker_embedd_input.permute(0,2,1).expand(-1,-1, embedded_inputs.size(2)) + embedded_inputs
         encoder_outputs = self.encoder.inference(embedded_inputs)
         mel_outputs, gate_outputs, alignments = self.decoder.inference(
             encoder_outputs)
