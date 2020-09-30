@@ -17,6 +17,7 @@ import time
 import pandas as pd 
 import numpy as np 
 import librosa
+from hparams import create_hparams
 
 # Definindo funções
 
