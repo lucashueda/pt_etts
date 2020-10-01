@@ -69,22 +69,34 @@ def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
     text_id = []
     wav_id = []
 
+    # Verbose de inicio da transformação de mels
+    print("Iniciando criação dos arquivos mels... Isso pode demorar algumas horas!")
+
     # Vamos percorrer as pastas do diretório da base vctk
     for file in os.listdir(vctk_path):
       if(file =='wav48'):
         wav_files = os.path.join(vctk_path, file)
         for folder in os.listdir(wav_files):
           wav_folder_files = os.path.join(wav_files, folder)
+
+          part_id = 0
+          count_part_id = 0
+
           for wav in os.listdir(wav_folder_files):
             wav_dirs.append(os.path.join(wav_folder_files, wav))
             wav_id.append(wav[:-4])
 
+            # Se ja interei mais do que 50 vezes, atualizo o part id para criar nova pasta
+            if(count_part_id >= 50):
+              count_part_id = 0
+              part_id = part_id + 1
 
             # TODO: Checagem se o arquivo ja foi criado
-            # TODO: Se uma pasta com 400 ainda n der pra ler pelo np.load, fazer script pra separar em pastas com 50 arquivos cada
+            # Ongoing: Se uma pasta com 400 ainda n der pra ler pelo np.load, fazer script pra separar em pastas com 50 arquivos cada
 
             # Gerando diretorio da pasta do arquivo mel
             speak_dir = os.path.join(out_dir, wav[:4])
+            speak_dir = os.path.join(speak_dir,str(part_id))
 
             # Cria a pasta caso ela n existe
             prepare_directory(os.path.join(speak_dir))
@@ -100,6 +112,9 @@ def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
             
             mel_dir.append(mel_out_path)
 
+            # Itera o count_part_id
+            count_part_id = count_part_id + 1
+
 
       if(file == 'txt'):
         txt_files = os.path.join(vctk_path, file)
@@ -109,11 +124,12 @@ def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
             text_dirs.append(os.path.join(txt_folder_files, txt))
             text_id.append(txt[:-4])
 
-    
+    print("Finalizado a criação dos arquivos mels...")
+
     df_texts = pd.DataFrame({'txt_path': text_dirs, 'id': text_id})
     df_wavs = pd.DataFrame({'wav_path': wav_dirs, 'id': wav_id, 'mel_path': mel_dir})
 
-    print("Starting sanity check...")
+    print("Iniciando check de sanidade dos arquivos...")
 
     # Juntando os dataframes de texto e audios
     df_final = df_wavs.merge(df_texts, how= 'left', on = 'id')

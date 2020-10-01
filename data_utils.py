@@ -156,7 +156,7 @@ class TextMelEmbLoader(torch.utils.data.Dataset):
             melspec = self.stft.mel_spectrogram(audio_norm)
             melspec = torch.squeeze(melspec, 0)
         else:
-            melspec = torch.from_numpy(np.load(filename).T)
+            melspec = torch.from_numpy(np.log(np.load(filename).T))
             assert melspec.size(0) == self.stft.n_mel_channels, (
                 'Mel dimension mismatch: given {}, expected {}'.format(
                     melspec.size(0), self.stft.n_mel_channels))
