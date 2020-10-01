@@ -79,9 +79,24 @@ def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
             wav_dirs.append(os.path.join(wav_folder_files, wav))
             wav_id.append(wav[:-4])
 
+
+            # TODO: Checagem se o arquivo ja foi criado
+
+            # Gerando diretorio da pasta do arquivo mel
+            mel_dir = os.path.join(out_dir, wav[:4])
+
+            # Cria a pasta caso ela n existe
+            prepare_directory(os.path.join(mel_out_path, wav[:-4]))
+            
+            # Gerando o caminho do arquivo
+            mel_out_path = os.path.join(mel_dir, wav[:-4])
+
+            # Gerando o mel spec a partir do wav file
             mel = np_wav2mel(os.path.join(wav_folder_files, wav))
-            mel_out_path = os.path.join(out_dir, wav[:-4])
+            
+            # Salva o mel
             np.save(mel_out_path + '.npy', mel)
+            
             mel_dir.append(mel_out_path)
 
 
