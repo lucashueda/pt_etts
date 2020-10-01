@@ -42,9 +42,13 @@ def np_wav2mel(wav_filepath, n_fft = 2048, hop_length = 512, n_mels = 80, n_pad 
 
   data, sampling_rate = librosa.load(wav_filepath)
 
+  data = data/32768
+
   mel_spec = librosa.feature.melspectrogram(data, sr=sampling_rate, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels) # (D, L)
 
-  return mel_spec.T # (L, D)
+  log_mel_spec = np.log(np.clip(mel_spec, a_min = 1e-5))
+
+  return log_mel_spec 
 
 def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
   '''
