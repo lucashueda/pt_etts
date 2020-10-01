@@ -81,12 +81,13 @@ def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
 
 
             # TODO: Checagem se o arquivo ja foi criado
+            # TODO: Se uma pasta com 400 ainda n der pra ler pelo np.load, fazer script pra separar em pastas com 50 arquivos cada
 
             # Gerando diretorio da pasta do arquivo mel
             mel_dir = os.path.join(out_dir, wav[:4])
 
             # Cria a pasta caso ela n existe
-            prepare_directory(os.path.join(mel_out_path, wav[:-4]))
+            prepare_directory(os.path.join(mel_dir, wav[:-4]))
             
             # Gerando o caminho do arquivo
             mel_out_path = os.path.join(mel_dir, wav[:-4])
