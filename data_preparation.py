@@ -69,7 +69,7 @@ def torch_wav2mel(wav_filepath, nfft = 2048, hop_length = 512, n_mels = 80):
       D -> Dimensão do espectrograma
   '''
 
-  audio, sampling_rate = load_wav_to_torch(filename)
+  audio, sampling_rate = load_wav_to_torch(wav_filepath)
 
   if sampling_rate != self.stft.sampling_rate:
       raise ValueError("{} {} SR doesn't match target {} SR".format(
