@@ -57,7 +57,7 @@ def np_wav2mel(wav_filepath, n_fft = 2048, hop_length = 512, n_mels = 80):
 
   return log_mel_spec 
 
-def torch_wav2mel(wav_filepath, nfft = 2048, hop_length = 512, n_mels = 80):
+def torch_wav2mel(wav_filepath, stft, nfft = 2048, hop_length = 512, n_mels = 80):
   '''
     Função que recebe um diretório de um arquivo .wav e retorna o melespectrograma como um vetor do numpy.
 
@@ -78,7 +78,7 @@ def torch_wav2mel(wav_filepath, nfft = 2048, hop_length = 512, n_mels = 80):
   audio_norm = audio / 32768
   audio_norm = audio_norm.unsqueeze(0)
   audio_norm = torch.autograd.Variable(audio_norm, requires_grad=False)
-  melspec = self.stft.mel_spectrogram(audio_norm)
+  melspec = stft.mel_spectrogram(audio_norm)
   melspec = torch.squeeze(melspec, 0)
 
   print(melspec.shape)
