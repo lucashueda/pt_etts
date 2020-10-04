@@ -40,13 +40,15 @@ def np_wav2mel(wav_filepath, n_fft = 2048, hop_length = 512, n_mels = 80, n_pad 
       D -> Dimensão do espectrograma
   '''
 
-  data, sampling_rate = librosa.load(wav_filepath)
+  data, sampling_rate = librosa.load(wav_filepath, sr=None)
 
   data = data/32768
 
   mel_spec = librosa.feature.melspectrogram(data, sr=sampling_rate, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels) # (D, L)
 
-  log_mel_spec = np.log(np.clip(mel_spec, a_min = 1e-5, a_max = None))
+  # log_mel_spec = np.log(np.clip(mel_spec, a_min = 1e-5, a_max = None))
+
+  log_mel_spec = np.log(mel_spec)
 
   return log_mel_spec 
 
