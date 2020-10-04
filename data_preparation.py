@@ -18,6 +18,8 @@ import pandas as pd
 import numpy as np 
 import librosa
 from hparams import create_hparams
+from utils import load_wav_to_torch
+from layers import TacotronSTFT
 
 # Definindo funções
 
@@ -29,11 +31,13 @@ def prepare_directory(out_dir):
     os.makedirs(out_dir)
     os.chmod(out_dir, 0o775) # Não tenho certeza se funciona no windows
 
-def np_wav2mel(wav_filepath, n_fft = 2048, hop_length = 512, n_mels = 80, n_pad = 200):
+def np_wav2mel(wav_filepath, n_fft = 2048, hop_length = 512, n_mels = 80):
   '''
     Função que recebe um diretório de um arquivo .wav e retorna o melespectrograma como um vetor do numpy.
 
     Essa função usa a librosa para a conversão e a numpy como vetor de saída.
+
+    APARENTEMENTE ELA BUGA COM O SISTEMA DE RECONSTRUCAO DE SPECTRO DO REPO ORIGINAL!!!
   
     Shape track: 
       L -> Tamanho da sequência
@@ -51,6 +55,35 @@ def np_wav2mel(wav_filepath, n_fft = 2048, hop_length = 512, n_mels = 80, n_pad 
   log_mel_spec = np.log(mel_spec)
 
   return log_mel_spec 
+
+def torch_wav2mel(wav_filepath, nfft = 2048, hop_length = 512, n_mels = 80):
+  '''
+    Função que recebe um diretório de um arquivo .wav e retorna o melespectrograma como um vetor do numpy.
+
+    Essa função usa a librosa para a conversão e a numpy como vetor de saída.
+
+    APARENTEMENTE ELA BUGA COM O SISTEMA DE RECONSTRUCAO DE SPECTRO DO REPO ORIGINAL!!!
+  
+    Shape track: 
+      L -> Tamanho da sequência
+      D -> Dimensão do espectrograma
+  '''
+
+  audio, sampling_rate = load_wav_to_torch(filename)
+  audio, sampling_rate = load_wav_to_torch(filename)
+
+  if sampling_rate != self.stft.sampling_rate:
+      raise ValueError("{} {} SR doesn't match target {} SR".format(
+          sampling_rate, self.stft.sampling_rate))
+  audio_norm = audio / self.max_wav_value
+  audio_norm = audio_norm.unsqueeze(0)
+  audio_norm = torch.autograd.Variable(audio_norm, requires_grad=False)
+  melspec = self.stft.mel_spectrogram(audio_norm)
+  melspec = torch.squeeze(melspec, 0)
+
+  print(melspec.shape)
+
+  return melspec 
 
 def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
   '''
