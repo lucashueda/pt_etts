@@ -70,12 +70,11 @@ def torch_wav2mel(wav_filepath, nfft = 2048, hop_length = 512, n_mels = 80):
   '''
 
   audio, sampling_rate = load_wav_to_torch(filename)
-  audio, sampling_rate = load_wav_to_torch(filename)
 
   if sampling_rate != self.stft.sampling_rate:
       raise ValueError("{} {} SR doesn't match target {} SR".format(
           sampling_rate, self.stft.sampling_rate))
-  audio_norm = audio / self.max_wav_value
+  audio_norm = audio / 32768
   audio_norm = audio_norm.unsqueeze(0)
   audio_norm = torch.autograd.Variable(audio_norm, requires_grad=False)
   melspec = self.stft.mel_spectrogram(audio_norm)
@@ -83,7 +82,7 @@ def torch_wav2mel(wav_filepath, nfft = 2048, hop_length = 512, n_mels = 80):
 
   print(melspec.shape)
 
-  return melspec 
+  return melspec, audio
 
 def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
   '''
