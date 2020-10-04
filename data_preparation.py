@@ -20,6 +20,7 @@ import librosa
 from hparams import create_hparams
 from utils import load_wav_to_torch
 from layers import TacotronSTFT
+import torch
 
 # Definindo funções
 
@@ -71,9 +72,9 @@ def torch_wav2mel(wav_filepath, nfft = 2048, hop_length = 512, n_mels = 80):
 
   audio, sampling_rate = load_wav_to_torch(wav_filepath)
 
-  if sampling_rate != self.stft.sampling_rate:
-      raise ValueError("{} {} SR doesn't match target {} SR".format(
-          sampling_rate, self.stft.sampling_rate))
+  # if sampling_rate != self.stft.sampling_rate:
+  #     raise ValueError("{} {} SR doesn't match target {} SR".format(
+  #         sampling_rate, self.stft.sampling_rate))
   audio_norm = audio / 32768
   audio_norm = audio_norm.unsqueeze(0)
   audio_norm = torch.autograd.Variable(audio_norm, requires_grad=False)
