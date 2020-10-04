@@ -81,9 +81,7 @@ def torch_wav2mel(wav_filepath, stft, nfft = 2048, hop_length = 512, n_mels = 80
   melspec = stft.mel_spectrogram(audio_norm)
   melspec = torch.squeeze(melspec, 0)
 
-  print(melspec.shape)
-
-  return melspec, audio
+  return melspec.detach().numpy()
 
 def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
   '''
@@ -96,6 +94,12 @@ def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
 
   # Criando o diretório onde será salvo os mels
   prepare_directory(out_dir)
+
+  # Instanciando stft
+  stft = TacotronSTFT(
+    hparams.filter_length, hparams.hop_length, hparams.win_length,
+    hparams.n_mel_channels, hparams.sampling_rate, hparams.mel_fmin,
+    hparams.mel_fmax)
 
   if(df == 'VCTK'):
     vctk_path = in_dir
@@ -144,8 +148,8 @@ def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
             mel_out_path = os.path.join(speak_dir, wav[:-4])
 
             # Gerando o mel spec a partir do wav file
-            mel = np_wav2mel(os.path.join(wav_folder_files, wav))
-            
+            mel = torch_wav2mel(os.path.join(wav_folder_files, wav), stft, nfft = hparams.filter_length, hop_length = hparams.hop_length, n_mels = hparams.n_mel_channels)
+
             # Salva o mel
             np.save(mel_out_path + '.npy', mel)
             
