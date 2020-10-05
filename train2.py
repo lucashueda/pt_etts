@@ -318,7 +318,9 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
 
         for i, batch in enumerate(train_loader):
             
-            print(f"iniciando batch {i}")
+            init = time.time()
+
+            print(f"iniciando batch {i} de tamanho {len(batch)}")
 
             start = time.perf_counter()
             for param_group in optimizer.param_groups:
@@ -382,7 +384,8 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
                                     checkpoint_path)
 
             iteration += 1
-
+            end = time.time()
+            print(f'tempo de exec = {end-init}')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
