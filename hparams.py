@@ -35,11 +35,13 @@ def create_hparams(hparams_string=None, verbose=False):
             max_wav_value=32768.0,
             sampling_rate=48000,
             filter_length=1024,
-            hop_length=256,
+            # hop_length=256,
+            hop_length = 512,
             win_length=1024,
             n_mel_channels=80,
             mel_fmin=0.0,
             mel_fmax=8000.0,
+            max_len = ,
 
             ################################
             # Model Parameters             #
@@ -81,7 +83,7 @@ def create_hparams(hparams_string=None, verbose=False):
             learning_rate=1e-3,
             weight_decay=1e-6,
             grad_clip_thresh=1.0,
-            batch_size=16,
+            batch_size=10,
             mask_padding=True,  # set model's padded outputs to padded values
 
             ################################
