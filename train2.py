@@ -15,7 +15,7 @@ from data_utils import TextMelEmbLoader, TextMelEmbCollate
 from loss_function import Tacotron2Loss
 from logger import Tacotron2Logger
 from hparams import create_hparams
-
+import multiprocessing
 
 speaker_dict = {'p225': 3,
  'p226': 1,
@@ -162,7 +162,8 @@ def prepare_dataloaders(hparams):
         train_sampler = None
         shuffle = True
 
-    train_loader = DataLoader(trainset, num_workers=1, shuffle=shuffle,
+    n_workers = multiprocessing.cpu_count()
+    train_loader = DataLoader(trainset, num_workers=n_workers, shuffle=shuffle,
                               sampler=train_sampler,
                               batch_size=hparams.batch_size, pin_memory=False,
                               drop_last=True, collate_fn=collate_fn)
