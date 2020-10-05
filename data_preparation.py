@@ -115,6 +115,9 @@ def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
     # Verbose de inicio da transformação de mels
     print("Iniciando criação dos arquivos mels... Isso pode demorar algumas horas!")
 
+    # Vetor que guardará o id dos arquivos corrompidos
+    corromp = []
+
     # Vamos percorrer as pastas do diretório da base vctk
     for file in os.listdir(vctk_path):
       if(file =='wav48'):
@@ -126,37 +129,45 @@ def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
           count_part_id = 0
 
           for wav in os.listdir(wav_folder_files):
-            wav_dirs.append(os.path.join(wav_folder_files, wav))
-            wav_id.append(wav[:-4])
 
-            # Se ja interei mais do que 50 vezes, atualizo o part id para criar nova pasta
-            if(count_part_id >= 50):
-              count_part_id = 0
-              part_id = part_id + 1
+            try:
+              wav_dirs.append(os.path.join(wav_folder_files, wav))
+              wav_id.append(wav[:-4])
 
-            # TODO: Checagem se o arquivo ja foi criado
-            # Ongoing: Se uma pasta com 400 ainda n der pra ler pelo np.load, fazer script pra separar em pastas com 50 arquivos cada
+              # Se ja interei mais do que 50 vezes, atualizo o part id para criar nova pasta
+              if(count_part_id >= 50):
+                count_part_id = 0
+                part_id = part_id + 1
 
-            # Gerando diretorio da pasta do arquivo mel
-            speak_dir = os.path.join(out_dir, wav[:4])
-            speak_dir = os.path.join(speak_dir,str(part_id))
+              # TODO: Checagem se o arquivo ja foi criado
+              # Ongoing: Se uma pasta com 400 ainda n der pra ler pelo np.load, fazer script pra separar em pastas com 50 arquivos cada
 
-            # Cria a pasta caso ela n existe
-            prepare_directory(os.path.join(speak_dir))
+              # Gerando diretorio da pasta do arquivo mel
+              speak_dir = os.path.join(out_dir, wav[:4])
+              speak_dir = os.path.join(speak_dir,str(part_id))
+
+              # Cria a pasta caso ela n existe
+              prepare_directory(os.path.join(speak_dir))
+              
+              # Gerando o caminho do arquivo
+              mel_out_path = os.path.join(speak_dir, wav[:-4])
+
+              # Gerando o mel spec a partir do wav file
+              mel = torch_wav2mel(os.path.join(wav_folder_files, wav), stft, nfft = hparams.filter_length, hop_length = hparams.hop_length, n_mels = hparams.n_mel_channels)
+
+              # Salva o mel se tiver tamanho menor que o limite do hparams
+              if(mel.shape[1] < hparams.max_seq_mel):
+                np.save(mel_out_path + '.npy', mel)
+              
+              mel_dir.append(mel_out_path)
+
+              # Itera o count_part_id
+              count_part_id = count_part_id + 1
             
-            # Gerando o caminho do arquivo
-            mel_out_path = os.path.join(speak_dir, wav[:-4])
+            except:
+              print(f"O arquivo {wav} está corrompido")
+              corromp.append(wav[:-4])
 
-            # Gerando o mel spec a partir do wav file
-            mel = torch_wav2mel(os.path.join(wav_folder_files, wav), stft, nfft = hparams.filter_length, hop_length = hparams.hop_length, n_mels = hparams.n_mel_channels)
-
-            # Salva o mel
-            np.save(mel_out_path + '.npy', mel)
-            
-            mel_dir.append(mel_out_path)
-
-            # Itera o count_part_id
-            count_part_id = count_part_id + 1
 
 
       if(file == 'txt'):
@@ -164,8 +175,9 @@ def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
         for folder in os.listdir(txt_files):
           txt_folder_files = os.path.join(txt_files, folder)
           for txt in os.listdir(txt_folder_files):
-            text_dirs.append(os.path.join(txt_folder_files, txt))
-            text_id.append(txt[:-4])
+            if(txt[:-4] not in corromp):
+              text_dirs.append(os.path.join(txt_folder_files, txt))
+              text_id.append(txt[:-4])
 
     print("Finalizado a criação dos arquivos mels...")
 
