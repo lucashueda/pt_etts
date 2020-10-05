@@ -361,14 +361,16 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
 
             print('opt step')
             optimizer.step()
-
+            
+            print('print e começando logging')
             if not is_overflow and rank == 0:
                 duration = time.perf_counter() - start
                 print("Train loss {} {:.6f} Grad Norm {:.6f} {:.2f}s/it".format(
                     iteration, reduced_loss, grad_norm, duration))
                 logger.log_training(
-                    reduced_loss, grad_norm, learning_rate, duration, iteration)
-
+                    reduced_loss, grad_norm, learning_rate, duration, iteration)        
+            
+            print('validando salvando checkpoint')
             if not is_overflow and (iteration % hparams.iters_per_checkpoint == 0):
                 validate(model, criterion, valset, iteration,
                          hparams.batch_size, n_gpus, collate_fn, logger,
