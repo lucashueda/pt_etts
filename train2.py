@@ -315,16 +315,32 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
     # ================ MAIN TRAINNIG LOOP! ===================
     for epoch in range(epoch_offset, hparams.epochs):
         print("Epoch: {}".format(epoch))
+
         for i, batch in enumerate(train_loader):
+            
+            print(f"iniciando batch {i}")
+
             start = time.perf_counter()
             for param_group in optimizer.param_groups:
                 param_group['lr'] = learning_rate
 
+            print(f'Model zero grad')
+
             model.zero_grad()
+
+            print(f'Iniciando parse batch')
+
             x, y = model.parse_batch(batch)
+            
+            print(f'Predizendo o ypred')
+
             y_pred = model(x)
 
+            print('loss')
+
             loss = criterion(y_pred, y)
+
+            print('Backward')
             if hparams.distributed_run:
                 reduced_loss = reduce_tensor(loss.data, n_gpus).item()
             else:
@@ -343,6 +359,7 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
                 grad_norm = torch.nn.utils.clip_grad_norm_(
                     model.parameters(), hparams.grad_clip_thresh)
 
+            print('opt step')
             optimizer.step()
 
             if not is_overflow and rank == 0:
