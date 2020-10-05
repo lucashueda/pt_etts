@@ -318,8 +318,6 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
         print("Epoch: {}".format(epoch))
 
         for i, batch in enumerate(train_loader):
-            
-            init = time.time()
 
             # print(f"iniciando batch {i} de tamanho {len(batch)}")
 
@@ -385,8 +383,6 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
                                     checkpoint_path)
 
             iteration += 1
-            end = time.time()
-            print(f'tempo de exec = {end-init}')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
