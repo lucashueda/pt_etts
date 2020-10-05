@@ -321,29 +321,29 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
             
             init = time.time()
 
-            print(f"iniciando batch {i} de tamanho {len(batch)}")
+            # print(f"iniciando batch {i} de tamanho {len(batch)}")
 
             start = time.perf_counter()
             for param_group in optimizer.param_groups:
                 param_group['lr'] = learning_rate
 
-            print(f'Model zero grad')
+            # print(f'Model zero grad')
 
             model.zero_grad()
 
-            print(f'Iniciando parse batch')
+            # print(f'Iniciando parse batch')
 
             x, y = model.parse_batch(batch)
             
-            print(f'Predizendo o ypred')
+            # print(f'Predizendo o ypred')
 
             y_pred = model(x)
 
-            print('loss')
+            # print('loss')
 
             loss = criterion(y_pred, y)
 
-            print('Backward')
+            # print('Backward')
             if hparams.distributed_run:
                 reduced_loss = reduce_tensor(loss.data, n_gpus).item()
             else:
@@ -362,18 +362,18 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
                 grad_norm = torch.nn.utils.clip_grad_norm_(
                     model.parameters(), hparams.grad_clip_thresh)
 
-            print('opt step')
+            # print('opt step')
             optimizer.step()
             
-            print('print e começando logging')
+            # print('print e começando logging')
             if not is_overflow and rank == 0:
                 duration = time.perf_counter() - start
                 print("Train loss {} {:.6f} Grad Norm {:.6f} {:.2f}s/it".format(
                     iteration, reduced_loss, grad_norm, duration))
-                logger.log_training(
-                    reduced_loss, grad_norm, learning_rate, duration, iteration)        
+                # logger.log_training(
+                #     reduced_loss, grad_norm, learning_rate, duration, iteration)        
             
-            print('validando salvando checkpoint')
+            # print('validando salvando checkpoint')
             if not is_overflow and (iteration % hparams.iters_per_checkpoint == 0):
                 validate(model, criterion, valset, iteration,
                          hparams.batch_size, n_gpus, collate_fn, logger,
