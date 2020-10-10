@@ -92,7 +92,7 @@ trim_fft_size = 1024
 trim_hop_size = 256
 trim_top_db = 23
 
-def get_audio(audio_path, hop_length, trim_top_db = 23, n_fft = 1024):
+def get_audio(audio_path, hop_length, trim_top_db = 23, n_fft = 1024, max_wav_value = 32768.0, sr = 48000):
     data, sampling_rate = librosa.core.load(audio_path, sr=sr)
     data = data / np.abs(data).max() * 0.999
     data_ = librosa.effects.trim(data, top_db=trim_top_db, frame_length=n_fft, hop_length=hop_length)[0]
