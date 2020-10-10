@@ -101,6 +101,7 @@ def get_audio(audio_path, hop_length, trim_top_db = 23, n_fft = 1024):
     data_ = np.append(data_, [0.]*5*hop_length)
     data_ = data_.astype(dtype=np.int16)
     data_ = data_ / np.abs(data).max() * 0.999
+    print(data_.shape)
     return torch.FloatTensor(data_.astype(np.float32))
 
 def get_mel(stft, audio):
@@ -109,6 +110,7 @@ def get_mel(stft, audio):
     #print(audio_norm.max(), audio_norm.min())
     melspec = stft.mel_spectrogram(audio_norm)
     melspec = torch.squeeze(melspec, 0)
+    print(melspec.detach().numpy().shape)
     return melspec.detach().numpy()
 
 def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
