@@ -101,7 +101,7 @@ def get_audio(audio_path, hop_length, trim_top_db = 23, n_fft = 1024):
     data_ = np.append(data_, [0.]*5*hop_length)
     data_ = data_.astype(dtype=np.int16)
     data_ = data_ / np.abs(data).max() * 0.999
-    # print(data_.shape)
+    print(data_.min(), data_.max())
     return torch.FloatTensor(data_.astype(np.float32))
 
 def get_mel(stft, audio):
