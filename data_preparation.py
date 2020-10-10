@@ -57,6 +57,7 @@ def np_wav2mel(wav_filepath, n_fft = 2048, hop_length = 512, n_mels = 80):
 
   return log_mel_spec 
 
+
 def torch_wav2mel(wav_filepath, stft, nfft = 2048, hop_length = 512, n_mels = 80):
   '''
     Função que recebe um diretório de um arquivo .wav e retorna o melespectrograma como um vetor do numpy.
@@ -82,6 +83,33 @@ def torch_wav2mel(wav_filepath, stft, nfft = 2048, hop_length = 512, n_mels = 80
   melspec = torch.squeeze(melspec, 0)
 
   return melspec.detach().numpy()
+
+
+
+sr = 48000
+max_wav_value=32768.0
+trim_fft_size = 1024
+trim_hop_size = 256
+trim_top_db = 23
+
+def get_audio(audio_path, hop_length, trim_top_db = 23, n_fft = 1024):
+    data, sampling_rate = librosa.core.load(audio_path, sr=None)
+    data = data / np.abs(data).max() * 0.999
+    data_ = librosa.effects.trim(data, top_db=trim_top_db, frame_length=n_fft, hop_length=hop_length)[0]
+    data_ = data_ * max_wav_value
+    data_ = np.append([0.]*5*hop_length, data_)
+    data_ = np.append(data_, [0.]*5*hop_length)
+    data_ = data_.astype(dtype=np.int16)
+    data_ = data_ / np.abs(data).max() * 0.999
+    return torch.FloatTensor(data_.astype(np.float32))
+
+def get_mel(stft, audio):
+    audio_norm = audio.unsqueeze(0)
+    audio_norm = torch.autograd.Variable(audio_norm, requires_grad=False)
+    #print(audio_norm.max(), audio_norm.min())
+    melspec = stft.mel_spectrogram(audio_norm)
+    melspec = torch.squeeze(melspec, 0)
+    return melspec.detach().numpy()
 
 def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
   '''
@@ -153,7 +181,9 @@ def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
               mel_out_path = os.path.join(speak_dir, wav[:-4])
 
               # Gerando o mel spec a partir do wav file
-              mel = torch_wav2mel(os.path.join(wav_folder_files, wav), stft, nfft = hparams.filter_length, hop_length = hparams.hop_length, n_mels = hparams.n_mel_channels)
+              aud = get_audio(os.path.join(wav_folder_files, wav), hparams.hop_length, trim_top_db = 23, n_fft = 1024)
+              mel = get_mel(stft, audio)
+              # mel = torch_wav2mel(os.path.join(wav_folder_files, wav), stft, nfft = hparams.filter_length, hop_length = hparams.hop_length, n_mels = hparams.n_mel_channels)
 
               # Salva o mel se tiver tamanho menor que o limite do hparams
               if(mel.shape[1] < hparams.max_seq_mel):
@@ -197,6 +227,15 @@ def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
 
     # Limpando audios duplicados
     df_final = df_final.drop_duplicates(subset='wav_path')
+
+    # pegando os textos
+    texts = []
+    for fname in df_final.txt_path.values:
+      with open(fname) as f:
+        for line in f:
+          texts.append(line)
+    
+    df_final['texts'] = texts
 
     # Normalizando os textos, tirando o '\n' do final
     df_final['text_n'] = df_final.texts.str.replace('\n', '') 
