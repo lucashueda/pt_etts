@@ -188,7 +188,7 @@ def generate_mel_files(in_dir, out_dir, hparams, df = 'VCTK'):
 
               # Gerando o mel spec a partir do wav file
               aud = get_audio(os.path.join(wav_folder_files, wav), hparams.hop_length, trim_top_db = 23, n_fft = 1024)
-              mel = get_mel(stft, audio)
+              mel = get_mel(stft, aud)
               # mel = torch_wav2mel(os.path.join(wav_folder_files, wav), stft, nfft = hparams.filter_length, hop_length = hparams.hop_length, n_mels = hparams.n_mel_channels)
 
               # Salva o mel se tiver tamanho menor que o limite do hparams
