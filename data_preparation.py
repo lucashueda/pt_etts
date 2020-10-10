@@ -105,10 +105,14 @@ def get_audio(audio_path, hop_length, trim_top_db = 23, n_fft = 1024):
     return torch.FloatTensor(data_.astype(np.float32))
 
 def get_mel(stft, audio):
+    print(audio.shape)
     audio_norm = audio.unsqueeze(0)
+    print(audio_norm.shape)
     audio_norm = torch.autograd.Variable(audio_norm, requires_grad=False)
+    print(audio_norm.shape)
     #print(audio_norm.max(), audio_norm.min())
     melspec = stft.mel_spectrogram(audio_norm)
+    print(melspec.shape)
     melspec = torch.squeeze(melspec, 0)
     print(melspec.detach().numpy().shape)
     return melspec.detach().numpy()
