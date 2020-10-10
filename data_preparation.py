@@ -93,7 +93,7 @@ trim_hop_size = 256
 trim_top_db = 23
 
 def get_audio(audio_path, hop_length, trim_top_db = 23, n_fft = 1024):
-    data, sampling_rate = librosa.core.load(audio_path, sr=None)
+    data, sampling_rate = librosa.core.load(audio_path, sr=sr)
     data = data / np.abs(data).max() * 0.999
     data_ = librosa.effects.trim(data, top_db=trim_top_db, frame_length=n_fft, hop_length=hop_length)[0]
     data_ = data_ * max_wav_value
@@ -101,7 +101,7 @@ def get_audio(audio_path, hop_length, trim_top_db = 23, n_fft = 1024):
     data_ = np.append(data_, [0.]*5*hop_length)
     data_ = data_.astype(dtype=np.int16)
     data_ = data_ / np.abs(data).max() * 0.999
-    print(data_.shape)
+    # print(data_.shape)
     return torch.FloatTensor(data_.astype(np.float32))
 
 def get_mel(stft, audio):
