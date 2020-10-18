@@ -217,6 +217,8 @@ class Decoder(nn.Module):
         self.gate_threshold = hparams.gate_threshold
         self.p_attention_dropout = hparams.p_attention_dropout
         self.p_decoder_dropout = hparams.p_decoder_dropout
+        
+        self.speaker_embedding = nn.Embedding(hparams.max_emb_size, hparams.speaker_embedding_dim)
 
         self.prenet = Prenet(
             hparams.n_mel_channels * hparams.n_frames_per_step,
@@ -340,7 +342,7 @@ class Decoder(nn.Module):
 
         return mel_outputs, gate_outputs, alignments
 
-    def decode(self, decoder_input):
+    def decode(self, decoder_input, embedds):
         """ Decoder step using stored states, attention and memory
         PARAMS
         ------
@@ -352,6 +354,11 @@ class Decoder(nn.Module):
         gate_output: gate output energies
         attention_weights:
         """
+
+        speak_emb = self.speaker_embedding(embedds)
+
+        print('Speak emb',speak_emb.shape)
+
         cell_input = torch.cat((decoder_input, self.attention_context), -1)
         self.attention_hidden, self.attention_cell = self.attention_rnn(
             cell_input, (self.attention_hidden, self.attention_cell))
@@ -370,7 +377,7 @@ class Decoder(nn.Module):
         decoder_input = torch.cat(
             (self.attention_hidden, self.attention_context), -1)
         
-        print(decoder_input.shape)
+        print('decoder input shape',decoder_input.shape)
 
         self.decoder_hidden, self.decoder_cell = self.decoder_rnn(
             decoder_input, (self.decoder_hidden, self.decoder_cell))
@@ -380,14 +387,14 @@ class Decoder(nn.Module):
         decoder_hidden_attention_context = torch.cat(
             (self.decoder_hidden, self.attention_context), dim=1)
         print(decoder_hidden_attention_context.shape, self.decoder_hidden.shape, self.attention_context.shape)
-        
+
         decoder_output = self.linear_projection(
             decoder_hidden_attention_context)
 
         gate_prediction = self.gate_layer(decoder_hidden_attention_context)
         return decoder_output, gate_prediction, self.attention_weights
 
-    def forward(self, memory, decoder_inputs, memory_lengths):
+    def forward(self, memory, decoder_inputs, memory_lengths, embedds):
         """ Decoder forward pass for training
         PARAMS
         ------
@@ -414,7 +421,7 @@ class Decoder(nn.Module):
         while len(mel_outputs) < decoder_inputs.size(0) - 1:
             decoder_input = decoder_inputs[len(mel_outputs)]
             mel_output, gate_output, attention_weights = self.decode(
-                decoder_input)
+                decoder_input, embedds)
             mel_outputs += [mel_output.squeeze(1)]
             gate_outputs += [gate_output.squeeze(1)]
             alignments += [attention_weights]
@@ -554,7 +561,7 @@ class Tacotron2SE(nn.Module):
         self.n_frames_per_step = hparams.n_frames_per_step
         self.max_emb_size = hparams.max_emb_size
 
-        self.speaker_embedding = nn.Embedding(self.max_emb_size, hparams.speaker_embedding_dim)
+        # self.speaker_embedding = nn.Embedding(self.max_emb_size, hparams.speaker_embedding_dim)
 
         self.embedding = nn.Embedding(
             hparams.n_symbols, hparams.symbols_embedding_dim)
@@ -595,17 +602,17 @@ class Tacotron2SE(nn.Module):
         text_inputs, text_lengths, mels, max_len, output_lengths, embedds = inputs
         text_lengths, output_lengths = text_lengths.data, output_lengths.data
 
-        speaker_embedd_input = self.speaker_embedding(embedds)
+        # speaker_embedd_input = self.speaker_embedding(embedds)
 
         embedded_inputs = self.embedding(text_inputs).transpose(1, 2)
         
-        embedded_inputs = speaker_embedd_input.permute(0,2,1).expand(-1,-1, embedded_inputs.size(2)) + embedded_inputs
+        # embedded_inputs = speaker_embedd_input.permute(0,2,1).expand(-1,-1, embedded_inputs.size(2)) + embedded_inputs
 
         encoder_outputs = self.encoder(embedded_inputs, text_lengths)
 
 
         mel_outputs, gate_outputs, alignments = self.decoder(
-            encoder_outputs, mels, memory_lengths=text_lengths)
+            encoder_outputs, mels, memory_lengths=text_lengths, embedds)
 
         mel_outputs_postnet = self.postnet(mel_outputs)
         mel_outputs_postnet = mel_outputs + mel_outputs_postnet
