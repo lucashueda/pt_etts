@@ -366,8 +366,12 @@ class Decoder(nn.Module):
             attention_weights_cat, self.mask)
 
         self.attention_weights_cum += self.attention_weights
+
         decoder_input = torch.cat(
             (self.attention_hidden, self.attention_context), -1)
+        
+        print(decoder_input.shape)
+
         self.decoder_hidden, self.decoder_cell = self.decoder_rnn(
             decoder_input, (self.decoder_hidden, self.decoder_cell))
         self.decoder_hidden = F.dropout(
@@ -375,6 +379,8 @@ class Decoder(nn.Module):
 
         decoder_hidden_attention_context = torch.cat(
             (self.decoder_hidden, self.attention_context), dim=1)
+        print(decoder_hidden_attention_context.shape, self.decoder_hidden.shape, self.attention_context.shape)
+        
         decoder_output = self.linear_projection(
             decoder_hidden_attention_context)
 
