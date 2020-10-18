@@ -357,7 +357,7 @@ class Decoder(nn.Module):
 
         speak_emb = self.speaker_embedding(embedds).squeeze(1)
 
-        print('Speak emb',speak_emb.shape)
+        # print('Speak emb',speak_emb.shape)
 
         cell_input = torch.cat((decoder_input, self.attention_context), -1)
         self.attention_hidden, self.attention_cell = self.attention_rnn(
@@ -377,7 +377,7 @@ class Decoder(nn.Module):
         decoder_input = torch.cat(
             (self.attention_hidden, self.attention_context, speak_emb), -1)
         
-        print('decoder input shape',decoder_input.shape)
+        # print('decoder input shape',decoder_input.shape)
 
         self.decoder_hidden, self.decoder_cell = self.decoder_rnn(
             decoder_input, (self.decoder_hidden, self.decoder_cell))
@@ -431,7 +431,7 @@ class Decoder(nn.Module):
 
         return mel_outputs, gate_outputs, alignments
 
-    def inference(self, memory):
+    def inference(self, memory, embedds):
         """ Decoder inference
         PARAMS
         ------
@@ -450,7 +450,7 @@ class Decoder(nn.Module):
         mel_outputs, gate_outputs, alignments = [], [], []
         while True:
             decoder_input = self.prenet(decoder_input)
-            mel_output, gate_output, alignment = self.decode(decoder_input)
+            mel_output, gate_output, alignment = self.decode(decoder_input, embedds)
 
             mel_outputs += [mel_output.squeeze(1)]
             gate_outputs += [gate_output]
@@ -622,12 +622,12 @@ class Tacotron2SE(nn.Module):
             output_lengths)
 
     def inference(self, inputs, embedd):
-        speaker_embedd_input = self.speaker_embedding(embedd)
+        # speaker_embedd_input = self.speaker_embedding(embedd)
         embedded_inputs = self.embedding(inputs).transpose(1, 2)
-        embedded_inputs = speaker_embedd_input.permute(0,2,1).expand(-1,-1, embedded_inputs.size(2)) + embedded_inputs
+        # embedded_inputs = speaker_embedd_input.permute(0,2,1).expand(-1,-1, embedded_inputs.size(2)) + embedded_inputs
         encoder_outputs = self.encoder.inference(embedded_inputs)
         mel_outputs, gate_outputs, alignments = self.decoder.inference(
-            encoder_outputs)
+            encoder_outputs, embedds = embedd)
 
         mel_outputs_postnet = self.postnet(mel_outputs)
         mel_outputs_postnet = mel_outputs + mel_outputs_postnet
