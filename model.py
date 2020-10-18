@@ -234,7 +234,7 @@ class Decoder(nn.Module):
             hparams.attention_location_kernel_size)
 
         self.decoder_rnn = nn.LSTMCell(
-            hparams.attention_rnn_dim + hparams.encoder_embedding_dim,
+            hparams.attention_rnn_dim + hparams.encoder_embedding_dim + hparams.speaker_embedding_dim,
             hparams.decoder_rnn_dim, 1)
 
         self.linear_projection = LinearNorm(
@@ -355,7 +355,7 @@ class Decoder(nn.Module):
         attention_weights:
         """
 
-        speak_emb = self.speaker_embedding(embedds)
+        speak_emb = self.speaker_embedding(embedds).squeeze(1)
 
         print('Speak emb',speak_emb.shape)
 
@@ -375,7 +375,7 @@ class Decoder(nn.Module):
         self.attention_weights_cum += self.attention_weights
 
         decoder_input = torch.cat(
-            (self.attention_hidden, self.attention_context), -1)
+            (self.attention_hidden, self.attention_context, speak_emb), -1)
         
         print('decoder input shape',decoder_input.shape)
 
@@ -386,7 +386,7 @@ class Decoder(nn.Module):
 
         decoder_hidden_attention_context = torch.cat(
             (self.decoder_hidden, self.attention_context), dim=1)
-        print(decoder_hidden_attention_context.shape, self.decoder_hidden.shape, self.attention_context.shape)
+        # print(decoder_hidden_attention_context.shape, self.decoder_hidden.shape, self.attention_context.shape)
 
         decoder_output = self.linear_projection(
             decoder_hidden_attention_context)
