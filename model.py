@@ -608,7 +608,7 @@ class Original_Decoder(nn.Module):
 
         return mel_outputs, gate_outputs, alignments
 
-    def decode(self, decoder_input, embedds):
+    def decode(self, decoder_input):
         """ Decoder step using stored states, attention and memory
         PARAMS
         ------
