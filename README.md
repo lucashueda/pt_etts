@@ -2,6 +2,27 @@
 
 In this project we aim to control expressiveness in text to speech system. (On going)
 
+(On going)
+
+We are still in experiments with multi speaker tacotron2 model. We have implemented 2 different modified Tacotron2 model with speaker simple embedding. The first one inject the embedding toguether with the word embeddings and the second one after the LSA (local sensitive attention). In the experiments the second implementation shows better results with voice synthesis around the iteration 30000 (almost 30 epochs with a subset of 60% VCTK).
+
+# Docker
+It is not guarateed that it works, but the file is already there.
+
+# How to run
+
+Actually we just did experiments using VCTK, so the data prep stage is working just for VCTK. In future we aim to make differents data process, and one more generic to be able to be edited.
+
+- 1 - Data preparation
+Run python3 data_preparation.py --input-dir='' --output_dir=''
+
+- 2 - Train
+Run python3 train.py --output_dir='' --log_dir='' --checkpoint_path='' --model='Tacotron2SE'
+
+- 3 - Synthesis (griffin lim)
+Since our objective is to control expressiviness we just have a simple griffin lim vocoder.
+Run python3 synthesis.py --output_dir='' --model='Tacotron2SE' --checkpoint_path=''
+
 # Author
 
 **Lucas Hideki Ueda (lucashueda@gmail.com)**
