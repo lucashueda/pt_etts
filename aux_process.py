@@ -28,6 +28,8 @@ df_final = df_final[~df_final.mel_path.isnull()]
 
 df_final = df_final.drop_duplicates(subset='mel_path')
 
+df_final.to_csv('./mel_txt_pairs.csv')
+
 df_final = pd.read_csv('./mel_txt_pairs.csv')
 
 df_final['text_n'] = df_final.texts.str.replace('\n', '')
