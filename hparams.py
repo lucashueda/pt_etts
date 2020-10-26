@@ -25,8 +25,8 @@ def create_hparams(hparams_string=None, verbose=False):
             # Data Parameters             #
             ################################
             load_mel_from_disk=True,
-            training_files='/content/drive/My Drive/Mestrado/TTS/RepoFinal/train.txt',
-            validation_files='/content/drive/My Drive/Mestrado/TTS/RepoFinal/val.txt',
+            training_files='./train.txt',
+            validation_files='./val.txt',
             text_cleaners=['english_cleaners'],
 
             ################################
