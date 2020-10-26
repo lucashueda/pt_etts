@@ -1,5 +1,5 @@
 import pandas as pd
-
+import os as
 # Lendo os arquivos .npy
 
 mels_path = './mel_dir/'
