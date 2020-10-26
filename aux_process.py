@@ -15,6 +15,9 @@ for file in os.listdir(mels_path):
       wav_ids.append(mel[:-4])
 print(len(mels_dir))
 
+df_final = pd.read_csv('/content/drive/My Drive/Mestrado/TTS/RepoFinal/wav_txt_pairs.csv')
+
+df_final['text_n'] = df_final.texts.str.replace('\n', '')
 
 df_mels = pd.DataFrame({'mel_path': mels_dir, 'id': wav_ids})
 
