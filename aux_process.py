@@ -13,6 +13,7 @@ for file in os.listdir(mels_path):
     for mel in os.listdir(part_files):
       mels_dir.append(os.path.join(part_files, mel))
       wav_ids.append(mel[:-4])
+      
 print(len(mels_dir))
 
 df_final = pd.read_csv('./wav_txt_pairs.csv')
