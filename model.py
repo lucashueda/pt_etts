@@ -1327,6 +1327,8 @@ class Tacotron2_EncSpeakEmb(nn.Module):
 
         speaker_embedd_input = self.speaker_embedding(embedds)
 
+        print(encoder_outputs.shape, encoder_outputs.size(1))
+        
         encoder_outputs = torch.cat((encoder_outputs,speaker_embedd_input.unsqueeze(1).repeat((1,encoder_outputs.size(1),1)), -1))
 
         mel_outputs, gate_outputs, alignments = self.decoder(
@@ -1339,9 +1341,14 @@ class Tacotron2_EncSpeakEmb(nn.Module):
             [mel_outputs, mel_outputs_postnet, gate_outputs, alignments],
             output_lengths)
 
-    def inference(self, inputs):
+    def inference(self, inputs, embedds):
         embedded_inputs = self.embedding(inputs).transpose(1, 2)
         encoder_outputs = self.encoder.inference(embedded_inputs)
+
+        speaker_embedd_input = self.speaker_embedding(embedds)
+
+        encoder_outputs = torch.cat((encoder_outputs,speaker_embedd_input.unsqueeze(1).repeat((1,encoder_outputs.size(1),1)), -1))
+
         mel_outputs, gate_outputs, alignments = self.decoder.inference(
             encoder_outputs)
 
