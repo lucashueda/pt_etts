@@ -772,8 +772,13 @@ class DecoderSpeakEmbedPostEnc(nn.Module):
             hparams.prenet_dim + hparams.encoder_embedding_dim,
             hparams.attention_rnn_dim)
 
+        # self.attention_layer = Attention(
+        #     hparams.attention_rnn_dim, hparams.encoder_embedding_dim,
+        #     hparams.attention_dim, hparams.attention_location_n_filters,
+        #     hparams.attention_location_kernel_size)
+
         self.attention_layer = Attention(
-            hparams.attention_rnn_dim, hparams.encoder_embedding_dim,
+            hparams.attention_rnn_dim, self.encoder_embedding_dim,
             hparams.attention_dim, hparams.attention_location_n_filters,
             hparams.attention_location_kernel_size)
 
