@@ -1281,7 +1281,7 @@ class Tacotron2_EncSpeakEmb(nn.Module):
         self.n_frames_per_step = hparams.n_frames_per_step
         self.embedding = nn.Embedding(
             hparams.n_symbols, hparams.symbols_embedding_dim)
-
+        self.max_emb_size = hparams.max_emb_size
         self.speaker_embedding = nn.Embedding(self.max_emb_size, hparams.speaker_embedding_dim)
 
         std = sqrt(2.0 / (hparams.n_symbols + hparams.symbols_embedding_dim))
