@@ -760,7 +760,8 @@ class DecoderSpeakEmbedPostEnc(nn.Module):
         self.p_attention_dropout = hparams.p_attention_dropout
         self.p_decoder_dropout = hparams.p_decoder_dropout
  
-        if(not speaker_embedding_dim):
+        if(speaker_embedding_dim != None):
+            print("Decoder com speak embedding depois do encoder ativado!")
             self.encoder_embedding_dim = self.encoder_embedding_dim + speaker_embedding_dim
 
         self.prenet = Prenet(
