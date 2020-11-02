@@ -1349,7 +1349,7 @@ class Tacotron2_EncSpeakEmb(nn.Module):
 
         speaker_embedd_input = self.speaker_embedding(embedds)
         
-        print(embedded_inputs.shape, encoder_outputs.shape, speaker_embedd_input.shape )
+        print(embedded_inputs.shape, encoder_outputs.shape, speaker_embedd_input.shape, speaker_embedd_input.repeat((1,encoder_outputs.size(1),1)))
 
         encoder_outputs = torch.cat((encoder_outputs,speaker_embedd_input.repeat((1,encoder_outputs.size(1),1)), -1))
 
