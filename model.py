@@ -772,10 +772,6 @@ class DecoderSpeakEmbedPostEnc(nn.Module):
             hparams.prenet_dim + self.encoder_embedding_dim,
             hparams.attention_rnn_dim)
 
-        # self.attention_layer = Attention(
-        #     hparams.attention_rnn_dim, hparams.encoder_embedding_dim,
-        #     hparams.attention_dim, hparams.attention_location_n_filters,
-        #     hparams.attention_location_kernel_size)
 
         self.attention_layer = Attention(
             hparams.attention_rnn_dim, self.encoder_embedding_dim,
@@ -1353,7 +1349,7 @@ class Tacotron2_EncSpeakEmb(nn.Module):
 
         speaker_embedd_input = self.speaker_embedding(embedds)
 
-        encoder_outputs = torch.cat((encoder_outputs,speaker_embedd_input.unsqueeze(1).repeat((1,encoder_outputs.size(1),1)), -1))
+        encoder_outputs = torch.cat((encoder_outputs,speaker_embedd_input.repeat((1,encoder_outputs.size(1),1)), -1))
 
         mel_outputs, gate_outputs, alignments = self.decoder.inference(
             encoder_outputs)
