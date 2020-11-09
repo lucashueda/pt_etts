@@ -7,7 +7,7 @@ In this project we aim to control expressiveness in text to speech system. (On g
 We are still in experiments with multi speaker tacotron2 model. We have implemented 2 different modified Tacotron2 model with speaker simple embedding. The first one inject the embedding toguether with the word embeddings and the second one after the LSA (local sensitive attention). In the experiments the second implementation shows better results with voice synthesis around the iteration 30000 (almost 30 epochs with a subset of 60% VCTK).
 
 
-This project in mainly based on NVIDIA implementation of tacotron2 ([https://github.com/NVIDIA/tacotron2]([1])) and we tried to keep some basic structure of ESPNET framework ([https://github.com/espnet/espnet]([4])). 
+This project in mainly based on NVIDIA implementation of tacotron2 ([[1]]([https://github.com/NVIDIA/tacotron2])) and we tried to keep some basic structure of ESPNET framework ([[4]](https://github.com/espnet/espnet))
 
 # Docker
 In progress to develop a docker image to better reproduce this project. At this time you have the requeriments.txt with all packages and versions used, also yo uneed PyTorch that is not specified.
