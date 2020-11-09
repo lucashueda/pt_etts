@@ -17,11 +17,10 @@ Actually we just did experiments using VCTK, so the data prep stage is working j
 <code> python3 data_preparation.py --input-dir='' --output_dir='' </code>
 
 - 2 - Train
-<coode> python3 train.py --output_dir='' --log_dir='' --checkpoint_path='' --model='Tacotron2SE' </code>
+<code> python3 train.py --output_dir='' --log_dir='' --checkpoint_path='' --model='Tacotron2SE' </code>
 
 - 3 - Synthesis (griffin lim)
 There will be a Parallel WaveGan vocoder but with private pre-trained model
-
 <code> python3 synthesis.py --output_dir='' --model='Tacotron2SE' --checkpoint_path='' </code>
 
 # Author
