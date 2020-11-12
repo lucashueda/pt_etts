@@ -33,5 +33,5 @@ trim_frame_size: 1024
 trim_hop_size: 124
 trim_treshold_in_db: 25
 
-training_files: './vctk_aux/vctk_train_sampled.csv'
-validation_files: './vctk_aux/vctk_val_sampled.csv'
+training_files: './vctk_aux/vctk_train.csv'
+validation_files: './vctk_aux/vctk_val.csv'
