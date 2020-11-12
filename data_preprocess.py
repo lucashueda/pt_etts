@@ -81,34 +81,39 @@ def main(outdir, config):
     # Starting trainning files process
     print(f"Saving train features in {os.path.join(outdir, 'train')} folder.")
     for i in range(train_df.shape[0]):
-        audio , sr = librosa.load(train_df.wav_path.values[i], sr = config['sampling_rate'])
 
-        # Trimming silence
-        audio = librosa.effects.trim(audio, top_db=config['trim_treshold_in_db'], 
-                                    frame_length=config['trim_frame_size'],
-                                    hop_length=config['trim_hop_size'])[0]
-        audio = np.append([0.]*3*config['trim_hop_size'], audio)
-        audio = np.append(audio, [0.]*3*config['trim_hop_size'])
+        try:
+            audio , sr = librosa.load(train_df.wav_path.values[i], sr = config['sampling_rate'])
 
-        durations.append(len(audio)/sr)
+            # Trimming silence
+            audio = librosa.effects.trim(audio, top_db=config['trim_treshold_in_db'], 
+                                        frame_length=config['trim_frame_size'],
+                                        hop_length=config['trim_hop_size'])[0]
+            audio = np.append([0.]*3*config['trim_hop_size'], audio)
+            audio = np.append(audio, [0.]*3*config['trim_hop_size'])
 
-        log10mel = logmelfilterbank(audio, config['sampling_rate'], config['filter_length'], 
-                                  config['hop_length'], config['win_length'], config['window'],
-                                  config['n_mel_channels'], config['mel_fmin'], config['mel_fmax'])
+            durations.append(len(audio)/sr)
+
+            log10mel = logmelfilterbank(audio, config['sampling_rate'], config['filter_length'], 
+                                    config['hop_length'], config['win_length'], config['window'],
+                                    config['n_mel_channels'], config['mel_fmin'], config['mel_fmax'])
+            
+            # Every 50 files i create a subfolder, its a specific google colab needed to run without crashing
+            if(i%50 == 0):
+                actual_store_folder = os.path.join(outdir,f'train/{i}')
+                prepare_directory(actual_store_folder)
+            
+            if(log10mel.shape[0] < config['max_seq_mel']):
+                # Thats a specific string treatment to get the file name, it needs because of "\" url dir
+                mel_path = os.path.join(actual_store_folder, train_df.wav_path.values[i].rsplit('/', 1)[-1][:-4] + '.npy') 
+                mel_path = mel_path.replace('\\', '/') 
+                mel_dirs.append(mel_path)
+                np.save(mel_path , log10mel)
+            else:
+                mel_dirs.append('ERROR_LIMITED_SIZE_ABOVE')
         
-        # Every 50 files i create a subfolder, its a specific google colab needed to run without crashing
-        if(i%50 == 0):
-            actual_store_folder = os.path.join(outdir,f'train/{i}')
-            prepare_directory(actual_store_folder)
-        
-        if(log10mel.shape[0] < config['max_seq_mel']):
-            # Thats a specific string treatment to get the file name, it needs because of "\" url dir
-            mel_path = os.path.join(actual_store_folder, train_df.wav_path.values[i].rsplit('\\', 1)[-1][:-4] + '.npy') 
-            mel_path = mel_path.replace('\\', '/') 
-            mel_dirs.append(mel_path)
-            np.save(mel_path , log10mel)
-        else:
-            mel_dirs.append('ERROR_LIMITED_SIZE_ABOVE')
+        except:
+            print('error')
 
 
     train_df['mel_dirs'] = mel_dirs
@@ -128,35 +133,40 @@ def main(outdir, config):
     # Starting Validation files process
     print(f"Saving validation features in {os.path.join(outdir, 'val')} folder.")
     for i in range(val_df.shape[0]):
-        audio , sr = librosa.load(val_df.wav_path.values[i], sr = config['sampling_rate'])
 
-        # Trimming silence
-        audio = librosa.effects.trim(audio, top_db=config['trim_treshold_in_db'], 
-                                    frame_length=config['trim_frame_size'],
-                                    hop_length=config['trim_hop_size'])[0]
-        audio = np.append([0.]*3*config['trim_hop_size'], audio)
-        audio = np.append(audio, [0.]*3*config['trim_hop_size'])
+        try: 
+            audio , sr = librosa.load(val_df.wav_path.values[i], sr = config['sampling_rate'])
 
-        durations.append(len(audio)/sr)
+            # Trimming silence
+            audio = librosa.effects.trim(audio, top_db=config['trim_treshold_in_db'], 
+                                        frame_length=config['trim_frame_size'],
+                                        hop_length=config['trim_hop_size'])[0]
+            audio = np.append([0.]*3*config['trim_hop_size'], audio)
+            audio = np.append(audio, [0.]*3*config['trim_hop_size'])
 
-        log10mel = logmelfilterbank(audio, config['sampling_rate'], config['filter_length'], 
-                                  config['hop_length'], config['win_length'], config['window'],
-                                  config['n_mel_channels'], config['mel_fmin'], config['mel_fmax'])
-        
-        # Every 50 files i create a subfolder, its a specific google colab needed to run without crashing
-        if(i%50 == 0):
-            actual_store_folder = os.path.join(outdir,f'val/{i}')
-            prepare_directory(actual_store_folder)
-        
-        if(log10mel.shape[0] < config['max_seq_mel']):
-            # Thats a specific string treatment to get the file name, it needs because of "\" url dir
-            mel_path = os.path.join(actual_store_folder, val_df.wav_path.values[i].rsplit('\\', 1)[-1][:-4] + '.npy')
-            mel_path = mel_path.replace('\\', '/') 
-            mel_dirs.append(mel_path)
-            np.save(mel_path , log10mel)
-        else:
-            mel_dirs.append('ERROR_LIMITED_SIZE_ABOVE')
+            durations.append(len(audio)/sr)
+
+            log10mel = logmelfilterbank(audio, config['sampling_rate'], config['filter_length'], 
+                                    config['hop_length'], config['win_length'], config['window'],
+                                    config['n_mel_channels'], config['mel_fmin'], config['mel_fmax'])
+            
+            # Every 50 files i create a subfolder, its a specific google colab needed to run without crashing
+            if(i%50 == 0):
+                actual_store_folder = os.path.join(outdir,f'val/{i}')
+                prepare_directory(actual_store_folder)
+            
+            if(log10mel.shape[0] < config['max_seq_mel']):
+                # Thats a specific string treatment to get the file name, it needs because of "\" url dir
+                mel_path = os.path.join(actual_store_folder, val_df.wav_path.values[i].rsplit('/', 1)[-1][:-4] + '.npy')
+                mel_path = mel_path.replace('\\', '/') 
+                mel_dirs.append(mel_path)
+                np.save(mel_path , log10mel)
+            else:
+                mel_dirs.append('ERROR_LIMITED_SIZE_ABOVE')
     
+        except:
+            print('error')
+
     val_df['mel_dirs'] = mel_dirs
     val_df['durations'] = durations
     val_df.to_csv(validation_files.rsplit('/', 1)[-2] + '/val_df_with_mels.csv', index = False)
