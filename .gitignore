@@ -2,3 +2,7 @@ data/LJSpeech/
 data/VCTK/
 processed_data/
 pre_trained/
+tests/
+OLD/
+ressintese_48k/
+/mel_out

@@ -1,0 +1,62 @@
+wav_path,text,emb_id,mel_dirs,durations
+./data/VCTK/VCTK-Corpus/wav48\p276\p276_123.wav,Petrol prices were widely blamed.,276,./mel_out/train/0/p276_123.npy,3.23175
+./data/VCTK/VCTK-Corpus/wav48\p312\p312_045.wav,I certainly hope not,312,./mel_out/train/0/p312_045.npy,1.1315
+./data/VCTK/VCTK-Corpus/wav48\p227\p227_080.wav,"Here, too, the Post Office has missed the boat.",227,./mel_out/train/0/p227_080.npy,2.5265
+./data/VCTK/VCTK-Corpus/wav48\p351\p351_188.wav,There will be no change in government,351,./mel_out/train/0/p351_188.npy,1.97625
+./data/VCTK/VCTK-Corpus/wav48\p254\p254_042.wav,The main concern is that it could interfere with air traffic.,254,./mel_out/train/0/p254_042.npy,2.7745
+./data/VCTK/VCTK-Corpus/wav48\p297\p297_310.wav,Your father was a good man,297,./mel_out/train/0/p297_310.npy,1.40275
+./data/VCTK/VCTK-Corpus/wav48\p294\p294_087.wav,They have to work so hard,294,./mel_out/train/0/p294_087.npy,1.3795
+./data/VCTK/VCTK-Corpus/wav48\p232\p232_411.wav,You wanted the evidence.,232,./mel_out/train/0/p232_411.npy,1.17025
+./data/VCTK/VCTK-Corpus/wav48\p257\p257_223.wav,"Jim Wallace, the justice minister, acknowledged that prisoner numbers were a concern.",257,./mel_out/train/0/p257_223.npy,4.433
+./data/VCTK/VCTK-Corpus/wav48\p376\p376_043.wav,"We need to chat.|376
+./data/VCTK/VCTK-Corpus/wav48\p376\p376_044.wav|We're in the premier division and we intend to stay there.",376,./mel_out/train/0/p376_043.npy,1.5345
+./data/VCTK/VCTK-Corpus/wav48\p230\p230_365.wav,Alex Ferguson is the same.,230,./mel_out/train/0/p230_365.npy,3.40225
+./data/VCTK/VCTK-Corpus/wav48\p250\p250_079.wav,We had a court hearing in London yesterday.,250,./mel_out/train/0/p250_079.npy,1.488
+./data/VCTK/VCTK-Corpus/wav48\p270\p270_408.wav,"Of course, it is nonsense.",270,./mel_out/train/0/p270_408.npy,2.965375
+./data/VCTK/VCTK-Corpus/wav48\p307\p307_243.wav,His son is a local legend,307,./mel_out/train/0/p307_243.npy,1.5965
+./data/VCTK/VCTK-Corpus/wav48\p307\p307_291.wav,"The painting was started, but finishing it was quite another matter",307,./mel_out/train/0/p307_291.npy,3.441
+./data/VCTK/VCTK-Corpus/wav48\p278\p278_199.wav,Last night was a key episode.,278,./mel_out/train/0/p278_199.npy,1.488
+./data/VCTK/VCTK-Corpus/wav48\p261\p261_277.wav,Blair is very positive at European Councils.,261,./mel_out/train/0/p261_277.npy,2.3095
+./data/VCTK/VCTK-Corpus/wav48\p341\p341_296.wav,They too refused to come out and talk,341,./mel_out/train/0/p341_296.npy,3.565
+./data/VCTK/VCTK-Corpus/wav48\p273\p273_284.wav,It was not hard to feel some sympathy for Baxter yesterday.,273,./mel_out/train/0/p273_284.npy,2.7745
+./data/VCTK/VCTK-Corpus/wav48\p314\p314_142.wav,That's the sort of game you want,314,./mel_out/train/0/p314_142.npy,1.6275
+./data/VCTK/VCTK-Corpus/wav48\p267\p267_184.wav,It was only later that the condition was diagnosed.,267,./mel_out/train/0/p267_184.npy,3.5699375
+./data/VCTK/VCTK-Corpus/wav48\p278\p278_117.wav,That might help a bit.,278,./mel_out/train/0/p278_117.npy,0.86025
+./data/VCTK/VCTK-Corpus/wav48\p335\p335_042.wav,"It will include the Black Watch, the Royal Highland regiment",335,./mel_out/train/0/p335_042.npy,3.4565
+./data/VCTK/VCTK-Corpus/wav48\p250\p250_154.wav,What happened in that game ?,250,./mel_out/train/0/p250_154.npy,0.99975
+./data/VCTK/VCTK-Corpus/wav48\p313\p313_026.wav,It is never an easy game,313,./mel_out/train/0/p313_026.npy,1.46475
+./data/VCTK/VCTK-Corpus/wav48\p250\p250_075.wav,There's nothing they can get on me.,250,./mel_out/train/0/p250_075.npy,1.333
+./data/VCTK/VCTK-Corpus/wav48\p361\p361_023.wav,"If the red of the second bow falls upon the green of the first, the result is to give a bow with an abnormally wide yellow band, since red and green light when mixed form yellow",361,ERROR_LIMITED_SIZE_ABOVE,8.82725
+./data/VCTK/VCTK-Corpus/wav48\p345\p345_039.wav,A killer is also on the loose,345,./mel_out/train/0/p345_039.npy,1.767
+./data/VCTK/VCTK-Corpus/wav48\p270\p270_225.wav,Does that put pressure on us ?,270,./mel_out/train/0/p270_225.npy,2.23975
+./data/VCTK/VCTK-Corpus/wav48\p279\p279_123.wav,We work on the same level.,279,./mel_out/train/0/p279_123.npy,1.34075
+./data/VCTK/VCTK-Corpus/wav48\p265\p265_178.wav,One was a lawyer.,265,./mel_out/train/0/p265_178.npy,1.178
+./data/VCTK/VCTK-Corpus/wav48\p233\p233_198.wav,We are talking about a case of champagne and a vacuum cleaner.,233,./mel_out/train/0/p233_198.npy,2.79
+./data/VCTK/VCTK-Corpus/wav48\p248\p248_143.wav,It's a crucial award.,248,./mel_out/train/0/p248_143.npy,1.35625
+./data/VCTK/VCTK-Corpus/wav48\p287\p287_285.wav,Both companies have had a rough ride in recent years.,287,./mel_out/train/0/p287_285.npy,2.5265
+./data/VCTK/VCTK-Corpus/wav48\p231\p231_387.wav,I wanted to go out on a high.,231,./mel_out/train/0/p231_387.npy,1.29425
+./data/VCTK/VCTK-Corpus/wav48\p262\p262_257.wav,We run within the law.,262,./mel_out/train/0/p262_257.npy,1.2555
+./data/VCTK/VCTK-Corpus/wav48\p279\p279_275.wav,The script was funny.,279,./mel_out/train/0/p279_275.npy,0.76725
+./data/VCTK/VCTK-Corpus/wav48\p244\p244_091.wav,"However, he stressed that no decision had yet been made.",244,./mel_out/train/0/p244_091.npy,3.224
+./data/VCTK/VCTK-Corpus/wav48\p323\p323_409.wav,Ferguson had a most productive afternoon,323,./mel_out/train/0/p323_409.npy,3.224
+./data/VCTK/VCTK-Corpus/wav48\p361\p361_241.wav,He was also very happy to listen,361,./mel_out/train/0/p361_241.npy,2.27075
+./data/VCTK/VCTK-Corpus/wav48\p323\p323_118.wav,If it does it means he has failed,323,./mel_out/train/0/p323_118.npy,2.54975
+./data/VCTK/VCTK-Corpus/wav48\p343\p343_331.wav,He was a one off,343,./mel_out/train/0/p343_331.npy,2.4983125
+./data/VCTK/VCTK-Corpus/wav48\p251\p251_217.wav,I began to pray.,251,./mel_out/train/0/p251_217.npy,1.9685
+./data/VCTK/VCTK-Corpus/wav48\p266\p266_299.wav,We lost a boy.,266,./mel_out/train/0/p266_299.npy,1.797625
+./data/VCTK/VCTK-Corpus/wav48\p243\p243_313.wav,For that reason cover should not be given.,243,./mel_out/train/0/p243_313.npy,2.19325
+./data/VCTK/VCTK-Corpus/wav48\p310\p310_182.wav,I'm not a magician,310,./mel_out/train/0/p310_182.npy,1.44925
+./data/VCTK/VCTK-Corpus/wav48\p239\p239_467.wav,Dunfermline manager Jimmy Calderwood was candid.,239,./mel_out/train/0/p239_467.npy,2.8985
+./data/VCTK/VCTK-Corpus/wav48\p239\p239_463.wav,We will provide immediate access.,239,./mel_out/train/0/p239_463.npy,2.666
+./data/VCTK/VCTK-Corpus/wav48\p240\p240_363.wav,A spokeswoman for Edinburgh City Council confirmed its support for the company.,240,./mel_out/train/0/p240_363.npy,3.844
+./data/VCTK/VCTK-Corpus/wav48\p257\p257_152.wav,They did very well.,257,./mel_out/train/0/p257_152.npy,1.2155625
+./data/VCTK/VCTK-Corpus/wav48\p335\p335_210.wav,John Lennon is a very large industry,335,./mel_out/train/50/p335_210.npy,3.007
+./data/VCTK/VCTK-Corpus/wav48\p233\p233_370.wav,Ms McNeill was killed on impact.,233,./mel_out/train/50/p233_370.npy,2.1235
+./data/VCTK/VCTK-Corpus/wav48\p306\p306_264.wav,History may repeat itself with Billy Elliot,306,./mel_out/train/50/p306_264.npy,3.4255
+./data/VCTK/VCTK-Corpus/wav48\p303\p303_070.wav,Repayment is not part of the game,303,./mel_out/train/50/p303_070.npy,3.193
+./data/VCTK/VCTK-Corpus/wav48\p362\p362_290.wav,Yet it seemed to work,362,./mel_out/train/50/p362_290.npy,3.634
+./data/VCTK/VCTK-Corpus/wav48\p300\p300_242.wav,They were two different types,300,./mel_out/train/50/p300_242.npy,2.22425
+./data/VCTK/VCTK-Corpus/wav48\p279\p279_109.wav,"For these people, the ruling is very welcome.",279,./mel_out/train/50/p279_109.npy,2.02275
+./data/VCTK/VCTK-Corpus/wav48\p228\p228_129.wav,An announcement on his replacement is expected within three weeks.,228,./mel_out/train/50/p228_129.npy,4.185
+./data/VCTK/VCTK-Corpus/wav48\p317\p317_019.wav,"Since then physicists have found that it is not reflection, but refraction by the raindrops which causes the rainbows",317,ERROR_LIMITED_SIZE_ABOVE,7.68025
+./data/VCTK/VCTK-Corpus/wav48\p341\p341_160.wav,You shouldn't have a stoppage in November,341,./mel_out/train/50/p341_160.npy,2.294

@@ -1,0 +1,62 @@
+wav_path,text,emb_id,mel_dirs,durations
+./data/VCTK/VCTK-Corpus/wav48\p363\p363_292.wav,It was an achievement all right,363,./mel_out/val/0/p363_292.npy,1.80575
+./data/VCTK/VCTK-Corpus/wav48\p253\p253_332.wav,This is a friendly match?,253,./mel_out/val/0/p253_332.npy,1.9685
+./data/VCTK/VCTK-Corpus/wav48\p261\p261_237.wav,I need a publishing deal!,261,./mel_out/val/0/p261_237.npy,1.3175
+./data/VCTK/VCTK-Corpus/wav48\p294\p294_237.wav,He was overwhelmed by the response,294,./mel_out/val/0/p294_237.npy,1.55775
+./data/VCTK/VCTK-Corpus/wav48\p248\p248_333.wav,I said that I had been raped.,248,./mel_out/val/0/p248_333.npy,1.65075
+./data/VCTK/VCTK-Corpus/wav48\p282\p282_347.wav,"Instead, he was informed to join the line of creditors.",282,./mel_out/val/0/p282_347.npy,2.6815
+./data/VCTK/VCTK-Corpus/wav48\p240\p240_148.wav,"Of course, we will need to strengthen the squad for Europe.",240,./mel_out/val/0/p240_148.npy,2.42575
+./data/VCTK/VCTK-Corpus/wav48\p253\p253_386.wav,The compromise is entirely on the arrival at that position.,253,./mel_out/val/0/p253_386.npy,2.759
+./data/VCTK/VCTK-Corpus/wav48\p263\p263_051.wav,I would love to have him home.,263,./mel_out/val/0/p263_051.npy,1.4415
+./data/VCTK/VCTK-Corpus/wav48\p259\p259_343.wav,Shareholders will be asked to approve a new replacement scheme.),259,./mel_out/val/0/p259_343.npy,3.0225
+./data/VCTK/VCTK-Corpus/wav48\p281\p281_300.wav,He added that the business was in good shape.,281,./mel_out/val/0/p281_300.npy,2.03825
+./data/VCTK/VCTK-Corpus/wav48\p311\p311_009.wav,"There is , according to legend, a boiling pot of gold at one end",311,./mel_out/val/0/p311_009.npy,2.976
+./data/VCTK/VCTK-Corpus/wav48\p236\p236_384.wav,They know it'll be fantastic.,236,./mel_out/val/0/p236_384.npy,1.4725
+./data/VCTK/VCTK-Corpus/wav48\p263\p263_079.wav,So what is the campaign about ?,263,./mel_out/val/0/p263_079.npy,1.3485
+./data/VCTK/VCTK-Corpus/wav48\p374\p374_422.wav,Next year this time  we will be home,374,./mel_out/val/0/p374_422.npy,3.503875
+./data/VCTK/VCTK-Corpus/wav48\p333\p333_374.wav,I'm just looking to take my chances,333,./mel_out/val/0/p333_374.npy,2.00725
+./data/VCTK/VCTK-Corpus/wav48\p251\p251_364.wav,A spokeswoman for Edinburgh City Council confirmed its support for the company.,251,./mel_out/val/0/p251_364.npy,4.03775
+./data/VCTK/VCTK-Corpus/wav48\p281\p281_263.wav,The calls were last night rejected by the US and the UK.,281,./mel_out/val/0/p281_263.npy,3.5188125
+./data/VCTK/VCTK-Corpus/wav48\p329\p329_364.wav,"We didn't enjoy the first game, but today they were excellent",329,./mel_out/val/0/p329_364.npy,4.11525
+./data/VCTK/VCTK-Corpus/wav48\p347\p347_227.wav,She will also get a pay rise,347,./mel_out/val/0/p347_227.npy,2.5575
+./data/VCTK/VCTK-Corpus/wav48\p300\p300_159.wav,They thought they had found a home,300,./mel_out/val/0/p300_159.npy,1.35625
+./data/VCTK/VCTK-Corpus/wav48\p279\p279_257.wav,This is a big club.,279,./mel_out/val/0/p279_257.npy,0.98425
+./data/VCTK/VCTK-Corpus/wav48\p247\p247_210.wav,Losing in that manner is very hard to take.),247,./mel_out/val/0/p247_210.npy,2.02275
+./data/VCTK/VCTK-Corpus/wav48\p336\p336_135.wav,"Clearly, audiences are unsettled",336,./mel_out/val/0/p336_135.npy,1.80575
+./data/VCTK/VCTK-Corpus/wav48\p243\p243_035.wav,It is about control of our economy.,243,ERROR_LIMITED_SIZE_ABOVE,12.37675
+./data/VCTK/VCTK-Corpus/wav48\p271\p271_281.wav,"In fact, he was talking about the survival business.",271,./mel_out/val/0/p271_281.npy,2.51875
+./data/VCTK/VCTK-Corpus/wav48\p376\p376_127.wav,"It will be too hot.|376
+./data/VCTK/VCTK-Corpus/wav48\p376\p376_128.wav|It's the big omission.",376,./mel_out/val/0/p376_127.npy,0.86025
+./data/VCTK/VCTK-Corpus/wav48\p287\p287_351.wav,"Last night, he pledged to clear his name.",287,./mel_out/val/0/p287_351.npy,2.3715
+./data/VCTK/VCTK-Corpus/wav48\p244\p244_279.wav,"It might be sad, but it's a fact.",244,./mel_out/val/0/p244_279.npy,3.058375
+./data/VCTK/VCTK-Corpus/wav48\p241\p241_076.wav,He is now resident in England.,241,./mel_out/val/0/p241_076.npy,1.5345
+./data/VCTK/VCTK-Corpus/wav48\p237\p237_266.wav,Children should be given the same amount of rights as adults.,237,./mel_out/val/0/p237_266.npy,4.557
+./data/VCTK/VCTK-Corpus/wav48\p295\p295_004.wav,We also need a small plastic snake and a big toy frog for the kids,295,./mel_out/val/0/p295_004.npy,4.8205
+./data/VCTK/VCTK-Corpus/wav48\p255\p255_372.wav,Yesterday the company reported a further downturn in profits.,255,./mel_out/val/0/p255_372.npy,3.58825
+./data/VCTK/VCTK-Corpus/wav48\p334\p334_061.wav,"It was served by sheriff officers, not by the council",334,./mel_out/val/0/p334_061.npy,3.68125
+./data/VCTK/VCTK-Corpus/wav48\p295\p295_129.wav,Axis itself was created from that exercise,295,./mel_out/val/0/p295_129.npy,2.5575
+./data/VCTK/VCTK-Corpus/wav48\p229\p229_151.wav,Who would be right ?,229,./mel_out/val/0/p229_151.npy,1.38725
+./data/VCTK/VCTK-Corpus/wav48\p362\p362_064.wav,Seems a sensible compromise,362,./mel_out/val/0/p362_064.npy,2.759
+./data/VCTK/VCTK-Corpus/wav48\p246\p246_087.wav,Downing Street will make the second appointment in the Scotland Office today.,246,./mel_out/val/0/p246_087.npy,5.07625
+./data/VCTK/VCTK-Corpus/wav48\p335\p335_035.wav,"If true, it will be the first sign of dissent",335,./mel_out/val/0/p335_035.npy,2.85975
+./data/VCTK/VCTK-Corpus/wav48\p360\p360_293.wav,I have never been unemployed,360,./mel_out/val/0/p360_293.npy,1.953
+./data/VCTK/VCTK-Corpus/wav48\p300\p300_303.wav,I'm wondering what you feel about the youngest,300,./mel_out/val/0/p300_303.npy,3.0225
+./data/VCTK/VCTK-Corpus/wav48\p256\p256_218.wav,The Prime Minister has a huge regard for Mo.,256,./mel_out/val/0/p256_218.npy,2.356
+./data/VCTK/VCTK-Corpus/wav48\p374\p374_343.wav,It's a great idea,374,./mel_out/val/0/p374_343.npy,2.95275
+./data/VCTK/VCTK-Corpus/wav48\p255\p255_244.wav,They had no children.,255,./mel_out/val/0/p255_244.npy,1.1935
+./data/VCTK/VCTK-Corpus/wav48\p316\p316_387.wav,Mr Campbell received a phone call,316,./mel_out/val/0/p316_387.npy,4.65
+./data/VCTK/VCTK-Corpus/wav48\p272\p272_237.wav,The project has already secured the support of Sir Sean Connery.,272,./mel_out/val/0/p272_237.npy,3.57275
+./data/VCTK/VCTK-Corpus/wav48\p283\p283_226.wav,You could feel the heat.,283,./mel_out/val/0/p283_226.npy,1.7515
+./data/VCTK/VCTK-Corpus/wav48\p278\p278_120.wav,You can spend money on housing.,278,./mel_out/val/0/p278_120.npy,1.35625
+./data/VCTK/VCTK-Corpus/wav48\p266\p266_397.wav,"So, in a sense, it was a government subsidy.",266,./mel_out/val/0/p266_397.npy,2.89075
+./data/VCTK/VCTK-Corpus/wav48\p351\p351_111.wav,You have caught a serial killer,351,./mel_out/val/0/p351_111.npy,1.40275
+./data/VCTK/VCTK-Corpus/wav48\p263\p263_231.wav,I'm just a regular person.,263,./mel_out/val/50/p263_231.npy,1.643
+./data/VCTK/VCTK-Corpus/wav48\p334\p334_265.wav,It felt like my support system was leaving,334,./mel_out/val/50/p334_265.npy,2.9915
+./data/VCTK/VCTK-Corpus/wav48\p343\p343_310.wav,"Last night, the company could not be contacted",343,./mel_out/val/50/p343_310.npy,3.1465
+./data/VCTK/VCTK-Corpus/wav48\p312\p312_369.wav,"And huge, indeed, it is",312,./mel_out/val/50/p312_369.npy,1.37175
+./data/VCTK/VCTK-Corpus/wav48\p244\p244_182.wav,It was by the numbers.,244,./mel_out/val/50/p244_182.npy,1.09275
+./data/VCTK/VCTK-Corpus/wav48\p275\p275_373.wav,Something is wrong.,275,./mel_out/val/50/p275_373.npy,2.054625
+./data/VCTK/VCTK-Corpus/wav48\p234\p234_284.wav,It is set in Paris.,234,./mel_out/val/50/p234_284.npy,1.80575
+./data/VCTK/VCTK-Corpus/wav48\p261\p261_280.wav,The Scotch whisky industry is absent from the agenda.,261,./mel_out/val/50/p261_280.npy,2.728
+./data/VCTK/VCTK-Corpus/wav48\p334\p334_283.wav,"Does it, Noel",334,./mel_out/val/50/p334_283.npy,1.97625
+./data/VCTK/VCTK-Corpus/wav48\p256\p256_268.wav,It looks as though he will be right.,256,./mel_out/val/50/p256_268.npy,2.7435

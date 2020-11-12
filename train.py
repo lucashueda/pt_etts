@@ -10,11 +10,13 @@ import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
 from torch.utils.data import DataLoader
 
-from model import Tacotron2
-from data_utils import TextMelLoader, TextMelCollate
+from model import Tacotron2, Tacotron2SE, Tacotron2SSE, Tacotron2_EncSpeakEmb
+from data_utils import TextMelLoader, TextMelCollate, TextMelEmbLoader, TextMelEmbCollate
 from loss_function import Tacotron2Loss
 from logger import Tacotron2Logger
 from hparams import create_hparams
+
+from vctk_speakers import speaker_dict
 
 
 def reduce_tensor(tensor, n_gpus):
@@ -273,6 +275,10 @@ if __name__ == '__main__':
                         required=False, help='Distributed group name')
     parser.add_argument('--hparams', type=str,
                         required=False, help='comma separated name=value pairs')
+    parser.add_argument('--conf', type='str', 
+                        required = True, help = 'Yaml configuration directory file.')
+    parser.add_argument('--model', type='str',
+                        required = True, help = 'Specify the model. Choose among: Tacotron2, Tacotron2SE, Tacotron2SSE or Tacotron2_EncSpeakEmb')
 
     args = parser.parse_args()
     hparams = create_hparams(args.hparams)
