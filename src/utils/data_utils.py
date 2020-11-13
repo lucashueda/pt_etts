@@ -3,9 +3,9 @@ import numpy as np
 import torch
 import torch.utils.data
 
-import src.layers.layers
+import src.layers.layers as layers
 from src.utils.utils import load_wav_to_torch, load_filepaths_and_text
-from src.modelstext import text_to_sequence
+from src.text import text_to_sequence
 
 
 class TextMelLoader(torch.utils.data.Dataset):
@@ -16,15 +16,15 @@ class TextMelLoader(torch.utils.data.Dataset):
     """
     def __init__(self, audiopaths_and_text, hparams):
         self.audiopaths_and_text = load_filepaths_and_text(audiopaths_and_text)
-        self.text_cleaners = hparams.text_cleaners
-        self.max_wav_value = hparams.max_wav_value
-        self.sampling_rate = hparams.sampling_rate
-        self.load_mel_from_disk = hparams.load_mel_from_disk
+        self.text_cleaners = hparams['text_cleaners']
+        self.max_wav_value = hparams['max_wav_value']
+        self.sampling_rate = hparams['sampling_rate']
+        self.load_mel_from_disk = hparams['load_mel_from_disk']
         self.stft = layers.TacotronSTFT(
-            hparams.filter_length, hparams.hop_length, hparams.win_length,
-            hparams.n_mel_channels, hparams.sampling_rate, hparams.mel_fmin,
-            hparams.mel_fmax)
-        random.seed(hparams.seed)
+            hparams['filter_length'], hparams['hop_length'], hparams['win_length'],
+            hparams['n_mel_channels'], hparams['sampling_rate'], hparams['mel_fmin'],
+            hparams['mel_fmax'])
+        random.seed(hparams['seed'])
         random.shuffle(self.audiopaths_and_text)
 
     def get_mel_text_pair(self, audiopath_and_text):
@@ -121,15 +121,15 @@ class TextMelEmbLoader(torch.utils.data.Dataset):
     """
     def __init__(self, audiopaths_and_text, hparams, emb_dict):
         self.audiopaths_and_text = load_filepaths_and_text(audiopaths_and_text)
-        self.text_cleaners = hparams.text_cleaners
-        self.max_wav_value = hparams.max_wav_value
-        self.sampling_rate = hparams.sampling_rate
-        self.load_mel_from_disk = hparams.load_mel_from_disk
+        self.text_cleaners = hparams['text_cleaners']
+        self.max_wav_value = hparams['max_wav_value']
+        self.sampling_rate = hparams['sampling_rate']
+        self.load_mel_from_disk = hparams['load_mel_from_disk']
         self.stft = layers.TacotronSTFT(
-            hparams.filter_length, hparams.hop_length, hparams.win_length,
-            hparams.n_mel_channels, hparams.sampling_rate, hparams.mel_fmin,
-            hparams.mel_fmax)
-        random.seed(hparams.seed)
+            hparams['filter_length'], hparams['hop_length'], hparams['win_length'],
+            hparams['n_mel_channels'], hparams['sampling_rate'], hparams['mel_fmin'],
+            hparams['mel_fmax'])
+        random.seed(hparams['seed'])
         random.shuffle(self.audiopaths_and_text)
         
         # Dict com o de-para de um número inteiro encodado para cada alvo do embedding
@@ -156,7 +156,7 @@ class TextMelEmbLoader(torch.utils.data.Dataset):
             melspec = self.stft.mel_spectrogram(audio_norm)
             melspec = torch.squeeze(melspec, 0)
         else:
-            melspec = torch.from_numpy(np.load(filename))
+            melspec = torch.from_numpy(np.load(filename).T)
             assert melspec.size(0) == self.stft.n_mel_channels, (
                 'Mel dimension mismatch: given {}, expected {}'.format(
                     melspec.size(0), self.stft.n_mel_channels))

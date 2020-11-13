@@ -6,3 +6,6 @@ tests/
 OLD/
 ressintese_48k/
 /mel_out
+/mel_outputs
+/outputs
+/log_dir

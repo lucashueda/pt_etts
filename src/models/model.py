@@ -479,42 +479,42 @@ class Decoder(nn.Module):
 class Original_Decoder(nn.Module):
     def __init__(self, hparams):
         super(Original_Decoder, self).__init__()
-        self.n_mel_channels = hparams.n_mel_channels
-        self.n_frames_per_step = hparams.n_frames_per_step
-        self.encoder_embedding_dim = hparams.encoder_embedding_dim
-        self.attention_rnn_dim = hparams.attention_rnn_dim
-        self.decoder_rnn_dim = hparams.decoder_rnn_dim
-        self.prenet_dim = hparams.prenet_dim
-        self.max_decoder_steps = hparams.max_decoder_steps
-        self.gate_threshold = hparams.gate_threshold
-        self.p_attention_dropout = hparams.p_attention_dropout
-        self.p_decoder_dropout = hparams.p_decoder_dropout
+        self.n_mel_channels = hparams['n_mel_channels']
+        self.n_frames_per_step = hparams['n_frames_per_step']
+        self.encoder_embedding_dim = hparams['encoder_embedding_dim']
+        self.attention_rnn_dim = hparams['attention_rnn_dim']
+        self.decoder_rnn_dim = hparams['decoder_rnn_dim']
+        self.prenet_dim = hparams['prenet_dim']
+        self.max_decoder_steps = hparams['max_decoder_steps']
+        self.gate_threshold = hparams['gate_threshold']
+        self.p_attention_dropout = hparams['p_attention_dropout']
+        self.p_decoder_dropout = hparams['p_decoder_dropout']
         
         # self.speaker_embedding = nn.Embedding(hparams.max_emb_size, hparams.speaker_embedding_dim)
 
         self.prenet = Prenet(
-            hparams.n_mel_channels * hparams.n_frames_per_step,
-            [hparams.prenet_dim, hparams.prenet_dim])
+            hparams['n_mel_channels'] * hparams['n_frames_per_step'],
+            [hparams['prenet_dim'], hparams['prenet_dim']])
 
         self.attention_rnn = nn.LSTMCell(
-            hparams.prenet_dim + hparams.encoder_embedding_dim,
-            hparams.attention_rnn_dim)
+            hparams['prenet_dim'] + hparams['encoder_embedding_dim'],
+            hparams['attention_rnn_dim'])
 
         self.attention_layer = Attention(
-            hparams.attention_rnn_dim, hparams.encoder_embedding_dim,
-            hparams.attention_dim, hparams.attention_location_n_filters,
-            hparams.attention_location_kernel_size)
+            hparams['attention_rnn_dim'], hparams['encoder_embedding_dim'],
+            hparams['attention_dim'], hparams['attention_location_n_filters'],
+            hparams['attention_location_kernel_size'])
 
         self.decoder_rnn = nn.LSTMCell(
-            hparams.attention_rnn_dim + hparams.encoder_embedding_dim,
-            hparams.decoder_rnn_dim, 1)
+            hparams['attention_rnn_dim'] + hparams['encoder_embedding_dim'],
+            hparams['decoder_rnn_dim'], 1)
 
         self.linear_projection = LinearNorm(
-            hparams.decoder_rnn_dim + hparams.encoder_embedding_dim,
-            hparams.n_mel_channels * hparams.n_frames_per_step)
+            hparams['decoder_rnn_dim'] + hparams['encoder_embedding_dim'],
+            hparams['n_mel_channels'] * hparams['n_frames_per_step'])
 
         self.gate_layer = LinearNorm(
-            hparams.decoder_rnn_dim + hparams.encoder_embedding_dim, 1,
+            hparams['decoder_rnn_dim'] + hparams['encoder_embedding_dim'], 1,
             bias=True, w_init_gain='sigmoid')
 
     def get_go_frame(self, memory):
@@ -749,45 +749,45 @@ class Original_Decoder(nn.Module):
 class DecoderSpeakEmbedPostEnc(nn.Module):
     def __init__(self, hparams, speaker_embedding_dim = None):
         super(DecoderSpeakEmbedPostEnc, self).__init__()
-        self.n_mel_channels = hparams.n_mel_channels
-        self.n_frames_per_step = hparams.n_frames_per_step
-        self.encoder_embedding_dim = hparams.encoder_embedding_dim
-        self.attention_rnn_dim = hparams.attention_rnn_dim
-        self.decoder_rnn_dim = hparams.decoder_rnn_dim
-        self.prenet_dim = hparams.prenet_dim
-        self.max_decoder_steps = hparams.max_decoder_steps
-        self.gate_threshold = hparams.gate_threshold
-        self.p_attention_dropout = hparams.p_attention_dropout
-        self.p_decoder_dropout = hparams.p_decoder_dropout
+        self.n_mel_channels = hparams['n_mel_channels']
+        self.n_frames_per_step = hparams['n_frames_per_step']
+        self.encoder_embedding_dim = hparams['encoder_embedding_dim']
+        self.attention_rnn_dim = hparams['attention_rnn_dim']
+        self.decoder_rnn_dim = hparams['decoder_rnn_dim']
+        self.prenet_dim = hparams['prenet_dim']
+        self.max_decoder_steps = hparams['max_decoder_steps']
+        self.gate_threshold = hparams['gate_threshold']
+        self.p_attention_dropout = hparams['p_attention_dropout']
+        self.p_decoder_dropout = hparams['p_decoder_dropout']
  
         if(speaker_embedding_dim != None):
             print("Decoder com speak embedding depois do encoder ativado!")
             self.encoder_embedding_dim = self.encoder_embedding_dim + speaker_embedding_dim
 
         self.prenet = Prenet(
-            hparams.n_mel_channels * hparams.n_frames_per_step,
-            [hparams.prenet_dim, hparams.prenet_dim])
+            hparams['n_mel_channels'] * hparams['n_frames_per_step'],
+            [hparams['prenet_dim'], hparams['prenet_dim']])
 
         self.attention_rnn = nn.LSTMCell(
-            hparams.prenet_dim + self.encoder_embedding_dim,
-            hparams.attention_rnn_dim)
+            hparams['prenet_dim'] + self.encoder_embedding_dim,
+            hparams['attention_rnn_dim'])
 
 
         self.attention_layer = Attention(
-            hparams.attention_rnn_dim, self.encoder_embedding_dim,
-            hparams.attention_dim, hparams.attention_location_n_filters,
-            hparams.attention_location_kernel_size)
+            hparams['attention_rnn_dim'], self.encoder_embedding_dim,
+            hparams['attention_dim'], hparams['attention_location_n_filters'],
+            hparams['attention_location_kernel_size'])
 
         self.decoder_rnn = nn.LSTMCell(
-            hparams.attention_rnn_dim + self.encoder_embedding_dim,
-            hparams.decoder_rnn_dim, 1)
+            hparams['attention_rnn_dim'] + self.encoder_embedding_dim,
+            hparams['decoder_rnn_dim'], 1)
 
         self.linear_projection = LinearNorm(
-            hparams.decoder_rnn_dim + self.encoder_embedding_dim,
-            hparams.n_mel_channels * hparams.n_frames_per_step)
+            hparams['decoder_rnn_dim'] + self.encoder_embedding_dim,
+            hparams['n_mel_channels'] * hparams['n_frames_per_step'])
 
         self.gate_layer = LinearNorm(
-            hparams.decoder_rnn_dim + self.encoder_embedding_dim, 1,
+            hparams['decoder_rnn_dim'] + self.encoder_embedding_dim, 1,
             bias=True, w_init_gain='sigmoid')
 
     def get_go_frame(self, memory):
@@ -1026,13 +1026,13 @@ class DecoderSpeakEmbedPostEnc(nn.Module):
 class Tacotron2(nn.Module):
     def __init__(self, hparams):
         super(Tacotron2, self).__init__()
-        self.mask_padding = hparams.mask_padding
-        self.fp16_run = hparams.fp16_run
-        self.n_mel_channels = hparams.n_mel_channels
-        self.n_frames_per_step = hparams.n_frames_per_step
+        self.mask_padding = hparams['mask_padding']
+        self.fp16_run = hparams['fp16_run']
+        self.n_mel_channels = hparams['n_mel_channels']
+        self.n_frames_per_step = hparams['n_frames_per_step']
         self.embedding = nn.Embedding(
-            hparams.n_symbols, hparams.symbols_embedding_dim)
-        std = sqrt(2.0 / (hparams.n_symbols + hparams.symbols_embedding_dim))
+            hparams['n_symbols'], hparams['symbols_embedding_dim'])
+        std = sqrt(2.0 / (hparams['n_symbols'] + hparams['symbols_embedding_dim']))
         val = sqrt(3.0) * std  # uniform bounds for std
         self.embedding.weight.data.uniform_(-val, val)
         self.encoder = Encoder(hparams)
@@ -1101,17 +1101,17 @@ class Tacotron2(nn.Module):
 class Tacotron2SSE(nn.Module):
     def __init__(self, hparams):
         super(Tacotron2SSE, self).__init__()
-        self.mask_padding = hparams.mask_padding
-        self.fp16_run = hparams.fp16_run
-        self.n_mel_channels = hparams.n_mel_channels
-        self.n_frames_per_step = hparams.n_frames_per_step
-        self.max_emb_size = hparams.max_emb_size
+        self.mask_padding = hparams['mask_padding']
+        self.fp16_run = hparams['fp16_run']
+        self.n_mel_channels = hparams['n_mel_channels']
+        self.n_frames_per_step = hparams['n_frames_per_step']
+        self.max_emb_size = hparams['max_emb_size']
 
-        self.speaker_embedding = nn.Embedding(self.max_emb_size, hparams.speaker_embedding_dim)
+        self.speaker_embedding = nn.Embedding(self.max_emb_size, hparams['speaker_embedding_dim'])
 
         self.embedding = nn.Embedding(
-            hparams.n_symbols, hparams.symbols_embedding_dim)
-        std = sqrt(2.0 / (hparams.n_symbols + hparams.symbols_embedding_dim))
+            hparams['n_symbols'], hparams['symbols_embedding_dim'])
+        std = sqrt(2.0 / (hparams['n_symbols'] + hparams['symbols_embedding_dim']))
         val = sqrt(3.0) * std  # uniform bounds for std
         self.embedding.weight.data.uniform_(-val, val)
         self.encoder = Encoder(hparams)
@@ -1187,17 +1187,17 @@ class Tacotron2SSE(nn.Module):
 class Tacotron2SE(nn.Module):
     def __init__(self, hparams):
         super(Tacotron2SE, self).__init__()
-        self.mask_padding = hparams.mask_padding
-        self.fp16_run = hparams.fp16_run
-        self.n_mel_channels = hparams.n_mel_channels
-        self.n_frames_per_step = hparams.n_frames_per_step
-        self.max_emb_size = hparams.max_emb_size
+        self.mask_padding = hparams['mask_padding']
+        self.fp16_run = hparams['fp16_run']
+        self.n_mel_channels = hparams['n_mel_channels']
+        self.n_frames_per_step = hparams['n_frames_per_step']
+        self.max_emb_size = hparams['max_emb_size']
 
         # self.speaker_embedding = nn.Embedding(self.max_emb_size, hparams.speaker_embedding_dim)
 
         self.embedding = nn.Embedding(
-            hparams.n_symbols, hparams.symbols_embedding_dim)
-        std = sqrt(2.0 / (hparams.n_symbols + hparams.symbols_embedding_dim))
+            hparams['n_symbols'], hparams['symbols_embedding_dim'])
+        std = sqrt(2.0 / (hparams['n_symbols'] + hparams['symbols_embedding_dim']))
         val = sqrt(3.0) * std  # uniform bounds for std
         self.embedding.weight.data.uniform_(-val, val)
         self.encoder = Encoder(hparams)
@@ -1277,20 +1277,20 @@ class Tacotron2SE(nn.Module):
 class Tacotron2_EncSpeakEmb(nn.Module):
     def __init__(self, hparams):
         super(Tacotron2_EncSpeakEmb, self).__init__()
-        self.mask_padding = hparams.mask_padding
-        self.fp16_run = hparams.fp16_run
-        self.n_mel_channels = hparams.n_mel_channels
-        self.n_frames_per_step = hparams.n_frames_per_step
+        self.mask_padding = hparams['mask_padding']
+        self.fp16_run = hparams['fp16_run']
+        self.n_mel_channels = hparams['n_mel_channels']
+        self.n_frames_per_step = hparams['n_frames_per_step']
         self.embedding = nn.Embedding(
-            hparams.n_symbols, hparams.symbols_embedding_dim)
-        self.max_emb_size = hparams.max_emb_size
-        self.speaker_embedding = nn.Embedding(self.max_emb_size, hparams.speaker_embedding_dim)
+            hparams['n_symbols'], hparams['symbols_embedding_dim'])
+        self.max_emb_size = hparams['max_emb_size']
+        self.speaker_embedding = nn.Embedding(self.max_emb_size, hparams['speaker_embedding_dim'])
 
-        std = sqrt(2.0 / (hparams.n_symbols + hparams.symbols_embedding_dim))
+        std = sqrt(2.0 / (hparams['n_symbols'] + hparams['symbols_embedding_dim']))
         val = sqrt(3.0) * std  # uniform bounds for std
         self.embedding.weight.data.uniform_(-val, val)
         self.encoder = Encoder(hparams)
-        self.decoder = DecoderSpeakEmbedPostEnc(hparams, hparams.speaker_embedding_dim)
+        self.decoder = DecoderSpeakEmbedPostEnc(hparams, hparams['speaker_embedding_dim'])
         self.postnet = Postnet(hparams)
 
     def parse_batch(self, batch):

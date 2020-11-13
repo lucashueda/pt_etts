@@ -56,8 +56,8 @@ def prepare_directory(out_dir):
 
 def main(outdir, config):
 
-    training_files = config['training_files']
-    validation_files = config['validation_files']
+    training_files = config['data_training_files']
+    validation_files = config['data_validation_files']
 
     # Creating directory of dataset
     prepare_directory(outdir)
@@ -99,7 +99,7 @@ def main(outdir, config):
                                     config['n_mel_channels'], config['mel_fmin'], config['mel_fmax'])
             
             # Every 50 files i create a subfolder, its a specific google colab needed to run without crashing
-            if(i%50 == 0):
+            if(i%250 == 0):
                 actual_store_folder = os.path.join(outdir,f'train/{i}')
                 prepare_directory(actual_store_folder)
             
