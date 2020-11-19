@@ -68,8 +68,8 @@ def main(outdir, config):
     prepare_directory(os.path.join(outdir, 'val'))
 
     
-    train_df = pd.read_csv(training_files, sep=',')
-    val_df = pd.read_csv(validation_files, sep=',')
+    train_df = pd.read_csv(training_files, sep=',', encoding='latin-1')
+    val_df = pd.read_csv(validation_files, sep=',', encoding='latin-1')
 
     ################################ TRAINING PROCESS ############################################
 
@@ -90,8 +90,9 @@ def main(outdir, config):
     for i in range(train_df.shape[0]):
 
         try:
+            print('enter try')
             audio , sr = librosa.load(train_df.wav_path.values[i], sr = config['sampling_rate'])
-
+            print('done reading audio')
             # Trimming silence
             audio = librosa.effects.trim(audio, top_db=config['trim_treshold_in_db'], 
                                         frame_length=config['trim_frame_size'],
@@ -99,15 +100,21 @@ def main(outdir, config):
             audio = np.append([0.]*5*config['trim_hop_size'], audio)
             audio = np.append(audio, [0.]*5*config['trim_hop_size'])
 
+            print('done ')
+
             durations.append(len(audio)/sr)
 
             log10mel = logmelfilterbank(audio, config['sampling_rate'], config['filter_length'], 
                                     config['hop_length'], config['win_length'], config['window'],
                                     config['n_mel_channels'], config['mel_fmin'], config['mel_fmax'])
             
+            print('done logmel')
+
             if(config['mel_clip_normalize'] == True):
                 log10mel = mel_normalize(log10mel, ref_level_db = config['ref_level_db'], 
                                         max_abs_value = config['max_abs_value'], min_level_db = config['min_level_db'])
+
+                print('done norm clip')
 
             # Every 50 files i create a subfolder, its a specific google colab need to run without crashing
             if(i%250 == 0):

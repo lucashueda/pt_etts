@@ -20,8 +20,8 @@ load_mel_from_disk: True
 text_cleaners: ['english_cleaners']
 
 
-data_training_files: './vctk_aux/vctk_train.csv'
-data_validation_files: './vctk_aux/vctk_val.csv'
+data_training_files: './vctk_aux/vctk_train_sampled.csv'
+data_validation_files: './vctk_aux/vctk_val_sampled.csv'
 
 training_files: './vctk_aux/train_debug.txt'
 validation_files: './vctk_aux/val_debug.txt'
@@ -49,7 +49,7 @@ trim_treshold_in_db: 25
 max_abs_value: 4
 min_level_db: -100
 ref_level_db: 45
-mel_clip_normalize: False
+mel_clip_normalize: True
 
 ################################
 # Model Parameters             #
