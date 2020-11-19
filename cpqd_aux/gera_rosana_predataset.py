@@ -31,10 +31,10 @@ if __name__ == '__main__':
 
 
     for file in os.listdir(cpqd_path):
-        if(os.isdir(file)):
+        if(os.path.isdir(file)):
             folders_path = os.path.join(cpqd_path,file)
             
-            if((os.isdir(os.path.join(folders_path,'transcricao'))) & (os.isdir(os.path.join(folders_path,'wav16')))):
+            if((os.path.isdir(os.path.join(folders_path,'transcricao'))) & (os.path.isdir(os.path.join(folders_path,'wav16')))):
                 
                 transcript = os.path.join(folders_path, 'transcricao')
                 wav_path = os.path.join(folders_path, 'wav16')
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
                             expected_wav_file = os.path.join(wav_path, filename + '.wav')
                             if(os.path.isfile(expected_wav_file)):
-                                texts.append(lines[N+2:])
+                                texts.append(line[N+2:])
                                 wav_dirs.append(expected_wav_file) 
                                 emb_ids.append(1) # Since we dont have embedding just put that to generate correct format
 
