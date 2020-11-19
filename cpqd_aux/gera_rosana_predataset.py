@@ -48,6 +48,8 @@ if __name__ == '__main__':
 
                 N = len(file) + 4
 
+                print(transcript, wav_path, expected_norm_text_file)
+
                 print(os.path.join(transcript, expected_norm_text_file, os.path.isdir(os.path.join(transcript, expected_norm_text_file))))
 
                 try:
