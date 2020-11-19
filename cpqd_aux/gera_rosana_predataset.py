@@ -50,7 +50,9 @@ if __name__ == '__main__':
 
                 print(transcript, wav_path, expected_norm_text_file)
 
-                print(os.path.isdir(transcript), os.path.isdir(wav_path))
+                # print(os.path.isdir(transcript), os.path.isdir(wav_path))
+
+                print(os.path.join(transcript, expected_norm_text_file))
 
                 try:
                     with open(os.path.join(transcript, expected_norm_text_file), 'r') as f:
