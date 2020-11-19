@@ -34,7 +34,7 @@ if __name__ == '__main__':
         if(os.isdir(file)):
             folders_path = os.path.join(cpqd_path,file)
             
-            if((os.isdir(os.path.join(folders_path,'transcricao'))) && (os.isdir(os.path.join(folders_path,'wav16')))):
+            if((os.isdir(os.path.join(folders_path,'transcricao'))) & (os.isdir(os.path.join(folders_path,'wav16')))):
                 
                 transcript = os.path.join(folders_path, 'transcricao')
                 wav_path = os.path.join(folders_path, 'wav16')
