@@ -55,7 +55,7 @@ if __name__ == '__main__':
                 # print(os.path.isfile(os.path.join(transcript, expected_norm_text_file)))
 
                 try:
-                    with open(os.path.join(transcript, expected_norm_text_file), encoding = 'latin-1', 'r') as f:
+                    with open(os.path.join(transcript, expected_norm_text_file), encoding = 'latin-1') as f:
                         # print('entrou')
                         for line in f:
                             filename = line[:N]
