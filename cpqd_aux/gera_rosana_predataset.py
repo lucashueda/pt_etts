@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
                     pass
 
-    df = pd.DataFrame({'wav_path':wav_files, 'text': text_files, 'emb_id': np.array(speaker_id).astype(int)})
+    df = pd.DataFrame({'wav_path':wav_dirs, 'text': texts, 'emb_id': np.array(emb_ids).astype(int)})
 
 
     df_train, df_val, speaker_id, speaker_id = train_test_split(df, df['emb_id'], test_size = 0.1, random_state = 42, stratify = df['emb_id'])
