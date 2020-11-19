@@ -33,10 +33,14 @@ if __name__ == '__main__':
 
     for file in os.listdir(cpqd_path):
         if(os.path.isdir(file)):
+
             folders_path = os.path.join(cpqd_path,file)
             
+            print(folders_path)
+
             if((os.path.isdir(os.path.join(folders_path,'transcricao'))) & (os.path.isdir(os.path.join(folders_path,'wav16')))):
-                
+                print('entrou no if')   
+
                 transcript = os.path.join(folders_path, 'transcricao')
                 wav_path = os.path.join(folders_path, 'wav16')
 
@@ -56,7 +60,7 @@ if __name__ == '__main__':
                                 emb_ids.append(1) # Since we dont have embedding just put that to generate correct format
 
                 except:
-
+                    print('deu except')
                     pass
 
     df = pd.DataFrame({'wav_path':wav_dirs, 'text': texts, 'emb_id': np.array(emb_ids).astype(int)})
