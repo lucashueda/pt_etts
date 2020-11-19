@@ -10,6 +10,7 @@ import os
 import argparse 
 import pandas as pd 
 from sklearn.model_selection import train_test_split
+import numpy as np
 
 if __name__ == '__main__':
     """Run preprocessing process."""
