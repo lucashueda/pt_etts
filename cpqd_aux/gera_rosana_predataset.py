@@ -31,7 +31,9 @@ if __name__ == '__main__':
     emb_ids = []
 
 
+    print('se so printar isso nem entrou n ofor')
     for file in os.listdir(cpqd_path):
+        print(file)
         if(os.path.isdir(file)):
 
             folders_path = os.path.join(cpqd_path,file)
