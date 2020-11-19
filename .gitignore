@@ -9,3 +9,6 @@ ressintese_48k/
 /mel_outputs
 /outputs
 /log_dir
+/tests
+/fbank_outputs
+/fbank_outputs_clip_norm

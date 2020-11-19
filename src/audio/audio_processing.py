@@ -91,3 +91,12 @@ def dynamic_range_decompression(x, C=1):
     C: compression factor used to compress
     """
     return torch.exp(x) / C
+
+def mel_normalize(x, ref_level_db = 45 ,max_abs_value=4.0, min_level_db=-100):
+    return np.clip((2 * max_abs_value) * ((x - ref_level_db - min_level_db) / (-min_level_db)) - max_abs_value,
+			 -max_abs_value, max_abs_value)
+
+def mel_denormalize(x, ref_level_db = 45, max_abs_value=4.0, min_level_db=-100):
+    return (((np.clip(x, -max_abs_value,
+				max_abs_value) + max_abs_value) * -min_level_db / (2 * max_abs_value))
+				+ min_level_db) + ref_level_db

@@ -7,3 +7,4 @@ scipy==1.0.0
 Unidecode==1.0.22
 pillow
 pyyaml==5.3.1
+sklearn==0.23.2

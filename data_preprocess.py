@@ -6,6 +6,8 @@ import librosa
 import numpy as np
 import yaml
 import pandas as pd
+import pickle
+from src.audio.audio_processing import mel_normalize
 
 def logmelfilterbank(audio,
                      sampling_rate,
@@ -78,6 +80,11 @@ def main(outdir, config):
     mel_dirs = []
     durations = []
 
+    # Normalization statistics, calculated just in training data and used to normalize all data
+    counts = {}
+    sum_feats = {}
+    square_sum_feats = {}
+
     # Starting trainning files process
     print(f"Saving train features in {os.path.join(outdir, 'train')} folder.")
     for i in range(train_df.shape[0]):
@@ -89,8 +96,8 @@ def main(outdir, config):
             audio = librosa.effects.trim(audio, top_db=config['trim_treshold_in_db'], 
                                         frame_length=config['trim_frame_size'],
                                         hop_length=config['trim_hop_size'])[0]
-            audio = np.append([0.]*3*config['trim_hop_size'], audio)
-            audio = np.append(audio, [0.]*3*config['trim_hop_size'])
+            audio = np.append([0.]*5*config['trim_hop_size'], audio)
+            audio = np.append(audio, [0.]*5*config['trim_hop_size'])
 
             durations.append(len(audio)/sr)
 
@@ -98,7 +105,11 @@ def main(outdir, config):
                                     config['hop_length'], config['win_length'], config['window'],
                                     config['n_mel_channels'], config['mel_fmin'], config['mel_fmax'])
             
-            # Every 50 files i create a subfolder, its a specific google colab needed to run without crashing
+            if(config['mel_clip_normalize'] == True):
+                log10mel = mel_normalize(log10mel, ref_level_db = config['ref_level_db'], 
+                                        max_abs_value = config['max_abs_value'], min_level_db = config['min_level_db'])
+
+            # Every 50 files i create a subfolder, its a specific google colab need to run without crashing
             if(i%250 == 0):
                 actual_store_folder = os.path.join(outdir,f'train/{i}')
                 prepare_directory(actual_store_folder)
@@ -109,11 +120,49 @@ def main(outdir, config):
                 mel_path = mel_path.replace('\\', '/') 
                 mel_dirs.append(mel_path)
                 np.save(mel_path , log10mel)
+
+                # Saving statistics
+                if(config['mel_clip_normalize'] == False):
+                    spk = train_df.emb_id.values[i]
+                    if(spk not in counts):
+                        counts[spk] = 0
+                        feat_shape = log10mel.shape[1:]
+                        sum_feats[spk] = np.zeros(feat_shape, dtype=np.float64)
+                        square_sum_feats[spk] = np.zeros(feat_shape, dtype=np.float64)
+
+                    counts[spk] += log10mel.shape[0]
+                    sum_feats[spk] += log10mel.sum(axis=0)
+                    square_sum_feats[spk] += (log10mel ** 2).sum(axis=0)
+
+
+
             else:
                 mel_dirs.append('ERROR_LIMITED_SIZE_ABOVE')
         
         except:
             print('error')
+
+    # Consolidating statistics for training set
+    if(config['mel_clip_normalize'] == False):
+        stats = {}
+        for spk in counts:
+            N = counts[spk]
+            mean = sum_feats[spk]/N
+            std = np.sqrt(square_sum_feats[spk] / N - mean**2)
+
+            stats_ = np.empty((2, config['n_mel_channels']), dtype = np.float64)
+            stats_[0,:] = mean 
+            stats_[1,:] = std
+            
+            stats[spk] = stats_
+
+        # Saving as a binary pickle file in exp/conf dir
+        stats_path = training_files.rsplit('/', 1)[-2] + '/stats.pkl'
+        file = open(stats_path, 'wb')
+        pickle.dump(stats, file)
+        file.close()
+
+        print(f"Normalization statistics of data saved in {stats_path}.")
 
 
     train_df['mel_dirs'] = mel_dirs
@@ -149,7 +198,11 @@ def main(outdir, config):
             log10mel = logmelfilterbank(audio, config['sampling_rate'], config['filter_length'], 
                                     config['hop_length'], config['win_length'], config['window'],
                                     config['n_mel_channels'], config['mel_fmin'], config['mel_fmax'])
-            
+
+            if(config['mel_clip_normalize'] == True):
+                log10mel = mel_normalize(log10mel, ref_level_db = config['ref_level_db'], 
+                                        max_abs_value = config['max_abs_value'], min_level_db = config['min_level_db'])            
+
             # Every 50 files i create a subfolder, its a specific google colab needed to run without crashing
             if(i%50 == 0):
                 actual_store_folder = os.path.join(outdir,f'val/{i}')
@@ -187,6 +240,5 @@ if __name__ == '__main__':
     with open(args.conf) as f:
         config = yaml.load(f, Loader=yaml.Loader)
     # config.update(vars(args))
-
     main(args.output_directory, config)
     

@@ -29,7 +29,7 @@ validation_files: './vctk_aux/val_debug.txt'
 # Features Parameters        #
 ################################
 
-max_wav_value: 32768.0 
+max_wav_value: 32768.0 # Actually it is not used because it affects our vocoder
 sampling_rate: 16000
 filter_length: 512
 hop_length: 128
@@ -40,9 +40,16 @@ mel_fmax: 8000.0 # The defaultin vocoder is 8000 because is sampling rate/2.
 window: 'hann'
 max_seq_mel: 800
 
+# Trimming parameters
 trim_frame_size: 1024
 trim_hop_size: 124
 trim_treshold_in_db: 25
+
+# Mel normalization parameters
+max_abs_value: 4
+min_level_db: -100
+ref_level_db: 45
+mel_clip_normalize: False
 
 ################################
 # Model Parameters             #
