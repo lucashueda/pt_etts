@@ -48,14 +48,15 @@ if __name__ == '__main__':
 
                 N = len(file) + 4
 
-                print(transcript, wav_path, expected_norm_text_file)
+                # print(transcript, wav_path, expected_norm_text_file)
 
                 # print(os.path.isdir(transcript), os.path.isdir(wav_path))
 
-                print(os.path.isdir(os.path.join(transcript, expected_norm_text_file)))
+                # print(os.path.isfile(os.path.join(transcript, expected_norm_text_file)))
 
                 try:
-                    with open(os.path.join(transcript, expected_norm_text_file), 'r') as f:
+                    with open(os.path.join(transcript, expected_norm_text_file), encoding = 'latin-1', 'r') as f:
+                        # print('entrou')
                         for line in f:
                             filename = line[:N]
 
