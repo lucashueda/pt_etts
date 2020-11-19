@@ -31,14 +31,12 @@ if __name__ == '__main__':
     emb_ids = []
 
 
-    print('se so printar isso nem entrou n ofor')
     for file in os.listdir(cpqd_path):
-        print(file)
+
         if(os.path.isdir(os.path.join(cpqd_path,file))):
 
             folders_path = os.path.join(cpqd_path,file)
             
-            print(folders_path)
 
             if((os.path.isdir(os.path.join(folders_path,'transcricao'))) & (os.path.isdir(os.path.join(folders_path,'wav16')))):
                 print('entrou no if')   
@@ -49,6 +47,8 @@ if __name__ == '__main__':
                 expected_norm_text_file = file+'_norm.txt'
 
                 N = len(file) + 4
+
+                print(os.path.join(transcript, expected_norm_text_file, os.path.isdir(os.path.join(transcript, expected_norm_text_file))
 
                 try:
                     with open(os.path.join(transcript, expected_norm_text_file), 'r') as f:
