@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
                 N = len(file) + 4
 
-                print(os.path.join(transcript, expected_norm_text_file, os.path.isdir(os.path.join(transcript, expected_norm_text_file))
+                print(os.path.join(transcript, expected_norm_text_file, os.path.isdir(os.path.join(transcript, expected_norm_text_file))))
 
                 try:
                     with open(os.path.join(transcript, expected_norm_text_file), 'r') as f:
