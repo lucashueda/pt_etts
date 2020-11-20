@@ -51,7 +51,7 @@ def prepare_dataloaders(hparams):
         valset = TextMelLoader(hparams['validation_files'], hparams)
         collate_fn = TextMelCollate(hparams['n_frames_per_step'])
 
-        if hparams.distributed_run:
+        if hparams['distributed_run']:
             train_sampler = DistributedSampler(trainset)
             shuffle = False
         else:
