@@ -88,41 +88,6 @@ def compute_style_mel(style_wav, ap, cuda=False):
         return style_mel.cuda()
     return style_mel
 
-# Set constants
-
-CONFIG_PATH =  './experiments/debug/config.json'
-
-
-CONFIG = load_config(CONFIG_PATH)
-
-use_cuda = True
-
-# load the model
-ap = AudioProcessor(**CONFIG.audio)
-
-num_chars = len(phonemes) if CONFIG.use_phonemes else len(symbols)
-
-# load the model
-num_chars = len(phonemes) if CONFIG.use_phonemes else len(symbols)
-model = setup_model(num_chars, 3, CONFIG, None)
-
-
-
-
-style_mel = compute_style_mel(style_wav, ap, cuda=True)
-style_mel = numpy_to_torch(style_mel, torch.float, cuda=use_cuda)
-
-s = "ambulantes vendem os ingressos para a copa do mundo de dois mil e catorze , mas só alguns dias antes do dia do sorteio ."
-
-inputs = text_to_seqvec(s, CONFIG)
-inputs = numpy_to_torch(inputs, torch.long, cuda=use_cuda)
-inputs = inputs.unsqueeze(0)
-
-embedded_inputs = model.embedding(inputs).transpose(1, 2)
-encoder_outputs = model.encoder.inference(embedded_inputs)
-
-encoder, logits = model.compute_gst(inputs = encoder_outputs, style_input = style_mel, speaker_embedding = None)
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
