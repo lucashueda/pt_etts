@@ -105,6 +105,9 @@ class Tacotron2(TacotronAbstract):
             encoder_outputs, logits = self.compute_gst(encoder_outputs,
                                                mel_specs,
                                                speaker_embeddings if self.gst_use_speaker_embedding else None)
+        else:
+            logits = None
+
         if self.num_speakers > 1:
             if not self.embeddings_per_sample:
                 # B x 1 x speaker_embed_dim
@@ -149,6 +152,9 @@ class Tacotron2(TacotronAbstract):
             encoder_outputs, logits = self.compute_gst(encoder_outputs,
                                                style_mel,
                                                speaker_embeddings if self.gst_use_speaker_embedding else None)
+        else:
+            logits = None
+
         if self.num_speakers > 1:
             if not self.embeddings_per_sample:
                 speaker_embeddings = self.speaker_embedding(speaker_ids)[:, None]
@@ -174,7 +180,9 @@ class Tacotron2(TacotronAbstract):
             encoder_outputs, logits = self.compute_gst(encoder_outputs,
                                                style_mel,
                                                speaker_embeddings if self.gst_use_speaker_embedding else None)
-
+        else:
+            logits = None 
+            
         if self.num_speakers > 1:
             if not self.embeddings_per_sample:
                 speaker_embeddings = self.speaker_embedding(speaker_ids)[:, None]

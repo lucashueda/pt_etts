@@ -320,7 +320,7 @@ class AudioProcessor(object):
         return x / abs(x).max() * 0.9
 
     ### save and load ###
-    def load_wav(self, filename, sr=None):
+    def load_wav(self, filename, sr=16000):
         if sr is None:
             x, sr = sf.read(filename)
             assert self.sample_rate == sr, "%s vs %s"%(self.sample_rate, sr)

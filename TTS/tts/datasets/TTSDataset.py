@@ -25,6 +25,7 @@ class MyDataset(Dataset):
                  phoneme_language="en-us",
                  enable_eos_bos=False,
                  speaker_mapping=None,
+                 style_mapping = None,
                  verbose=False):
         """
         Args:
@@ -116,9 +117,9 @@ class MyDataset(Dataset):
         item = self.items[idx]
 
         if len(item) == 5:
-            text, wav_file, speaker_name, style, attn_file = item
+            text, wav_file, speaker_name, style_target, attn_file = item
         else:
-            text, wav_file, speaker_name, style = item
+            text, wav_file, speaker_name, style_target = item
             attn = None
 
         wav = np.asarray(self.load_wav(wav_file), dtype=np.float32)
@@ -136,13 +137,15 @@ class MyDataset(Dataset):
         if "attn_file" in locals():
             attn = np.load(attn_file)
 
+
         sample = {
             'text': text,
             'wav': wav,
             'attn': attn,
             'item_idx': self.items[idx][1],
             'speaker_name': speaker_name,
-            'wav_file_name': os.path.basename(wav_file)
+            'wav_file_name': os.path.basename(wav_file), 
+            'style_target': style_target
         }
         return sample
 
@@ -211,6 +214,11 @@ class MyDataset(Dataset):
             speaker_name = [
                 batch[idx]['speaker_name'] for idx in ids_sorted_decreasing
             ]
+
+            style_target = [
+                batch[idx]['style_target'] for idx in ids_sorted_decreasing
+            ]
+
             # get speaker embeddings
             if self.speaker_mapping is not None:
                 wav_files_names = [
@@ -254,6 +262,7 @@ class MyDataset(Dataset):
             mel_lengths = torch.LongTensor(mel_lengths)
             stop_targets = torch.FloatTensor(stop_targets)
 
+
             if speaker_embedding is not None:
                 speaker_embedding = torch.FloatTensor(speaker_embedding)
 
@@ -282,7 +291,7 @@ class MyDataset(Dataset):
             else:
                 attns = None
             return text, text_lenghts, speaker_name, linear, mel, mel_lengths, \
-                   stop_targets, item_idxs, speaker_embedding, attns
+                   stop_targets, item_idxs, speaker_embedding, attns, style_target
 
         raise TypeError(("batch must contain tensors, numbers, dicts or lists;\
                          found {}".format(type(batch[0]))))

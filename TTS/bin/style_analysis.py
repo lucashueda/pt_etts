@@ -11,6 +11,9 @@ import traceback
 import numpy as np
 import torch
 
+
+sys.path.insert(1, '/l/disk1/awstebas/lhueda/github/repo_final/pt_etts/')
+
 import pickle
 from random import randrange
 from torch.utils.data import DataLoader
@@ -123,50 +126,58 @@ if __name__ == '__main__':
     if 'characters' in c.keys():
         symbols, phonemes = make_symbols(**c.characters)
 
-    # DISTRUBUTED
-    if num_gpus > 1:
-        init_distributed(args.rank, num_gpus, args.group_id,
-                         c.distributed["backend"], c.distributed["url"])
     num_chars = len(phonemes) if c.use_phonemes else len(symbols)
 
     # load data instances
     meta_data_train, meta_data_eval = load_meta_data(c.datasets)
-
-    # set the portion of the data used for training
-    if 'train_portion' in c.keys():
-        meta_data_train = meta_data_train[:int(len(meta_data_train) * c.train_portion)]
-    if 'eval_portion' in c.keys():
-        meta_data_eval = meta_data_eval[:int(len(meta_data_eval) * c.eval_portion)]
 
     num_speakers = 4
     speaker_embedding_dim = None
     speaker_mapping = None
 
     model = setup_model(num_chars, num_speakers, c, speaker_embedding_dim)
+    
+    MODEL_PATH = "/l/disk1/awstebas/lhueda/github/TTS/4speaker_spkembed_gst_4tokens1head/best_model.pth.tar"
+    cp = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
+    model.load_state_dict(cp['model'])
+    model.eval()
 
     N = c['gst']['gst_style_tokens']
+    h = c['gst']['gst_num_heads']
+    N = N*h
+
     train_feats = np.zeros((len(meta_data_train), N))
-    valid_feats = np.zeros((len(meta_data_val), N))
+    valid_feats = np.zeros((len(meta_data_eval), N))
 
     for i in range(len(meta_data_train)):
-        style_wave = meta_data_train[i][0]
+        style_wav = meta_data_train[i][1]
         style_mel = compute_style_mel(style_wav, ap, cuda=True)
         style_mel = numpy_to_torch(style_mel, torch.float, cuda=use_cuda)
-        _, logits = model.gst_layer(style_mel)
-        train_feats[i] = logits.squeeze(0).squeeze(0).squeeze(0).detach().cpu().numpy()
-        with open(arg.experiment_folder + 'train_feats.pkl', rb) as f:
-            pickle.dump(train_feats, f)
-        with open(arg.experiment_folder + 'train_meta.pkl', rb) as f:
-            pickle.dump(meta_data_train, f)
+        _, logits = model.cuda().gst_layer(style_mel)
+        logits = torch.cat(
+            torch.split(logits, 1, dim=0),
+            dim=3).squeeze(0)
+
+        #print(style_wav, style_mel.shape, logits, logits.shape)
+        train_feats[i] = logits.squeeze(0).squeeze(0).detach().cpu().numpy()
+    with open(args.experiment_folder + 'train_feats.pkl', 'wb') as f:
+        pickle.dump(train_feats, f)
+    with open(args.experiment_folder + 'train_meta.pkl', 'wb') as f:
+        pickle.dump(meta_data_train, f)
 
 
-    for i in range(len(meta_data_val)):
-        style_wave = meta_data_val[i][0]
+    for i in range(len(meta_data_eval)):
+        style_wav = meta_data_eval[i][1]
         style_mel = compute_style_mel(style_wav, ap, cuda=True)
         style_mel = numpy_to_torch(style_mel, torch.float, cuda=use_cuda)
-        _, logits = model.gst_layer(style_mel)
-        valid_feats[i] = logits.squeeze(0).squeeze(0).squeeze(0).detach().cpu().numpy()
-        with open(arg.experiment_folder + 'val_feats.pkl', rb) as f:
-            pickle.dump(valid_feats, f)
-        with open(arg.experiment_folder + 'val_meta.pkl', rb) as f:
-            pickle.dump(meta_data_val, f)
+        _, logits = model.cuda().gst_layer(style_mel)
+
+        logits  = torch.cat(
+            torch.split(logits, 1, dim=0),
+            dim=3).squeeze(0)
+
+        valid_feats[i] = logits.squeeze(0).squeeze(0).detach().cpu().numpy()
+    with open(args.experiment_folder + 'val_feats.pkl', 'wb') as f:
+        pickle.dump(valid_feats, f)
+    with open(args.experiment_folder + 'val_meta.pkl', 'wb') as f:
+        pickle.dump(meta_data_eval, f)

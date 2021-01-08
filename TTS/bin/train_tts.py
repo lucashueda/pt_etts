@@ -8,6 +8,9 @@ import sys
 import time
 import traceback
 
+sys.path.insert(1, 'D:\\Mestrado\\Emotion Audio Synthesis (TTS)\\repo_final\\pt_etts')
+
+
 import numpy as np
 import torch
 
@@ -24,6 +27,8 @@ from TTS.tts.utils.io import save_best_model, save_checkpoint
 from TTS.tts.utils.measures import alignment_diagonal_score
 from TTS.tts.utils.speakers import (get_speakers, load_speaker_mapping,
                                     save_speaker_mapping)
+from TTS.tts.utils.styles import (get_styles, load_style_mapping,
+                                    save_style_mapping)
 from TTS.tts.utils.synthesis import synthesis
 from TTS.tts.utils.text.symbols import make_symbols, phonemes, symbols
 from TTS.tts.utils.visual import plot_alignment, plot_spectrogram
@@ -75,9 +80,11 @@ def setup_loader(ap, r, is_val=False, verbose=False, speaker_mapping=None):
             pin_memory=False)
     return loader
 
-def format_data(data, speaker_mapping=None):
+def format_data(data, speaker_mapping=None, style_mapping = None):
     if speaker_mapping is None and c.use_speaker_embedding and not c.use_external_speaker_embedding_file:
         speaker_mapping = load_speaker_mapping(OUT_PATH)
+    if style_mapping is None and c.use_style_embeddings:
+        style_mapping = load_style_mapping(OUT_PATH)
 
     # setup input data
     text_input = data[0]
@@ -87,6 +94,7 @@ def format_data(data, speaker_mapping=None):
     mel_input = data[4]
     mel_lengths = data[5]
     stop_targets = data[6]
+    style_targets = data[10]
     avg_text_length = torch.mean(text_lengths.float())
     avg_spec_length = torch.mean(mel_lengths.float())
 
@@ -104,6 +112,25 @@ def format_data(data, speaker_mapping=None):
         speaker_embeddings = None
         speaker_ids = None
 
+    if c.use_style_embedding:
+        style_targets = [
+                style_mapping[style_target] for style_target in style_targets
+            ]
+        if c.use_one_hot_style: # Style target will be a one hotted vector
+            style_targets_ = np.zeros((len(style_targets), len(style_mapping)))
+            for i in range(len(style_targets_)):
+                if(style_targets[i] != 0): # If we force the 0 mapped style to be the non
+                    style_targets_[i][style_targets[i]] = 1 # For each position we one hot encode it
+            
+            style_targets = style_targets_
+            
+            style_targets = torch.FloatTensor(style_targets)
+            
+            del style_targets_
+        else: # Style target will be just the indice
+            style_targets = torch.FloatTensor(style_targets)
+    else:
+        style_targets = None
 
     # set stop targets view, we predict a single stop token per iteration.
     stop_targets = stop_targets.view(text_input.shape[0],
@@ -123,12 +150,14 @@ def format_data(data, speaker_mapping=None):
             speaker_ids = speaker_ids.cuda(non_blocking=True)
         if speaker_embeddings is not None:
             speaker_embeddings = speaker_embeddings.cuda(non_blocking=True)
+        if style_targets is not None:
+            style_targets = style_targets.cuda(non_blocking=True)
 
-    return text_input, text_lengths, mel_input, mel_lengths, linear_input, stop_targets, speaker_ids, speaker_embeddings, avg_text_length, avg_spec_length
+    return text_input, text_lengths, mel_input, mel_lengths, linear_input, stop_targets, speaker_ids, speaker_embeddings, avg_text_length, avg_spec_length, style_targets
 
 
 def train(model, criterion, optimizer, optimizer_st, scheduler,
-          ap, global_step, epoch, amp, speaker_mapping=None):
+          ap, global_step, epoch, amp, speaker_mapping=None, style_mapping = None):
     data_loader = setup_loader(ap, model.decoder.r, is_val=False,
                                verbose=(epoch == 0), speaker_mapping=speaker_mapping)
     model.train()
@@ -145,7 +174,7 @@ def train(model, criterion, optimizer, optimizer_st, scheduler,
         start_time = time.time()
 
         # format data
-        text_input, text_lengths, mel_input, mel_lengths, linear_input, stop_targets, speaker_ids, speaker_embeddings, avg_text_length, avg_spec_length = format_data(data, speaker_mapping)
+        text_input, text_lengths, mel_input, mel_lengths, linear_input, stop_targets, speaker_ids, speaker_embeddings, avg_text_length, avg_spec_length, style_targets = format_data(data, speaker_mapping, style_mapping)
         loader_time = time.time() - end_time
 
         global_step += 1
@@ -178,7 +207,7 @@ def train(model, criterion, optimizer, optimizer_st, scheduler,
                               linear_input, stop_tokens, stop_targets,
                               mel_lengths, decoder_backward_output,
                               alignments, alignment_lengths, alignments_backward,
-                              text_lengths)
+                              text_lengths, logits, style_targets)
 
         # backward pass
         if amp is not None:
@@ -314,7 +343,7 @@ def train(model, criterion, optimizer, optimizer_st, scheduler,
 
 
 @torch.no_grad()
-def evaluate(model, criterion, ap, global_step, epoch, speaker_mapping=None):
+def evaluate(model, criterion, ap, global_step, epoch, speaker_mapping=None, style_mapping = None):
     data_loader = setup_loader(ap, model.decoder.r, is_val=True, speaker_mapping=speaker_mapping)
     model.eval()
     epoch_time = 0
@@ -325,7 +354,7 @@ def evaluate(model, criterion, ap, global_step, epoch, speaker_mapping=None):
             start_time = time.time()
 
             # format data
-            text_input, text_lengths, mel_input, mel_lengths, linear_input, stop_targets, speaker_ids, speaker_embeddings, _, _, logits_targets= format_data(data, speaker_mapping)
+            text_input, text_lengths, mel_input, mel_lengths, linear_input, stop_targets, speaker_ids, speaker_embeddings, _, _, style_targets= format_data(data, speaker_mapping, style_mapping)
             assert mel_input.shape[1] % model.decoder.r == 0
 
             # forward pass model
@@ -349,7 +378,7 @@ def evaluate(model, criterion, ap, global_step, epoch, speaker_mapping=None):
                                   linear_input, stop_tokens, stop_targets,
                                   mel_lengths, decoder_backward_output,
                                   alignments, alignment_lengths, alignments_backward,
-                                  text_lengths, logits, logits_targets)
+                                  text_lengths, logits, style_targets)
 
             # step time
             step_time = time.time() - start_time
@@ -539,6 +568,31 @@ def main(args):  # pylint: disable=redefined-outer-name
         speaker_embedding_dim = None
         speaker_mapping = None
 
+
+    # parse styles
+    if c.use_style_embedding:
+        styles = get_styles(meta_data_train)
+        if args.restore_path:
+            prev_out_path = os.path.dirname(args.restore_path)
+            style_mapping = load_style_mapping(prev_out_path)
+            style_embedding_dim = None
+            assert all([style in style_mapping
+                        for style in styles]), "As of now you, you cannot " \
+                                                "introduce new styles to " \
+                                                "a previously trained model."
+        else: # if start new train and don't use External Embedding file
+            style_mapping = {name: i for i, name in enumerate(styles)}
+            style_embedding_dim = None
+        save_style_mapping(OUT_PATH, style_mapping)
+        num_styles = len(style_mapping)
+        print("Training with {} styles: {}".format(num_styles,
+                                                    ", ".join(styles)))
+    else:
+        num_styles = 0
+        style_embedding_dim = None
+        style_mapping = None
+
+
     model = setup_model(num_chars, num_speakers, c, speaker_embedding_dim)
 
     params = set_weight_decay(model, c.wd)
@@ -624,8 +678,8 @@ def main(args):  # pylint: disable=redefined-outer-name
             print("\n > Number of output frames:", model.decoder.r)
         train_avg_loss_dict, global_step = train(model, criterion, optimizer,
                                                  optimizer_st, scheduler, ap,
-                                                 global_step, epoch, amp, speaker_mapping)
-        eval_avg_loss_dict = evaluate(model, criterion, ap, global_step, epoch, speaker_mapping)
+                                                 global_step, epoch, amp, speaker_mapping, style_mapping)
+        eval_avg_loss_dict = evaluate(model, criterion, ap, global_step, epoch, speaker_mapping, style_mapping)
         c_logger.print_epoch_end(epoch, eval_avg_loss_dict)
         target_loss = train_avg_loss_dict['avg_postnet_loss']
         if c.run_eval:
@@ -731,6 +785,6 @@ if __name__ == '__main__':
         except SystemExit:
             os._exit(0)  # pylint: disable=protected-access
     except Exception:  # pylint: disable=broad-except
-        remove_experiment_folder(OUT_PATH)
+        # remove_experiment_folder(OUT_PATH)
         traceback.print_exc()
         sys.exit(1)
