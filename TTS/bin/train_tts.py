@@ -381,6 +381,12 @@ def evaluate(model, criterion, ap, global_step, epoch, speaker_mapping=None, sty
             else:
                 alignment_lengths = mel_lengths //  model.decoder.r
 
+            if c.gst_use_linear_style_target:
+                logits = logits.squeeze(1)
+            else:
+                logits = logits.squeeze(0).squeeze(1)
+
+
             # compute loss
             loss_dict = criterion(postnet_output, decoder_output, mel_input,
                                   linear_input, stop_tokens, stop_targets,
