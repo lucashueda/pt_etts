@@ -220,6 +220,7 @@ def train(model, criterion, optimizer, optimizer_st, scheduler,
                               alignments, alignment_lengths, alignments_backward,
                               text_lengths, logits, style_targets)
 
+        print('after',loss_dict['gst_style_loss'])
         # backward pass
         if amp is not None:
             with amp.scale_loss(loss_dict['loss'], optimizer) as scaled_loss:
