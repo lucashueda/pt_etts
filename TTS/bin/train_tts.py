@@ -607,6 +607,8 @@ def main(args):  # pylint: disable=redefined-outer-name
         style_mapping = None
 
 
+    print(num_styles, type(num_styles))
+
     # Num styles must be n-1 because neutral ones are defined as target zero
     model = setup_model(num_chars, num_speakers, num_styles - 1, c, speaker_embedding_dim)
 
