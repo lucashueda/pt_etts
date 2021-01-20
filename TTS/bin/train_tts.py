@@ -120,10 +120,10 @@ def format_data(data, speaker_mapping=None, style_mapping = None):
                 style_mapping[style_target] for style_target in style_targets
             ]
         if c.use_one_hot_style: # Style target will be a one hotted vector
-            style_targets_ = np.zeros((len(style_targets), len(style_mapping)))
+            style_targets_ = np.zeros((len(style_targets), len(style_mapping)-1))
             for i in range(len(style_targets_)):
                 if(style_targets[i] != 0): # If we force the 0 mapped style to be the non
-                    style_targets_[i][style_targets[i]] = 1 # For each position we one hot encode it
+                    style_targets_[i][style_targets[i]-1] = 1 # For each position we one hot encode it
             
             style_targets = style_targets_
             
@@ -134,6 +134,7 @@ def format_data(data, speaker_mapping=None, style_mapping = None):
             style_targets = torch.FloatTensor(style_targets)
     else:
         style_targets = None
+
 
     # set stop targets view, we predict a single stop token per iteration.
     stop_targets = stop_targets.view(text_input.shape[0],
