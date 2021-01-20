@@ -9,7 +9,7 @@ import time
 import traceback
 
 
-sys.path.insert(1, '/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/pt_etts')
+sys.path.insert(1, '/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts')
 
 # sys.path.insert(1, 'D:\\Mestrado\\Emotion Audio Synthesis (TTS)\\repo_final\\pt_etts')
 
@@ -205,7 +205,7 @@ def train(model, criterion, optimizer, optimizer_st, scheduler,
         else:
             alignment_lengths = mel_lengths //  model.decoder.r
 
-        if c.gst_use_linear_style_target:
+        if c.gst['gst_use_linear_style_target']:
             logits = logits.squeeze(1)
         else:
             logits = logits.squeeze(0).squeeze(1)
@@ -381,7 +381,7 @@ def evaluate(model, criterion, ap, global_step, epoch, speaker_mapping=None, sty
             else:
                 alignment_lengths = mel_lengths //  model.decoder.r
 
-            if c.gst_use_linear_style_target:
+            if c.gst['gst_use_linear_style_target']:
                 logits = logits.squeeze(1)
             else:
                 logits = logits.squeeze(0).squeeze(1)
