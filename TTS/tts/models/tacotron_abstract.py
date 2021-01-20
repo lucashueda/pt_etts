@@ -11,6 +11,7 @@ class TacotronAbstract(ABC, nn.Module):
     def __init__(self,
                  num_chars,
                  num_speakers,
+                 num_styles,
                  r,
                  postnet_output_dim=80,
                  decoder_output_dim=80,
@@ -35,7 +36,8 @@ class TacotronAbstract(ABC, nn.Module):
                  gst_embedding_dim=512,
                  gst_num_heads=4,
                  gst_style_tokens=10,
-                 gst_use_speaker_embedding=False):
+                 gst_use_speaker_embedding=False,
+                 gst_use_linear_style_target = False):
         """ Abstract Tacotron class """
         super().__init__()
         self.num_chars = num_chars
@@ -48,6 +50,7 @@ class TacotronAbstract(ABC, nn.Module):
         self.gst_style_tokens = gst_style_tokens
         self.gst_use_speaker_embedding = gst_use_speaker_embedding
         self.num_speakers = num_speakers
+        self.num_styles = num_styles 
         self.bidirectional_decoder = bidirectional_decoder
         self.double_decoder_consistency = double_decoder_consistency
         self.ddc_r = ddc_r
@@ -65,6 +68,7 @@ class TacotronAbstract(ABC, nn.Module):
         self.encoder_in_features = encoder_in_features
         self.decoder_in_features = decoder_in_features
         self.speaker_embedding_dim = speaker_embedding_dim
+        self.gst_use_linear_style_target = gst_use_linear_style_target
 
         # layers
         self.embedding = None
@@ -208,7 +212,7 @@ class TacotronAbstract(ABC, nn.Module):
         else:
             gst_outputs, logits = self.gst_layer(style_input, speaker_embedding) # pylint: disable=not-callable
         inputs = self._concat_speaker_embedding(inputs, gst_outputs)
-        return inputs, logits
+        return inputs, gst_outputs, logits
 
     @staticmethod
     def _add_speaker_embedding(outputs, speaker_embeddings):

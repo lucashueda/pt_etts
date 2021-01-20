@@ -10,6 +10,7 @@ class Tacotron2(TacotronAbstract):
     def __init__(self,
                  num_chars,
                  num_speakers,
+                 num_styles,
                  r,
                  postnet_output_dim=80,
                  decoder_output_dim=80,
@@ -34,9 +35,10 @@ class Tacotron2(TacotronAbstract):
                  gst_embedding_dim=512,
                  gst_num_heads=4,
                  gst_style_tokens=10,
-                 gst_use_speaker_embedding=False):
+                 gst_use_speaker_embedding=False,
+                 gst_use_linear_style_target = False):
         super(Tacotron2,
-              self).__init__(num_chars, num_speakers, r, postnet_output_dim,
+              self).__init__(num_chars, num_speakers, num_styles, r, postnet_output_dim,
                              decoder_output_dim, attn_type, attn_win,
                              attn_norm, prenet_type, prenet_dropout,
                              forward_attn, trans_agent, forward_attn_mask,
@@ -44,7 +46,7 @@ class Tacotron2(TacotronAbstract):
                              bidirectional_decoder, double_decoder_consistency,
                              ddc_r, encoder_in_features, decoder_in_features,
                              speaker_embedding_dim, gst, gst_embedding_dim,
-                             gst_num_heads, gst_style_tokens, gst_use_speaker_embedding)
+                             gst_num_heads, gst_style_tokens, gst_use_speaker_embedding, gst_use_linear_style_target)
 
         # speaker embedding layer
         if self.num_speakers > 1:
@@ -75,6 +77,13 @@ class Tacotron2(TacotronAbstract):
                                  num_style_tokens=self.gst_style_tokens,
                                  gst_embedding_dim=self.gst_embedding_dim,
                                  speaker_embedding_dim=speaker_embedding_dim if self.embeddings_per_sample and self.gst_use_speaker_embedding else None)
+        
+            # If enabled, we use a linear dense layer to force the embedding space to be linear 
+            # separable. Note that, by our implementation, num_styles will be n-1 #styles, because 
+            # we use neutral one to be the vector [0,0,0]
+            if self.gst_use_linear_style_target:
+                self.linear_style_target_layer = nn.Linear(self.gst_embedding_dim, self.num_styles) 
+        
         # backward pass decoder
         if self.bidirectional_decoder:
             self._init_backward_decoder()
@@ -102,9 +111,11 @@ class Tacotron2(TacotronAbstract):
         encoder_outputs = self.encoder(embedded_inputs, text_lengths)
         if self.gst:
             # B x gst_dim (logits are the gst logits of style tokens)
-            encoder_outputs, logits = self.compute_gst(encoder_outputs,
+            encoder_outputs, gst_outputs, logits = self.compute_gst(encoder_outputs,
                                                mel_specs,
                                                speaker_embeddings if self.gst_use_speaker_embedding else None)
+            if self.gst_use_linear_style_target:
+                logits = self.linear_style_target_layer(gst_outputs)
         else:
             logits = None
 
@@ -149,9 +160,11 @@ class Tacotron2(TacotronAbstract):
 
         if self.gst:
             # B x gst_dim
-            encoder_outputs, logits = self.compute_gst(encoder_outputs,
+            encoder_outputs, gst_outputs, logits = self.compute_gst(encoder_outputs,
                                                style_mel,
                                                speaker_embeddings if self.gst_use_speaker_embedding else None)
+            if self.gst_use_linear_style_target:
+                logits = self.linear_style_target_layer(gst_outputs)
         else:
             logits = None
 
@@ -177,9 +190,11 @@ class Tacotron2(TacotronAbstract):
 
         if self.gst:
             # B x gst_dim
-            encoder_outputs, logits = self.compute_gst(encoder_outputs,
+            encoder_outputs, gst_outputs, logits = self.compute_gst(encoder_outputs,
                                                style_mel,
                                                speaker_embeddings if self.gst_use_speaker_embedding else None)
+            if self.gst_use_linear_style_target:
+                logits = self.linear_style_target_layer(gst_outputs)    
         else:
             logits = None 
             

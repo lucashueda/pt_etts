@@ -8,7 +8,10 @@ import sys
 import time
 import traceback
 
-sys.path.insert(1, 'D:\\Mestrado\\Emotion Audio Synthesis (TTS)\\repo_final\\pt_etts')
+
+sys.path.insert(1, '/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/pt_etts')
+
+# sys.path.insert(1, 'D:\\Mestrado\\Emotion Audio Synthesis (TTS)\\repo_final\\pt_etts')
 
 
 import numpy as np
@@ -201,6 +204,11 @@ def train(model, criterion, optimizer, optimizer_st, scheduler,
             alignment_lengths = (mel_lengths + (model.decoder.r - (mel_lengths.max() % model.decoder.r))) // model.decoder.r
         else:
             alignment_lengths = mel_lengths //  model.decoder.r
+
+        if c.gst_use_linear_style_target:
+            logits = logits.squeeze(1)
+        else:
+            logits = logits.squeeze(0).squeeze(1)
 
         # compute loss
         loss_dict = criterion(postnet_output, decoder_output, mel_input,
@@ -593,7 +601,8 @@ def main(args):  # pylint: disable=redefined-outer-name
         style_mapping = None
 
 
-    model = setup_model(num_chars, num_speakers, c, speaker_embedding_dim)
+    # Num styles must be n-1 because neutral ones are defined as target zero
+    model = setup_model(num_chars, num_speakers, num_styles - 1, c, speaker_embedding_dim)
 
     params = set_weight_decay(model, c.wd)
     optimizer = RAdam(params, lr=c.lr, weight_decay=0)

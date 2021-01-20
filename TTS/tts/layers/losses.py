@@ -284,7 +284,7 @@ class TacotronLoss(torch.nn.Module):
             return_dict['diff_spec_loss'] = diff_spec_loss
 
         if self.config.gst_style_loss:
-            gst_style_loss = functional.binary_cross_entropy(gst_logits.squeeze(0).squeeze(1), gst_logits_target)
+            gst_style_loss = functional.binary_cross_entropy(gst_logits, gst_logits_target)
             loss += gst_style_loss
             return_dict['gst_logits_loss'] = gst_style_loss
             
