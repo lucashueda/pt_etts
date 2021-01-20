@@ -211,6 +211,8 @@ def train(model, criterion, optimizer, optimizer_st, scheduler,
         else:
             logits = logits.squeeze(0).squeeze(1)
 
+
+        print(logits.shape, style_targets.shape)
         # compute loss
         loss_dict = criterion(postnet_output, decoder_output, mel_input,
                               linear_input, stop_tokens, stop_targets,
