@@ -77,13 +77,13 @@ class Tacotron2(TacotronAbstract):
                                  num_style_tokens=self.gst_style_tokens,
                                  gst_embedding_dim=self.gst_embedding_dim,
                                  speaker_embedding_dim=speaker_embedding_dim if self.embeddings_per_sample and self.gst_use_speaker_embedding else None)
-        
+                                       
             # If enabled, we use a linear dense layer to force the embedding space to be linear 
             # separable. Note that, by our implementation, num_styles will be n-1 #styles, because 
             # we use neutral one to be the vector [0,0,0]
             if self.gst_use_linear_style_target:
                 self.linear_style_target_layer = nn.Linear(self.gst_embedding_dim, self.num_styles) 
-        
+
         # backward pass decoder
         if self.bidirectional_decoder:
             self._init_backward_decoder()

@@ -46,6 +46,7 @@ def to_camel(text):
 
 
 def setup_model(num_chars, num_speakers, num_styles, c, speaker_embedding_dim=None):
+    print('hi')
     print(" > Using model: {}".format(c.model))
     MyModel = importlib.import_module('TTS.tts.models.' + c.model.lower())
     MyModel = getattr(MyModel, to_camel(c.model))
