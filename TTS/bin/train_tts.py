@@ -206,13 +206,15 @@ def train(model, criterion, optimizer, optimizer_st, scheduler,
         else:
             alignment_lengths = mel_lengths //  model.decoder.r
 
+        # print(logits.shape)
+
         if c.gst['gst_use_linear_style_target']:
             logits = logits.squeeze(1)
         else:
             logits = logits.squeeze(0).squeeze(1)
 
 
-        print(logits.shape, style_targets.shape)
+        # print(logits.shape, style_targets.shape)
         # compute loss
         loss_dict = criterion(postnet_output, decoder_output, mel_input,
                               linear_input, stop_tokens, stop_targets,
@@ -220,7 +222,7 @@ def train(model, criterion, optimizer, optimizer_st, scheduler,
                               alignments, alignment_lengths, alignments_backward,
                               text_lengths, logits, style_targets)
 
-        print('after',loss_dict['gst_style_loss'])
+        # print('after',loss_dict['gst_logits_loss'])
         # backward pass
         if amp is not None:
             with amp.scale_loss(loss_dict['loss'], optimizer) as scaled_loss:
@@ -602,8 +604,8 @@ def main(args):  # pylint: disable=redefined-outer-name
             style_mapping = {name: i for i, name in enumerate(styles)}
             style_embedding_dim = None
         save_style_mapping(OUT_PATH, style_mapping)
-        num_styles = len(style_mapping)
-        print("Training with {} styles: {}".format(num_styles,
+        num_styles = len(style_mapping) - 1
+        print("Training with {} styles + neutral: {}".format(num_styles,
                                                     ", ".join(styles)))
     else:
         num_styles = 0
@@ -611,10 +613,9 @@ def main(args):  # pylint: disable=redefined-outer-name
         style_mapping = None
 
 
-    print(num_styles, type(num_styles))
 
     # Num styles must be n-1 because neutral ones are defined as target zero
-    model = setup_model(num_chars, num_speakers, num_styles - 1, c, speaker_embedding_dim)
+    model = setup_model(num_chars, num_speakers, num_styles, c, speaker_embedding_dim)
 
     params = set_weight_decay(model, c.wd)
     optimizer = RAdam(params, lr=c.lr, weight_decay=0)
