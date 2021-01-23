@@ -77397,3 +77397,20 @@ warning: audio amplitude out of range, auto clipped.
      | > step_time: 2.4379
      | > loader_time: 0.01
      | > current_lr: 0.0001
+
+[1m   --> STEP: 1011/1120 -- GLOBAL_STEP: 104475[0m
+     | > decoder_loss: 0.04660  (0.04089)
+     | > postnet_loss: 0.03832  (0.03426)
+     | > stopnet_loss: 0.01793  (0.07147)
+     | > decoder_coarse_loss: 0.08182  (0.06845)
+     | > decoder_ddc_loss: 0.00167  (0.00347)
+     | > ga_loss: 0.00073  (0.00222)
+     | > diff_spec_loss: 0.04344  (0.03972)
+     | > gst_logits_loss: 0.00000  (0.00132)
+     | > loss: 0.08621  (0.07844)
+     | > align_error: 0.39527  (0.29659)
+     | > avg_spec_length: 616.8
+     | > avg_text_length: 67.2
+     | > step_time: 3.3488
+     | > loader_time: 0.01
+     | > current_lr: 0.0001
