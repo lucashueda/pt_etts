@@ -65,7 +65,12 @@ if __name__ == '__main__':
                                 texts.append(line[N+2:])
                                 wav_dirs.append(expected_wav_file) 
                                 emb_ids.append(3) # Since we dont have embedding just put that to generate correct format
-                                style_targets.append('pool')
+                                if((file == "neutro")|(file == "riqueza_fonetica")):
+                                        style_targets.append("t_neutro")
+                                elif((file== "expressivo_animado")|(file=="expressivo_animado_rf")):
+                                        style_targets.append("t_animado")
+                                else:
+                                        style_targets.append('a_pool')
                 except:
                     print('deu except')
                     pass

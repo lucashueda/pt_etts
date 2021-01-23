@@ -1,0 +1,80 @@
+2021-01-20 18:07:43.453697: I tensorflow/stream_executor/platform/default/dso_loader.cc:48] Successfully opened dynamic library libcudart.so.10.1
+Traceback (most recent call last):
+  File "TTS/bin/train_tts.py", line 796, in <module>
+    main(args)
+  File "TTS/bin/train_tts.py", line 612, in main
+    model = setup_model(num_chars, num_speakers, num_styles, c, speaker_embedding_dim)
+TypeError: setup_model() takes from 3 to 4 positional arguments but 5 were given
+ > Using CUDA:  True
+ > Number of GPUs:  1
+ > Setting up Audio Processor...
+ | > sample_rate:16000
+ | > num_mels:80
+ | > min_level_db:-100
+ | > frame_shift_ms:None
+ | > frame_length_ms:None
+ | > ref_level_db:20
+ | > fft_size:512
+ | > power:1.5
+ | > preemphasis:0.0
+ | > griffin_lim_iters:60
+ | > signal_norm:False
+ | > symmetric_norm:True
+ | > mel_fmin:0
+ | > mel_fmax:8000.0
+ | > spec_gain:1.0
+ | > stft_pad_mode:reflect
+ | > max_norm:4.0
+ | > clip_norm:True
+ | > do_trim_silence:True
+ | > trim_db:60
+ | > do_sound_norm:False
+ | > stats_path:
+ | > hop_length:128
+ | > win_length:512
+ | > Found 16192 files in /l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/cpqd_aux
+ | > Found 4927 files in /l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/cpqd_aux
+ | > Found 6848 files in /l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/cpqd_aux
+ | > Found 361 files in /l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/cpqd_aux
+Training with 3 speakers: 1, 2, 3
+Training with 2 styles + neutral : a_pool, t_animado, t_neutro
+2021-01-20 18:12:12.625291: I tensorflow/stream_executor/platform/default/dso_loader.cc:48] Successfully opened dynamic library libcudart.so.10.1
+Traceback (most recent call last):
+  File "TTS/bin/train_tts.py", line 796, in <module>
+    main(args)
+  File "TTS/bin/train_tts.py", line 612, in main
+    model = setup_model(num_chars, num_speakers, num_styles, c, speaker_embedding_dim)
+TypeError: setup_model() takes from 3 to 4 positional arguments but 5 were given
+ > Using CUDA:  True
+ > Number of GPUs:  1
+ > Setting up Audio Processor...
+ | > sample_rate:16000
+ | > num_mels:80
+ | > min_level_db:-100
+ | > frame_shift_ms:None
+ | > frame_length_ms:None
+ | > ref_level_db:20
+ | > fft_size:512
+ | > power:1.5
+ | > preemphasis:0.0
+ | > griffin_lim_iters:60
+ | > signal_norm:False
+ | > symmetric_norm:True
+ | > mel_fmin:0
+ | > mel_fmax:8000.0
+ | > spec_gain:1.0
+ | > stft_pad_mode:reflect
+ | > max_norm:4.0
+ | > clip_norm:True
+ | > do_trim_silence:True
+ | > trim_db:60
+ | > do_sound_norm:False
+ | > stats_path:
+ | > hop_length:128
+ | > win_length:512
+ | > Found 16192 files in /l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/cpqd_aux
+ | > Found 4927 files in /l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/cpqd_aux
+ | > Found 6848 files in /l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/cpqd_aux
+ | > Found 361 files in /l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/cpqd_aux
+Training with 3 speakers: 1, 2, 3
+Training with 2 styles + neutral : a_pool, t_animado, t_neutro
