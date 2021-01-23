@@ -134,7 +134,7 @@ if __name__ == '__main__':
     num_speakers = 3
     speaker_embedding_dim = None
     speaker_mapping = None
-    num _styles = 2
+    num_styles = 2
     model = setup_model(num_chars, num_speakers,num_styles, c, speaker_embedding_dim)
     
     MODEL_PATH = "/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/experiments/gst_4speakers_6tokens2heads_style_targeted/best_model.pth.tar"
