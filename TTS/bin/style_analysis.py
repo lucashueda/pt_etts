@@ -12,7 +12,7 @@ import numpy as np
 import torch
 
 
-sys.path.insert(1, '/l/disk1/awstebas/lhueda/github/repo_final/pt_etts/')
+sys.path.insert(1, '/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/')
 
 import pickle
 from random import randrange
@@ -137,7 +137,7 @@ if __name__ == '__main__':
 
     model = setup_model(num_chars, num_speakers, c, speaker_embedding_dim)
     
-    MODEL_PATH = "/l/disk1/awstebas/lhueda/github/TTS/4speaker_spkembed_gst_4tokens1head/best_model.pth.tar"
+    MODEL_PATH = "/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/experiments/gst_4speakers_6tokens2heads_style_targeted/best_model.pth.tar"
     cp = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
     model.load_state_dict(cp['model'])
     model.eval()
