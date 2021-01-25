@@ -209,8 +209,12 @@ class TacotronAbstract(ABC, nn.Module):
         elif style_input is None:
             logits = None
             gst_outputs = torch.zeros(1, 1, self.gst_embedding_dim).to(device)
+        elif style_input.shape[2] == 512:
+            logits = None
+            gst_outputs = style_input
         else:
             gst_outputs, logits = self.gst_layer(style_input, speaker_embedding) # pylint: disable=not-callable
+        
         inputs = self._concat_speaker_embedding(inputs, gst_outputs)
         return inputs, gst_outputs, logits
 
