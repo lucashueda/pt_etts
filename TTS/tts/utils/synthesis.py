@@ -208,10 +208,15 @@ def synthesis(model,
     # GST processing
     style_mel = None
     if CONFIG.use_gst and style_wav is not None:
+        # print(style_wav.shape, style_wav.shape[2], CONFIG['gst']['gst_embedding_dim'])
         if isinstance(style_wav, dict):
             style_mel = style_wav
-        else:
+        elif isinstance(style_wav, str): 
             style_mel = compute_style_mel(style_wav, ap, cuda=use_cuda)
+        elif style_wav.shape[2] == CONFIG['gst']['gst_embedding_dim']:
+            style_mel = style_wav # just putting
+        else:
+            style_mel = None
     # preprocess the given text
     inputs = text_to_seqvec(text, CONFIG)
     # pass tensors to backend

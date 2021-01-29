@@ -191,6 +191,7 @@ class TacotronAbstract(ABC, nn.Module):
 
         # print('computing gst')
 
+        print(inputs, style_input)
 
         if isinstance(style_input, dict):
             query = torch.zeros(1, 1, self.gst_embedding_dim//2).to(device)
@@ -207,11 +208,14 @@ class TacotronAbstract(ABC, nn.Module):
                 # print(gst_outputs_att.shape)
                 gst_outputs = gst_outputs + gst_outputs_att * v_amplifier
         elif style_input is None:
+            print('entered here')
             logits = None
             gst_outputs = torch.zeros(1, 1, self.gst_embedding_dim).to(device)
-        elif style_input.shape[2] == 512:
+        elif style_input.shape[2] == self.gst_embedding_dim:
+            print('entered correctly')
             logits = None
             gst_outputs = style_input
+            print(gst_outputs, style_input)
         else:
             gst_outputs, logits = self.gst_layer(style_input, speaker_embedding) # pylint: disable=not-callable
         
