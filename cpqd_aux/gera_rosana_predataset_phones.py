@@ -70,10 +70,10 @@ if __name__ == '__main__':
                                 emb_ids.append(1) # Since we dont have embedding just put that to generate correct format
                                 x , sr = librosa.load(expected_wav_file, sr = None)
                                 with open(expected_lab_file , 'r') as f:
-                                    for x in f.readlines():
+                                    for k in f.readlines():
                                         if("phones" in line[:10]):
-                                            qtde_phones = len(line[10:].replace('|', '').split(), len(line[10:].replace('|', '').split()))
-                                
+                                            qtde_phones = len(k[10:].replace('|', '').split(), len(line[10:].replace('|', '').split()))
+                                print(len(x), sr, qtde_phones)
                                 style_targets.append(int(qtde_phones/len(x)/sr))
                 except:
                     print('deu except')
