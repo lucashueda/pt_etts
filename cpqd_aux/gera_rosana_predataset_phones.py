@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
                             expected_wav_file = os.path.join(wav_path, filename + '.wav')
                             expected_lab_file = os.path.join(lab_path, filename + '.lab')
-                            if((os.path.isfile(expected_wav_file))&(os.path.isfile(expected_lab_file))):
+                            if((os.path.isfile(expected_wav_file))):
                                 texts.append(line[N+2:])
                                 wav_dirs.append(expected_wav_file) 
                                 emb_ids.append(1) # Since we dont have embedding just put that to generate correct format
