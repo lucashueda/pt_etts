@@ -137,7 +137,7 @@ if __name__ == '__main__':
     num_styles = 2
     model = setup_model(num_chars, num_speakers,num_styles, c, speaker_embedding_dim)
     
-    MODEL_PATH = "/l/disk0/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/experiments/gst_4speakers_6tokens2heads_style_target_alfredo/best_model.pth.tar"
+    MODEL_PATH = "/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/experiments/gst_4speakers_6tokens2heads_style_target_alfredo/best_model.pth.tar"
     cp = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
     model.load_state_dict(cp['model'])
     model.eval()
