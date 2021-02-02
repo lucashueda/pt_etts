@@ -84,6 +84,7 @@ if __name__ == '__main__':
                     print('deu except')
                     pass
 
+    print(len(wav_dirs), len(texts), len(emb_ids), len(style_targets))
     df = pd.DataFrame({'wav_path':wav_dirs, 'text': texts, 'emb_id': np.array(emb_ids).astype(int), 'style_target': style_targets})
 
 
