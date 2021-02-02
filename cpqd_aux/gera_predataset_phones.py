@@ -23,6 +23,8 @@ if __name__ == '__main__':
                         help='directory of all folders of Rosana data')
     parser.add_argument('-t', '--text', type=str,
                         help='Whether to get norm text or phoneme level')
+    parser.add_argument('-dn', '--df_name', type = str)
+    parser.add_argument('-s', '--speaker_id', type = str)
     args = parser.parse_args()
 
     cpqd_path = args.input_directory
@@ -67,7 +69,7 @@ if __name__ == '__main__':
                             if((os.path.isfile(expected_wav_file))):
                                 texts.append(line[N+2:])
                                 wav_dirs.append(expected_wav_file) 
-                                emb_ids.append(1) # Since we dont have embedding just put that to generate correct format
+                                emb_ids.append(int(args.speaker_id)) # Since we dont have embedding just put that to generate correct format
                                 x , sr = librosa.load(expected_wav_file, sr = None)
                                 with open(expected_lab_file , 'r') as f:
                                     for k in f.readlines():
@@ -84,8 +86,8 @@ if __name__ == '__main__':
 
     df_train, df_val, speaker_id, speaker_id = train_test_split(df, df['emb_id'], test_size = 0.1, random_state = 42, stratify = df['emb_id'])
 
-    out_train = os.path.join(args.output_directory, 'rosana_train.csv')
-    out_val = os.path.join(args.output_directory, 'rosana_val.csv')
+    out_train = os.path.join(args.output_directory, args.df_name + '_train.csv')
+    out_val = os.path.join(args.output_directory, args.df_name + 'val.csv')
 
     df_train.to_csv(out_train, index = False, sep = '|', encoding='latin-1')
     df_val.to_csv(out_val, index = False, sep='|', encoding = 'latin-1')
