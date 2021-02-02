@@ -77,7 +77,7 @@ if __name__ == '__main__':
                                 with open(expected_lab_file , 'r', encoding = 'latin-1') as f:
                                     for k in f.readlines():
                                         if("phones" in k[:10]):
-                                            qtde_phones = len(k[10:].replace('|', '').split(), len(line[10:].replace('|', '').split()))
+                                            qtde_phones = len(k[10:].replace('|', '').split())
                                 print(len(x), sr, qtde_phones)
                                 style_targets.append(int(qtde_phones/len(x)/sr))
                 except:
