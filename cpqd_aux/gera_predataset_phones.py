@@ -78,7 +78,7 @@ if __name__ == '__main__':
                                         if("phones" in k[:10]):
                                             qtde_phones = len(k[10:].replace('|', '').split())
                                 # print(len(x), sr, qtde_phones)
-                                style_targets.append(round(qtde_phones/len(x)/sr, 3))
+                                style_targets.append(round(qtde_phones/(len(x)/sr), 3))
                                 texts.append(line[N+2:])
                                 wav_dirs.append(expected_wav_file) 
                                 emb_ids.append(int(args.speaker_id)) # Since we dont have embedding just put that to generate correct format
