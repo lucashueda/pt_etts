@@ -71,8 +71,8 @@ if __name__ == '__main__':
                             expected_lab_file = os.path.join(lab_path, filename + '.lab')
                             if((os.path.isfile(expected_wav_file))):
                                 # print("antes do librosa")
+                                x , sr = librosa.load(expected_wav_file, sr = None)
                                 if(args.style_name == None):
-                                    x , sr = librosa.load(expected_wav_file, sr = None)
                                     # print('antes do arquivo lab')
                                     # print(expected_lab_file, os.path.isfile(expected_lab_file))
                                     with open(expected_lab_file , 'r', encoding = 'latin-1') as f:
