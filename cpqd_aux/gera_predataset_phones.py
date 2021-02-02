@@ -73,6 +73,7 @@ if __name__ == '__main__':
                                 print("antes do librosa")
                                 x , sr = librosa.load(expected_wav_file, sr = None)
                                 print('antes do arquivo lab')
+                                print(expected_lab_file, os.path.isfile(expected_lab_file))
                                 with open(expected_lab_file , 'r', encoding = 'latin-1') as f:
                                     for k in f.readlines():
                                         if("phones" in line[:10]):
