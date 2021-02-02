@@ -70,7 +70,9 @@ if __name__ == '__main__':
                                 texts.append(line[N+2:])
                                 wav_dirs.append(expected_wav_file) 
                                 emb_ids.append(int(args.speaker_id)) # Since we dont have embedding just put that to generate correct format
+                                print("antes do librosa")
                                 x , sr = librosa.load(expected_wav_file, sr = None)
+                                print('antes do arquivo lab')
                                 with open(expected_lab_file , 'r') as f:
                                     for k in f.readlines():
                                         if("phones" in line[:10]):
