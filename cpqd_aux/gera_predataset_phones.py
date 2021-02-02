@@ -67,9 +67,6 @@ if __name__ == '__main__':
                             expected_wav_file = os.path.join(wav_path, filename + '.wav')
                             expected_lab_file = os.path.join(lab_path, filename + '.lab')
                             if((os.path.isfile(expected_wav_file))):
-                                texts.append(line[N+2:])
-                                wav_dirs.append(expected_wav_file) 
-                                emb_ids.append(int(args.speaker_id)) # Since we dont have embedding just put that to generate correct format
                                 # print("antes do librosa")
                                 x , sr = librosa.load(expected_wav_file, sr = None)
                                 # print('antes do arquivo lab')
@@ -80,6 +77,10 @@ if __name__ == '__main__':
                                             qtde_phones = len(k[10:].replace('|', '').split())
                                 # print(len(x), sr, qtde_phones)
                                 style_targets.append(int(qtde_phones/len(x)/sr))
+                                texts.append(line[N+2:])
+                                wav_dirs.append(expected_wav_file) 
+                                emb_ids.append(int(args.speaker_id)) # Since we dont have embedding just put that to generate correct format
+        
                 except:
                     print('deu except')
                     pass
