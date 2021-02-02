@@ -42,7 +42,7 @@ if __name__ == '__main__':
             
 
             if((os.path.isdir(os.path.join(folders_path,'transcricao'))) & (os.path.isdir(os.path.join(folders_path,'wav16')))):
-                print('entrou no if')   
+                # print('entrou no if')   
 
                 transcript = os.path.join(folders_path, 'transcricao')
                 wav_path = os.path.join(folders_path, 'wav16')
@@ -70,15 +70,15 @@ if __name__ == '__main__':
                                 texts.append(line[N+2:])
                                 wav_dirs.append(expected_wav_file) 
                                 emb_ids.append(int(args.speaker_id)) # Since we dont have embedding just put that to generate correct format
-                                print("antes do librosa")
+                                # print("antes do librosa")
                                 x , sr = librosa.load(expected_wav_file, sr = None)
-                                print('antes do arquivo lab')
-                                print(expected_lab_file, os.path.isfile(expected_lab_file))
+                                # print('antes do arquivo lab')
+                                # print(expected_lab_file, os.path.isfile(expected_lab_file))
                                 with open(expected_lab_file , 'r', encoding = 'latin-1') as f:
                                     for k in f.readlines():
                                         if("phones" in k[:10]):
                                             qtde_phones = len(k[10:].replace('|', '').split())
-                                print(len(x), sr, qtde_phones)
+                                # print(len(x), sr, qtde_phones)
                                 style_targets.append(int(qtde_phones/len(x)/sr))
                 except:
                     print('deu except')
