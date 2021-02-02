@@ -78,7 +78,7 @@ if __name__ == '__main__':
                                         if("phones" in k[:10]):
                                             qtde_phones = len(k[10:].replace('|', '').split())
                                 # print(len(x), sr, qtde_phones)
-                                style_targets.append(float(qtde_phones/len(x)/sr))
+                                style_targets.append(round(float(qtde_phones/len(x)/sr), 3))
                                 texts.append(line[N+2:])
                                 wav_dirs.append(expected_wav_file) 
                                 emb_ids.append(int(args.speaker_id)) # Since we dont have embedding just put that to generate correct format
@@ -90,6 +90,7 @@ if __name__ == '__main__':
     print(len(wav_dirs), len(texts), len(emb_ids), len(style_targets), total_time/3600)
     df = pd.DataFrame({'wav_path':wav_dirs, 'text': texts, 'emb_id': np.array(emb_ids).astype(int), 'style_target': style_targets})
 
+    df['text'] = df['text'].str.lower().str.replace('.', ' .').str.replace(',', ' ,').str.replace('!', ' !').str.replace('?', ' ?').str.replace('\n', '').str.replace('\t', '').str.replace('''"''', '')
 
     df_train, df_val, speaker_id, speaker_id = train_test_split(df, df['emb_id'], test_size = 0.1, random_state = 42, stratify = df['emb_id'])
 
