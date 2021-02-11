@@ -8,20 +8,30 @@ class GST(nn.Module):
 
     See https://arxiv.org/pdf/1803.09017"""
 
-    def __init__(self, num_mel, num_heads, num_style_tokens, gst_embedding_dim, speaker_embedding_dim=None):
+    def __init__(self, num_mel, num_heads, num_style_tokens, gst_embedding_dim, 
+                speaker_embedding_dim=None, use_only_reference = False):
         super().__init__()
         self.encoder = ReferenceEncoder(num_mel, gst_embedding_dim)
         self.style_token_layer = StyleTokenLayer(num_heads, num_style_tokens,
                                                  gst_embedding_dim, speaker_embedding_dim)
+
+        self.use_only_reference = use_only_reference
 
     def forward(self, inputs, speaker_embedding=None):
         enc_out = self.encoder(inputs)
         # concat speaker_embedding
         if speaker_embedding is not None:
             enc_out = torch.cat([enc_out, speaker_embedding], dim=-1)
-        style_embed, logits = self.style_token_layer(enc_out)
 
-        return style_embed, logits
+        if(self.use_only_reference):
+            logits = None   
+            # Return just the reference encoder out put and a None logits
+            return enc_out.unsqueeze(1), logits
+        else:
+            style_embed, logits = self.style_token_layer(enc_out)
+
+            # return style_embed, logits
+            return style_embed, logits
 
 
 class ReferenceEncoder(nn.Module):
@@ -55,7 +65,8 @@ class ReferenceEncoder(nn.Module):
             num_mel, 3, 2, 1, num_layers)
         self.recurrence = nn.GRU(
             input_size=filters[-1] * post_conv_height,
-            hidden_size=embedding_dim // 2,
+            # hidden_size=embedding_dim // 2, # OLD
+            hidden_size = embedding_dim, # NEW
             batch_first=True)
 
     def forward(self, inputs):
@@ -96,7 +107,8 @@ class StyleTokenLayer(nn.Module):
                  embedding_dim, speaker_embedding_dim=None):
         super().__init__()
 
-        self.query_dim = embedding_dim // 2
+        # self.query_dim = embedding_dim // 2 # OLD
+        self.query_dim = embedding_dim #NEW
 
         if speaker_embedding_dim:
             self.query_dim += speaker_embedding_dim

@@ -106,7 +106,8 @@ def setup_model(num_chars, num_speakers, num_styles, c, speaker_embedding_dim=No
                         double_decoder_consistency=c.double_decoder_consistency,
                         ddc_r=c.ddc_r,
                         speaker_embedding_dim=speaker_embedding_dim,
-                        gst_use_linear_style_target = c.gst['gst_use_linear_style_target'])
+                        gst_use_linear_style_target = c.gst['gst_use_linear_style_target'], 
+                        use_only_reference = c.gst['use_only_reference'])
     elif c.model.lower() == "glow_tts":
         model = MyModel(num_chars=num_chars,
                         hidden_channels=192,

@@ -36,7 +36,8 @@ class Tacotron2(TacotronAbstract):
                  gst_num_heads=4,
                  gst_style_tokens=10,
                  gst_use_speaker_embedding=False,
-                 gst_use_linear_style_target = False):
+                 gst_use_linear_style_target = False,
+                 use_only_reference = False):
         super(Tacotron2,
               self).__init__(num_chars, num_speakers, num_styles, r, postnet_output_dim,
                              decoder_output_dim, attn_type, attn_win,
@@ -46,7 +47,8 @@ class Tacotron2(TacotronAbstract):
                              bidirectional_decoder, double_decoder_consistency,
                              ddc_r, encoder_in_features, decoder_in_features,
                              speaker_embedding_dim, gst, gst_embedding_dim,
-                             gst_num_heads, gst_style_tokens, gst_use_speaker_embedding, gst_use_linear_style_target)
+                             gst_num_heads, gst_style_tokens, gst_use_speaker_embedding,
+                             gst_use_linear_style_target, use_only_reference)
 
         # speaker embedding layer
         if self.num_speakers > 1:
@@ -76,7 +78,8 @@ class Tacotron2(TacotronAbstract):
                                  num_heads=self.gst_num_heads,
                                  num_style_tokens=self.gst_style_tokens,
                                  gst_embedding_dim=self.gst_embedding_dim,
-                                 speaker_embedding_dim=speaker_embedding_dim if self.embeddings_per_sample and self.gst_use_speaker_embedding else None)
+                                 speaker_embedding_dim=speaker_embedding_dim if self.embeddings_per_sample and self.gst_use_speaker_embedding else None,
+                                 use_only_reference = self.use_only_reference)
                                        
             # If enabled, we use a linear dense layer to force the embedding space to be linear 
             # separable. Note that, by our implementation, num_styles will be n-1 #styles, because 
