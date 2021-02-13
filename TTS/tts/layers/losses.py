@@ -6,6 +6,7 @@ from torch.nn import functional
 from TTS.tts.utils.generic_utils import sequence_mask
 
 
+
 class L1LossMasked(nn.Module):
     def __init__(self, seq_len_norm):
         super().__init__()
@@ -210,6 +211,12 @@ class TacotronLoss(torch.nn.Module):
         self.criterion_st = BCELossMasked(
             pos_weight=torch.tensor(stopnet_pos_weight)) if c.stopnet else None
 
+        if c.gst_style_loss:
+            if c.semi_supervised:
+                self.criterion_style = nn.CrossEntropyLoss(ignore_index = 0) # Ignores target 
+            else:
+                self.criterion_style = nn.CrossEntropyLoss()
+
     def forward(self, postnet_output, decoder_output, mel_input, linear_input,
                 stopnet_output, stopnet_target, output_lens, decoder_b_output,
                 alignments, alignment_lens, alignments_backwards, input_lens,
@@ -284,7 +291,8 @@ class TacotronLoss(torch.nn.Module):
             return_dict['diff_spec_loss'] = diff_spec_loss
 
         if self.config.gst_style_loss:
-            gst_style_loss = functional.binary_cross_entropy_with_logits(gst_logits, gst_logits_target)
+            # gst_style_loss = functional.binary_cross_entropy_with_logits(gst_logits, gst_logits_target)
+            gst_style_loss = self.criterion_style(gst_logits, gst_logits_target)
             loss += gst_style_loss
             return_dict['gst_logits_loss'] = gst_style_loss
             

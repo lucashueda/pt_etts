@@ -130,8 +130,8 @@ def format_data(data, speaker_mapping=None, style_mapping = None):
             style_targets = torch.FloatTensor(style_targets)
             
             del style_targets_
-        else: # Style target will be just the indice
-            style_targets = torch.FloatTensor(style_targets)
+        else: # Style target will be just the indice 
+            style_targets = torch.LongTensor(style_targets) # To use in CrossEntropyLoss need to be LongTensor
     else:
         style_targets = None
 

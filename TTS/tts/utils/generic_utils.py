@@ -46,8 +46,21 @@ def to_camel(text):
 
 
 def setup_model(num_chars, num_speakers, num_styles, c, speaker_embedding_dim=None):
-    print('hi')
+    # print('hi')
     print(" > Using model: {}".format(c.model))
+    if(num_speakers is None):
+        n_speakers = 0
+    else:
+        n_speakers = num_speakers
+    if(num_styles is None):
+        n_styles = 0
+    else:
+        n_styles = num_styles
+
+    print(f"Training with {n_speakers} speakers and {n_styles} styles")
+    print(f"Use style target = {c['gst']['gst_use_linear_style_target']}")
+    print(f"Use semi supervised = {c.semi_supervised}")
+
     MyModel = importlib.import_module('TTS.tts.models.' + c.model.lower())
     MyModel = getattr(MyModel, to_camel(c.model))
     if c.model.lower() in "tacotron":
