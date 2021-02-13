@@ -83,7 +83,8 @@ class Tacotron2(TacotronAbstract):
                                        
             # If enabled, we use a linear dense layer to force the embedding space to be linear 
             # separable. Note that, by our implementation, num_styles will be n-1 #styles, because 
-            # we use neutral one to be the vector [0,0,0]
+            # we use neutral one to be the vector [0,0,0]. But if semi supervised is on it will be 
+            # same len of unique style values, because then we use CrossEntropyLoss class
             if self.gst_use_linear_style_target:
                 self.linear_style_target_layer = nn.Linear(self.gst_embedding_dim, self.num_styles) 
 

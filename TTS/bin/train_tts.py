@@ -604,7 +604,10 @@ def main(args):  # pylint: disable=redefined-outer-name
             style_mapping = {name: i for i, name in enumerate(styles)}
             style_embedding_dim = None
         save_style_mapping(OUT_PATH, style_mapping)
-        num_styles = len(style_mapping) - 1
+        if c.semi_supervised:
+            num_styles = len(style_mapping)
+        else: # else it will be the vector where neutral are the zero vector, so numstyles - 1
+            num_styles = len(style_mapping) - 1
         print("Training with {} styles + neutral: {}".format(num_styles,
                                                     ", ".join(styles)))
     else:
