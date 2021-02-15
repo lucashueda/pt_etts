@@ -104,6 +104,16 @@ if __name__ == '__main__':
         type=str,
         help='Path to config file for training.'
     )
+    parser.add_argument(
+        '--num_speakers',
+        type=int,
+        help='n_speakers.'
+    )
+    parser.add_argument(
+        '--num_styles',
+        type=int,
+        help='n_styles.'
+    )
     parser.add_argument('--config',
                         type=bool,
                         default=False,
@@ -131,10 +141,10 @@ if __name__ == '__main__':
     # load data instances
     meta_data_train, meta_data_eval = load_meta_data(c.datasets)
 
-    num_speakers = 3
+    num_speakers = args.num_speakers
     speaker_embedding_dim = None
     speaker_mapping = None
-    num_styles = 3
+    num_styles = args.num_styles
     model = setup_model(num_chars, num_speakers,num_styles, c, speaker_embedding_dim)
     
     # MODEL_PATH = "/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/experiments/gst_3speakers_10tokens4heads_phones_onlyrosana/checkpoint_173000.pth.tar"
