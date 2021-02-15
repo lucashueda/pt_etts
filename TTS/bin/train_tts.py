@@ -86,7 +86,7 @@ def setup_loader(ap, r, is_val=False, verbose=False, speaker_mapping=None):
 def format_data(data, speaker_mapping=None, style_mapping = None):
     if speaker_mapping is None and c.use_speaker_embedding and not c.use_external_speaker_embedding_file:
         speaker_mapping = load_speaker_mapping(OUT_PATH)
-    if style_mapping is None and c.use_style_embeddings:
+    if style_mapping is None and c.use_style_embedding:
         style_mapping = load_style_mapping(OUT_PATH)
 
     # setup input data
