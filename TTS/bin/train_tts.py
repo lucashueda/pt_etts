@@ -390,10 +390,14 @@ def evaluate(model, criterion, ap, global_step, epoch, speaker_mapping=None, sty
             else:
                 alignment_lengths = mel_lengths //  model.decoder.r
 
-            if c.gst['gst_use_linear_style_target']:
-                logits = logits.squeeze(1)
+
+            if c.use_style_embedding:
+                if c.gst['gst_use_linear_style_target']:
+                    logits = logits.squeeze(1)
+                else:
+                    logits = logits.squeeze(0).squeeze(1)
             else:
-                logits = logits.squeeze(0).squeeze(1)
+                logits = None
 
 
             # compute loss
