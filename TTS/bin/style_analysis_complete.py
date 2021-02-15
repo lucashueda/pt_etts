@@ -160,8 +160,8 @@ if __name__ == '__main__':
     # h = c['gst']['gst_num_heads']
     # N = N*h
 
-    # N = c['gst']['gst_embedding_dim']/2
-    N = 64
+    N = c['gst']['gst_embedding_dim']
+    # N = 64
     train_feats = np.zeros((len(meta_data_train), N))
     valid_feats = np.zeros((len(meta_data_eval), N))
 
