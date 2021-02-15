@@ -65,8 +65,8 @@ class ReferenceEncoder(nn.Module):
             num_mel, 3, 2, 1, num_layers)
         self.recurrence = nn.GRU(
             input_size=filters[-1] * post_conv_height,
-            # hidden_size=embedding_dim // 2, # OLD
-            hidden_size = embedding_dim, # NEW
+            hidden_size=embedding_dim // 2, # OLD
+            # hidden_size = embedding_dim, # NEW
             batch_first=True)
 
     def forward(self, inputs):
