@@ -208,10 +208,13 @@ def train(model, criterion, optimizer, optimizer_st, scheduler,
 
         # print(logits.shape)
 
-        if c.gst['gst_use_linear_style_target']:
-            logits = logits.squeeze(1)
+        if c.use_style_embedding:
+            if c.gst['gst_use_linear_style_target']:
+                logits = logits.squeeze(1)
+            else:
+                logits = logits.squeeze(0).squeeze(1)
         else:
-            logits = logits.squeeze(0).squeeze(1)
+            logits = None
 
 
         # print(logits.shape, style_targets.shape)
