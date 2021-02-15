@@ -137,7 +137,11 @@ if __name__ == '__main__':
     num_styles = 3
     model = setup_model(num_chars, num_speakers,num_styles, c, speaker_embedding_dim)
     
-    MODEL_PATH = "/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/experiments/gst_3speakers_10tokens4heads_phones_onlyrosana/checkpoint_173000.pth.tar"
+    # MODEL_PATH = "/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts/experiments/gst_3speakers_10tokens4heads_phones_onlyrosana/checkpoint_173000.pth.tar"
+    
+    MODEL_PATH = args.model_checkpoint
+    
+    
     cp = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
     model.load_state_dict(cp['model'])
     model.eval()
