@@ -611,7 +611,7 @@ def main(args):  # pylint: disable=redefined-outer-name
             style_mapping = {name: i for i, name in enumerate(styles)}
             style_embedding_dim = None
         save_style_mapping(OUT_PATH, style_mapping)
-        if c.semi_supervised:
+        if((c.semi_supervised) | (c.use_one_hot_style == False)):
             num_styles = len(style_mapping)
         else: # else it will be the vector where neutral are the zero vector, so numstyles - 1
             num_styles = len(style_mapping) - 1
