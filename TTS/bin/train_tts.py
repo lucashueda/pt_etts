@@ -760,6 +760,8 @@ if __name__ == '__main__':
                         help='DISTRIBUTED: process group id.')
     args = parser.parse_args()
 
+    print(f"{args.continue_path}")
+
     if args.continue_path != '':
         print(f" > Training continues for {args.continue_path}")
         args.output_path = args.continue_path
