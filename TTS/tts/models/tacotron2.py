@@ -53,7 +53,7 @@ class Tacotron2(TacotronAbstract):
         # speaker embedding layer
         if self.num_speakers > 1:
             if not self.embeddings_per_sample:
-                speaker_embedding_dim = 512
+                speaker_embedding_dim = int(gst_embedding_dim/2)
                 self.speaker_embedding = nn.Embedding(self.num_speakers, speaker_embedding_dim)
                 self.speaker_embedding.weight.data.normal_(0, 0.3)
 
