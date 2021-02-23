@@ -38,7 +38,8 @@ class TacotronAbstract(ABC, nn.Module):
                  gst_style_tokens=10,
                  gst_use_speaker_embedding=False,
                  gst_use_linear_style_target = False,
-                 use_only_reference = False):
+                 use_only_reference = False,
+                 lookup_speaker_dim = 512):
         """ Abstract Tacotron class """
         super().__init__()
         self.num_chars = num_chars
@@ -71,6 +72,7 @@ class TacotronAbstract(ABC, nn.Module):
         self.speaker_embedding_dim = speaker_embedding_dim
         self.gst_use_linear_style_target = gst_use_linear_style_target
         self.use_only_reference = use_only_reference
+        self.lookup_speaker_dim = lookup_speaker_dim
 
         # layers
         self.embedding = None

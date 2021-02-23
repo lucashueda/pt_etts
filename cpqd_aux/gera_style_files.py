@@ -72,7 +72,7 @@ if __name__ == '__main__':
                                 if(os.path.isfile(expected_wav_file)):
                                     texts.append(line[N+2:])
                                     wav_dirs.append(expected_wav_file) 
-                                    emb_ids.append(0) # Since we dont have embedding just put that to generate correct format
+                                    emb_ids.append(args.speaker_id) # Since we dont have embedding just put that to generate correct format
                                     style_targets.append('t_' + file)
                     except:
                         print('deu except')

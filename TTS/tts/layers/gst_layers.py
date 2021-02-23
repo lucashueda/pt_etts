@@ -12,10 +12,14 @@ class GST(nn.Module):
                 speaker_embedding_dim=None, use_only_reference = False):
         super().__init__()
         self.encoder = ReferenceEncoder(num_mel, gst_embedding_dim)
-        self.style_token_layer = StyleTokenLayer(num_heads, num_style_tokens,
-                                                 gst_embedding_dim, speaker_embedding_dim)
-
         self.use_only_reference = use_only_reference
+
+        if(self.use_only_reference):
+            self.style_token_layer = None
+        else:
+            self.style_token_layer = StyleTokenLayer(num_heads, num_style_tokens,
+                                                    gst_embedding_dim, speaker_embedding_dim)
+
 
     def forward(self, inputs, speaker_embedding=None):
         enc_out = self.encoder(inputs)
@@ -29,7 +33,6 @@ class GST(nn.Module):
             return enc_out.unsqueeze(1), logits
         else:
             style_embed, logits = self.style_token_layer(enc_out)
-
             # return style_embed, logits
             return style_embed, logits
 

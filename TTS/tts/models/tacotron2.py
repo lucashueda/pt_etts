@@ -37,7 +37,8 @@ class Tacotron2(TacotronAbstract):
                  gst_style_tokens=10,
                  gst_use_speaker_embedding=False,
                  gst_use_linear_style_target = False,
-                 use_only_reference = False):
+                 use_only_reference = False,
+                 lookup_speaker_dim = 512):
         super(Tacotron2,
               self).__init__(num_chars, num_speakers, num_styles, r, postnet_output_dim,
                              decoder_output_dim, attn_type, attn_win,
@@ -48,13 +49,13 @@ class Tacotron2(TacotronAbstract):
                              ddc_r, encoder_in_features, decoder_in_features,
                              speaker_embedding_dim, gst, gst_embedding_dim,
                              gst_num_heads, gst_style_tokens, gst_use_speaker_embedding,
-                             gst_use_linear_style_target, use_only_reference)
+                             gst_use_linear_style_target, use_only_reference, lookup_speaker_dim)
 
         # speaker embedding layer
         if self.num_speakers > 1:
             if not self.embeddings_per_sample:
                 # speaker_embedding_dim = int(gst_embedding_dim/2)
-                speaker_embedding_dim = 512
+                speaker_embedding_dim = self.lookup_speaker_dim
                 self.speaker_embedding = nn.Embedding(self.num_speakers, speaker_embedding_dim)
                 self.speaker_embedding.weight.data.normal_(0, 0.3)
 
