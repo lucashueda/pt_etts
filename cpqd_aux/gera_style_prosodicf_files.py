@@ -137,6 +137,7 @@ if __name__ == '__main__':
                     transcript = os.path.join(folders_path, 'transcricao')
                     wav_path = os.path.join(folders_path, 'wav16')
                     lab_path = os.path.join(folders_path, 'lab')
+
                     expected_norm_text_file = file+'.txt'
 
                     N = len(file) + 4
@@ -155,7 +156,10 @@ if __name__ == '__main__':
 
                                 expected_wav_file = os.path.join(wav_path, filename + '.wav')
                                 expected_lab_file = os.path.join(lab_path, filename + '.lab')
-                                if(os.path.isfile(expected_wav_file)):
+                                if(os.path.isfile(expected_wav_file)):                                    
+                                    pitch_range.append(get_pitch_range(expected_wav_file))
+                                    speaking_rate.append(get_cpqd_lab_speaking_rate(expected_wav_file, expected_lab_file))
+                                    energy.append(get_energy(expected_wav_file, sr = None, top_level_db=15, frame_length = 512, hop_length=128))
                                     texts.append(line[N+2:])
                                     wav_dirs.append(expected_wav_file) 
                                     emb_ids.append(args.speaker_id) # Since we dont have embedding just put that to generate correct format
@@ -163,10 +167,6 @@ if __name__ == '__main__':
                                         style_targets.append('t_' + file[:12])
                                     else:
                                         style_targets.append(args.style_name)
-                                    
-                                    pitch_range.append(get_pitch_range(expected_wav_file))
-                                    speaking_rate.append(get_cpqd_lab_speaking_rate(expected_wav_file, expected_lab_file))
-                                    energy.append(get_energy(expected_wav_file, sr = None, top_level_db=15, frame_length = 512, hop_length=128))
                     except:
                         print('deu except')
                         pass
