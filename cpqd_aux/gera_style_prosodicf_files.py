@@ -136,7 +136,7 @@ if __name__ == '__main__':
 
                     transcript = os.path.join(folders_path, 'transcricao')
                     wav_path = os.path.join(folders_path, 'wav16')
-
+                    lab_path = os.path.join(folders_path, 'lab')
                     expected_norm_text_file = file+'.txt'
 
                     N = len(file) + 4
