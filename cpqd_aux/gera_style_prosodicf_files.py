@@ -175,10 +175,10 @@ if __name__ == '__main__':
     # print(len(wav_dirs), len(texts), len(emb_ids), len(style_targets), total_time/3600)
     df = pd.DataFrame({'wav_path':wav_dirs, 'text': texts, 'emb_id': emb_ids, 'style_target': style_targets, 
     'pitch_range': pitch_range, 'energy': energy, 'speaking_rate': speaking_rate})
-
+    
     df['text'] = df['text'].str.lower().str.replace('.', ' .').str.replace(',', ' ,').str.replace('!', ' !').str.replace('?', ' ?').str.replace('\n', '').str.replace('\t', '').str.replace('''"''', '')
 
-    df_train, df_val, speaker_id, speaker_id = train_test_split(df, df['emb_id'], test_size = 0.1, random_state = 42, stratify = df['emb_id'])
+    df_train, df_val, _, _ = train_test_split(df, df['emb_id'], test_size = 0.1, random_state = 42, stratify = df['emb_id'])
 
     out_train = os.path.join(args.output_directory, args.df_name + '_train.csv')
     out_val = os.path.join(args.output_directory, args.df_name + '_val.csv')
