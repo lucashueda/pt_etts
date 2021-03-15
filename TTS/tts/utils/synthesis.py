@@ -251,7 +251,7 @@ def synthesis(model,
     if backend == 'torch':
         decoder_output, postnet_output, alignments, stop_tokens, logits = run_model_torch(
             model, inputs, CONFIG, truncated, speaker_id, style_mel, speaker_embeddings=speaker_embedding,
-            pitch_range, speaking_rate, energy)
+            pitch_range = pitch_range, speaking_rate = speaking_rate, energy = energy)
         postnet_output, decoder_output, alignment, stop_tokens = parse_outputs_torch(
             postnet_output, decoder_output, alignments, stop_tokens)
     elif backend == 'tf':
