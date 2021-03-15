@@ -163,7 +163,7 @@ if __name__ == '__main__':
                                     texts.append(line[N+2:])
                                     wav_dirs.append(expected_wav_file) 
                                     emb_ids.append(args.speaker_id) # Since we dont have embedding just put that to generate correct format
-                                    if(args.style_name == None):
+                                    if(args.style_name is None):
                                         style_targets.append('t_' + file[:12])
                                     else:
                                         style_targets.append(args.style_name)
@@ -173,8 +173,7 @@ if __name__ == '__main__':
 
 
     # print(len(wav_dirs), len(texts), len(emb_ids), len(style_targets), total_time/3600)
-    df = pd.DataFrame({'wav_path':wav_dirs, 'text': texts, 'emb_id': emb_ids, 'style_target': style_targets, 
-    'pitch_range': pitch_range, 'energy': energy, 'speaking_rate': speaking_rate})
+    df = pd.DataFrame({'wav_path':wav_dirs, 'text': texts, 'emb_id': emb_ids, 'style_target': style_targets, 'pitch_range': pitch_range, 'energy': energy, 'speaking_rate': speaking_rate})
     
     df['text'] = df['text'].str.lower().str.replace('.', ' .').str.replace(',', ' ,').str.replace('!', ' !').str.replace('?', ' ?').str.replace('\n', '').str.replace('\t', '').str.replace('''"''', '')
 
