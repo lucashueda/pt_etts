@@ -414,9 +414,9 @@ def style_prosodic_reader(root_path, meta_file):
             text = cols[1]
             speaker_name = cols[2]
             style_target = cols[3]
-            pitch_range = cols[4]
-            energy = cols[5]
-            speaking_rate = cols[6][:-1] # The last char is always "\n" since after this line is a breakline
+            pitch_range = float(cols[4])
+            energy = float(cols[5])
+            speaking_rate = float(cols[6][:-1]) # The last char is always "\n" since after this line is a breakline
             items.append([text,wav_file,speaker_name,style_target, pitch_range, speaking_rate, energy])
 
     return items

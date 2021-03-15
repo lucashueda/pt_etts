@@ -141,13 +141,13 @@ def format_data(data, speaker_mapping=None, style_mapping = None):
 
     # Prosodic features          
     if pitch_range is not None:
-        pitch_range = torch.LongTensor(float(pitch_range))
+        pitch_range = torch.LongTensor(pitch_range)
     
     if speaking_rate is not None:
-        speaking_rate = torch.LongTensor(float(speaking_rate))
+        speaking_rate = torch.LongTensor(speaking_rate)
 
     if energy is not None:
-        energy = torch.LongTensor(float(energy))
+        energy = torch.LongTensor(energy)
 
 
     # set stop targets view, we predict a single stop token per iteration.
