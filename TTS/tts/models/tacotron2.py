@@ -38,7 +38,9 @@ class Tacotron2(TacotronAbstract):
                  gst_use_speaker_embedding=False,
                  gst_use_linear_style_target = False,
                  use_only_reference = False,
-                 lookup_speaker_dim = 512):
+                 lookup_speaker_dim = 512,
+                 num_prosodic_features = 0,
+                 agg_style_space = True):
         super(Tacotron2,
               self).__init__(num_chars, num_speakers, num_styles, r, postnet_output_dim,
                              decoder_output_dim, attn_type, attn_win,
@@ -49,7 +51,8 @@ class Tacotron2(TacotronAbstract):
                              ddc_r, encoder_in_features, decoder_in_features,
                              speaker_embedding_dim, gst, gst_embedding_dim,
                              gst_num_heads, gst_style_tokens, gst_use_speaker_embedding,
-                             gst_use_linear_style_target, use_only_reference, lookup_speaker_dim)
+                             gst_use_linear_style_target, use_only_reference, lookup_speaker_dim,
+                             num_prosodic_features, agg_style_space)
 
         # speaker embedding layer
         if self.num_speakers > 1:
@@ -62,6 +65,9 @@ class Tacotron2(TacotronAbstract):
         # speaker and gst embeddings is concat in decoder input
         if self.num_speakers > 1:
             self.decoder_in_features += speaker_embedding_dim # add speaker embedding dim
+
+        # Add prosodic features in decoder_in_features, default is 0
+        self.decoder_in_features += num_prosodic_features  
 
         # embedding layer
         self.embedding = nn.Embedding(num_chars, 512, padding_idx=0)
@@ -107,7 +113,8 @@ class Tacotron2(TacotronAbstract):
         mel_outputs_postnet = mel_outputs_postnet.transpose(1, 2)
         return mel_outputs, mel_outputs_postnet, alignments
 
-    def forward(self, text, text_lengths, mel_specs=None, mel_lengths=None, speaker_ids=None, speaker_embeddings=None):
+    def forward(self, text, text_lengths, mel_specs=None, mel_lengths=None, speaker_ids=None, \
+        speaker_embeddings=None, pitch_range=None, speaking_rate=None, energy=None):
         # compute mask for padding
         # B x T_in_max (boolean)
         input_mask, output_mask = self.compute_masks(text_lengths, mel_lengths)
@@ -119,11 +126,23 @@ class Tacotron2(TacotronAbstract):
             # B x gst_dim (logits are the gst logits of style tokens)
             encoder_outputs, gst_outputs, logits = self.compute_gst(encoder_outputs,
                                                mel_specs,
-                                               speaker_embeddings if self.gst_use_speaker_embedding else None)
+                                               speaker_embeddings if self.gst_use_speaker_embedding else None, 
+                                               self.agg_style_space, 
+                                               pitch_range, speaking_rate, energy)
             if self.gst_use_linear_style_target:
                 logits = self.linear_style_target_layer(gst_outputs)
         else:
             logits = None
+
+        # prosodic features 
+        if not self.agg_style_space:
+            if pitch_range is not None:
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, pitch_range.unsqueeze(1))
+            if speaking_rate is not None:
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaking_rate.unsqueeze(1))
+            if energy is not None:
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, energy.unsqueeze(1))
+                                          
 
         if self.num_speakers > 1:
             if not self.embeddings_per_sample:
@@ -160,19 +179,32 @@ class Tacotron2(TacotronAbstract):
         return decoder_outputs, postnet_outputs, alignments, stop_tokens, logits
 
     @torch.no_grad()
-    def inference(self, text, speaker_ids=None, style_mel=None, speaker_embeddings=None):
+    def inference(self, text, speaker_ids=None, style_mel=None, speaker_embeddings=None, \
+         pitch_range=None, speaking_rate=None, energy=None):
         embedded_inputs = self.embedding(text).transpose(1, 2)
         encoder_outputs = self.encoder.inference(embedded_inputs)
 
         if self.gst:
             # B x gst_dim
             encoder_outputs, gst_outputs, logits = self.compute_gst(encoder_outputs,
-                                               style_mel,
-                                               speaker_embeddings if self.gst_use_speaker_embedding else None)
+                                               mel_specs,
+                                               speaker_embeddings if self.gst_use_speaker_embedding else None, 
+                                               self.agg_style_space, 
+                                               pitch_range, speaking_rate, energy)
             if self.gst_use_linear_style_target:
                 logits = self.linear_style_target_layer(gst_outputs)
         else:
             logits = None
+
+        # prosodic features 
+        if not self.agg_style_space:
+            if pitch_range is not None:
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, pitch_range.unsqueeze(1))
+            if speaking_rate is not None:
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaking_rate.unsqueeze(1))
+            if energy is not None:
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, energy.unsqueeze(1))
+                      
 
         if self.num_speakers > 1:
             if not self.embeddings_per_sample:
@@ -187,7 +219,8 @@ class Tacotron2(TacotronAbstract):
             decoder_outputs, postnet_outputs, alignments)
         return decoder_outputs, postnet_outputs, alignments, stop_tokens, logits
 
-    def inference_truncated(self, text, speaker_ids=None, style_mel=None, speaker_embeddings=None):
+    def inference_truncated(self, text, speaker_ids=None, style_mel=None, speaker_embeddings=None, \
+         pitch_range=None, speaking_rate=None, energy=None):
         """
         Preserve model states for continuous inference
         """
@@ -197,12 +230,24 @@ class Tacotron2(TacotronAbstract):
         if self.gst:
             # B x gst_dim
             encoder_outputs, gst_outputs, logits = self.compute_gst(encoder_outputs,
-                                               style_mel,
-                                               speaker_embeddings if self.gst_use_speaker_embedding else None)
+                                               mel_specs,
+                                               speaker_embeddings if self.gst_use_speaker_embedding else None, 
+                                               self.agg_style_space, 
+                                               pitch_range, speaking_rate, energy)
             if self.gst_use_linear_style_target:
-                logits = self.linear_style_target_layer(gst_outputs)    
+                logits = self.linear_style_target_layer(gst_outputs)
         else:
-            logits = None 
+            logits = None
+
+        # prosodic features 
+        if not self.agg_style_space:
+            if pitch_range is not None:
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, pitch_range.unsqueeze(1))
+            if speaking_rate is not None:
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaking_rate.unsqueeze(1))
+            if energy is not None:
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, energy.unsqueeze(1))
+                      
             
         if self.num_speakers > 1:
             if not self.embeddings_per_sample:

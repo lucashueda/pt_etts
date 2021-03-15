@@ -98,6 +98,10 @@ def format_data(data, speaker_mapping=None, style_mapping = None):
     mel_lengths = data[5]
     stop_targets = data[6]
     style_targets = data[10]
+    pitch_range = data[11]
+    speaking_rate = data[12]
+    energy = data[13]
+
     avg_text_length = torch.mean(text_lengths.float())
     avg_spec_length = torch.mean(mel_lengths.float())
 
@@ -135,6 +139,16 @@ def format_data(data, speaker_mapping=None, style_mapping = None):
     else:
         style_targets = None
 
+    # Prosodic features          
+    if pitch_range is not None:
+        pitch_range = torch.LongTensor(pitch_range)
+    
+    if speaking_rate is not None:
+        speaking_rate = torch.LongTensor(speaking_rate)
+
+    if energy is not None:
+        energy = torch.LongTensor(energy)
+
 
     # set stop targets view, we predict a single stop token per iteration.
     stop_targets = stop_targets.view(text_input.shape[0],
@@ -157,7 +171,18 @@ def format_data(data, speaker_mapping=None, style_mapping = None):
         if style_targets is not None:
             style_targets = style_targets.cuda(non_blocking=True)
 
-    return text_input, text_lengths, mel_input, mel_lengths, linear_input, stop_targets, speaker_ids, speaker_embeddings, avg_text_length, avg_spec_length, style_targets
+        # Prosodic features          
+        if pitch_range is not None:
+            pitch_range = pitch_range.cuda(non_blocking=True)
+        
+        if speaking_rate is not None:
+            speaking_rate = speaking_rate.cuda(non_blocking=True)
+
+        if energy is not None:
+            energy = energy.cuda(non_blocking=True)
+
+    return text_input, text_lengths, mel_input, mel_lengths, linear_input, stop_targets, speaker_ids, \
+        speaker_embeddings, avg_text_length, avg_spec_length, style_targets, pitch_range, speaking_rate, energy
 
 
 def train(model, criterion, optimizer, optimizer_st, scheduler,
@@ -178,7 +203,9 @@ def train(model, criterion, optimizer, optimizer_st, scheduler,
         start_time = time.time()
 
         # format data
-        text_input, text_lengths, mel_input, mel_lengths, linear_input, stop_targets, speaker_ids, speaker_embeddings, avg_text_length, avg_spec_length, style_targets = format_data(data, speaker_mapping, style_mapping)
+        text_input, text_lengths, mel_input, mel_lengths, linear_input, stop_targets, speaker_ids, \
+            speaker_embeddings, avg_text_length, avg_spec_length, style_targets, pitch_range, \
+                speaking_rate, energy = format_data(data, speaker_mapping, style_mapping)
         loader_time = time.time() - end_time
 
         global_step += 1
@@ -193,10 +220,12 @@ def train(model, criterion, optimizer, optimizer_st, scheduler,
         # forward pass model
         if c.bidirectional_decoder or c.double_decoder_consistency:
             decoder_output, postnet_output, alignments, stop_tokens, decoder_backward_output, alignments_backward, logits = model(
-                text_input, text_lengths, mel_input, mel_lengths, speaker_ids=speaker_ids, speaker_embeddings=speaker_embeddings)
+                text_input, text_lengths, mel_input, mel_lengths, speaker_ids=speaker_ids, speaker_embeddings=speaker_embeddings,
+                pitch_range = pitch_range, speaking_rate=speaking_rate, energy=energy)
         else:
             decoder_output, postnet_output, alignments, stop_tokens, logits = model(
-                text_input, text_lengths, mel_input, mel_lengths, speaker_ids=speaker_ids, speaker_embeddings=speaker_embeddings)
+                text_input, text_lengths, mel_input, mel_lengths, speaker_ids=speaker_ids, speaker_embeddings=speaker_embeddings,
+                pitch_range = pitch_range, speaking_rate=speaking_rate, energy=energy)
             decoder_backward_output = None
             alignments_backward = None
 
@@ -371,16 +400,19 @@ def evaluate(model, criterion, ap, global_step, epoch, speaker_mapping=None, sty
             start_time = time.time()
 
             # format data
-            text_input, text_lengths, mel_input, mel_lengths, linear_input, stop_targets, speaker_ids, speaker_embeddings, _, _, style_targets= format_data(data, speaker_mapping, style_mapping)
+            text_input, text_lengths, mel_input, mel_lengths, linear_input, stop_targets, speaker_ids, \
+                speaker_embeddings, _, _, style_targets, pitch_range, speaking_rate, energy = format_data(data, speaker_mapping, style_mapping)
             assert mel_input.shape[1] % model.decoder.r == 0
 
             # forward pass model
             if c.bidirectional_decoder or c.double_decoder_consistency:
                 decoder_output, postnet_output, alignments, stop_tokens, decoder_backward_output, alignments_backward, logits = model(
-                    text_input, text_lengths, mel_input, speaker_ids=speaker_ids, speaker_embeddings=speaker_embeddings)
+                    text_input, text_lengths, mel_input, speaker_ids=speaker_ids, speaker_embeddings=speaker_embeddings,
+                    pitch_range = pitch_range, speaking_rate=speaking_rate, energy=energy)
             else:
                 decoder_output, postnet_output, alignments, stop_tokens, logits = model(
-                    text_input, text_lengths, mel_input, speaker_ids=speaker_ids, speaker_embeddings=speaker_embeddings)
+                    text_input, text_lengths, mel_input, speaker_ids=speaker_ids, speaker_embeddings=speaker_embeddings,
+                    pitch_range = pitch_range, speaking_rate=speaking_rate, energy=energy)
                 decoder_backward_output = None
                 alignments_backward = None
 
@@ -498,6 +530,11 @@ def evaluate(model, criterion, ap, global_step, epoch, speaker_mapping=None, sty
             for i in range(c.gst['gst_style_tokens']):
                 style_wav[str(i)] = 0
         style_wav = c.get("gst_style_input")
+
+        pitch_range = None     
+        speaking_rate = None
+        energy = None   
+
         for idx, test_sentence in enumerate(test_sentences):
             try:
                 wav, alignment, decoder_output, postnet_output, stop_tokens, _ = synthesis(
@@ -509,6 +546,9 @@ def evaluate(model, criterion, ap, global_step, epoch, speaker_mapping=None, sty
                     speaker_id=speaker_id,
                     speaker_embedding=speaker_embedding,
                     style_wav=style_wav,
+                    pitch_range = pitch_range, 
+                    speaking_rate = speaking_rate, 
+                    energy = energy,
                     truncated=False,
                     enable_eos_bos_chars=c.enable_eos_bos_chars, #pylint: disable=unused-argument
                     use_griffin_lim=True,
@@ -649,6 +689,8 @@ def main(args):  # pylint: disable=redefined-outer-name
 
     if args.restore_path:
         checkpoint = torch.load(args.restore_path, map_location='cpu')
+        if(args.warm_init):
+            
         try:
             # TODO: fix optimizer init, model.cuda() needs to be called before
             # optimizer restore
@@ -774,6 +816,14 @@ if __name__ == '__main__':
     c = load_config(args.config_path)
     check_config_tts(c)
     _ = os.path.dirname(os.path.realpath(__file__))
+
+    ## Defining default c keys, HARD CODED
+    if 'num_prosodic_features' not in c.keys():
+        c['num_prosodic_features'] = 0
+    if 'agg_style_space' not in c.keys():
+        c['agg_style_space'] = False
+    if 'lookup_speaker_dim' not in c.keys():
+        c['lookup_speaker_dim'] = 512 
 
     if c.apex_amp_level == 'O1':
         print("   >  apex AMP level: ", c.apex_amp_level)

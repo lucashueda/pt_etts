@@ -118,9 +118,28 @@ class MyDataset(Dataset):
 
         if len(item) == 5:
             text, wav_file, speaker_name, style_target, attn_file = item
-        else:
+            pitch_range = None
+            energy = None  
+            speaking_rate = None
+        elif len(item) == 4:
             text, wav_file, speaker_name, style_target = item
             attn = None
+            pitch_range = None
+            energy = None  
+            speaking_rate = None
+        elif len(item) == 7: # This is the case that we are using prosodic features
+            text, wav_file, speaker_name, style_target, pitch_range, speaking_rate, energy = item
+            attn = None
+        else: # just to avoid crashing, the else option all information are None
+            text = None  
+            wav_file = None
+            speaker_name = None
+            style_target = None
+            pitch_range = None
+            speaking_rate = None
+            energy = None
+            attn = None
+
 
         wav = np.asarray(self.load_wav(wav_file), dtype=np.float32)
 
@@ -145,7 +164,10 @@ class MyDataset(Dataset):
             'item_idx': self.items[idx][1],
             'speaker_name': speaker_name,
             'wav_file_name': os.path.basename(wav_file), 
-            'style_target': style_target
+            'style_target': style_target,
+            'pitch_range': pitch_range,
+            'speaking_rate': speaking_rate,
+            'energy': energy
         }
         return sample
 
@@ -219,6 +241,27 @@ class MyDataset(Dataset):
                 batch[idx]['style_target'] for idx in ids_sorted_decreasing
             ]
 
+            if batch[0]['pitch_range'] is None:
+                pitch_range = None
+            else:
+                pitch_range = [
+                    batch[idx]['pitch_range'] for idx in ids_sorted_decreasing
+                ]
+
+            if batch[0]['speaking_rate'] is None:
+                speaking_rate = None
+            else:
+                speaking_rate = [
+                    batch[idx]['speaking_rate'] for idx in ids_sorted_decreasing
+                ]
+
+            if batch[0]['energy'] is None:
+                energy = None
+            else:
+                energy = [
+                    batch[idx]['energy'] for idx in ids_sorted_decreasing
+                ]
+
             # get speaker embeddings
             if self.speaker_mapping is not None:
                 wav_files_names = [
@@ -290,8 +333,10 @@ class MyDataset(Dataset):
                 attns = torch.FloatTensor(attns).unsqueeze(1)
             else:
                 attns = None
+
             return text, text_lenghts, speaker_name, linear, mel, mel_lengths, \
-                   stop_targets, item_idxs, speaker_embedding, attns, style_target
+                   stop_targets, item_idxs, speaker_embedding, attns, style_target, \
+                       pitch_range, speaking_rate, energy
 
         raise TypeError(("batch must contain tensors, numbers, dicts or lists;\
                          found {}".format(type(batch[0]))))
