@@ -156,9 +156,9 @@ if __name__ == '__main__':
 
                                 expected_wav_file = os.path.join(wav_path, filename + '.wav')
                                 expected_lab_file = os.path.join(lab_path, filename + '.lab')
-                                if(os.path.isfile(expected_wav_file)):                                    
+                                if(os.path.isfile(expected_wav_file)):                    
+                                    speaking_rate.append(get_cpqd_lab_speaking_rate(expected_wav_file, expected_lab_file))                
                                     pitch_range.append(get_pitch_range(expected_wav_file))
-                                    speaking_rate.append(get_cpqd_lab_speaking_rate(expected_wav_file, expected_lab_file))
                                     energy.append(get_energy(expected_wav_file, sr = None, top_level_db=15, frame_length = 512, hop_length=128))
                                     texts.append(line[N+2:])
                                     wav_dirs.append(expected_wav_file) 
