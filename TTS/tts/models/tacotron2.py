@@ -40,7 +40,9 @@ class Tacotron2(TacotronAbstract):
                  use_only_reference = False,
                  lookup_speaker_dim = 512,
                  num_prosodic_features = 0,
-                 agg_style_space = True):
+                 agg_style_space = True,
+                 use_style_lookup = False,
+                 lookup_style_dim = 64):
         super(Tacotron2,
               self).__init__(num_chars, num_speakers, num_styles, r, postnet_output_dim,
                              decoder_output_dim, attn_type, attn_win,
@@ -52,7 +54,7 @@ class Tacotron2(TacotronAbstract):
                              speaker_embedding_dim, gst, gst_embedding_dim,
                              gst_num_heads, gst_style_tokens, gst_use_speaker_embedding,
                              gst_use_linear_style_target, use_only_reference, lookup_speaker_dim,
-                             num_prosodic_features, agg_style_space)
+                             num_prosodic_features, agg_style_space, use_style_lookup, lookup_style_dim)
 
         # speaker embedding layer
         if self.num_speakers > 1:
@@ -67,7 +69,15 @@ class Tacotron2(TacotronAbstract):
             self.decoder_in_features += speaker_embedding_dim # add speaker embedding dim
 
         # Add prosodic features in decoder_in_features, default is 0
-        self.decoder_in_features += num_prosodic_features  
+        self.decoder_in_features += self.num_prosodic_features
+
+        # Add style embedding look up, make sure to not use gst_use_linear_style_target if using style look up 
+        if((self.num_styles > 1)&(self.use_style_lookup)):
+            style_embedding_dim = self.lookup_style_dim
+            self.style_embedding = nn.Embedding(self.num_styles, style_embedding_dim)
+            self.style_embedding.weight.data.normal_(0, 0.3)
+            self.decoder_in_features += style_embedding_dim
+
 
         # embedding layer
         self.embedding = nn.Embedding(num_chars, 512, padding_idx=0)
@@ -94,7 +104,10 @@ class Tacotron2(TacotronAbstract):
             # we use neutral one to be the vector [0,0,0]. But if semi supervised is on it will be 
             # same len of unique style values, because then we use CrossEntropyLoss class
             if self.gst_use_linear_style_target:
-                self.linear_style_target_layer = nn.Linear(self.gst_embedding_dim, self.num_styles) 
+                if self.agg_style_space:
+                    self.linear_style_target_layer = nn.Linear(self.gst_embedding_dim + self.num_prosodic_features, self.num_styles) 
+                else:
+                    self.linear_style_target_layer = nn.Linear(self.gst_embedding_dim, self.num_styles) 
 
         # backward pass decoder
         if self.bidirectional_decoder:
@@ -114,7 +127,7 @@ class Tacotron2(TacotronAbstract):
         return mel_outputs, mel_outputs_postnet, alignments
 
     def forward(self, text, text_lengths, mel_specs=None, mel_lengths=None, speaker_ids=None, \
-        speaker_embeddings=None, pitch_range=None, speaking_rate=None, energy=None):
+        speaker_embeddings=None, pitch_range=None, speaking_rate=None, energy=None, style_ids = None):
         # compute mask for padding
         # B x T_in_max (boolean)
         input_mask, output_mask = self.compute_masks(text_lengths, mel_lengths)
@@ -135,13 +148,13 @@ class Tacotron2(TacotronAbstract):
             logits = None
 
         # prosodic features 
-        if not self.agg_style_space:
+        if((not self.agg_style_space) & (self.num_prosodic_features > 0)):
             if pitch_range is not None:
-                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, pitch_range.unsqueeze(1))
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, pitch_range.unsqueeze(1).unsqueeze(1))
             if speaking_rate is not None:
-                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaking_rate.unsqueeze(1))
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaking_rate.unsqueeze(1).unsqueeze(1))
             if energy is not None:
-                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, energy.unsqueeze(1))
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, energy.unsqueeze(1).unsqueeze(1))
                                           
 
         if self.num_speakers > 1:
@@ -152,6 +165,11 @@ class Tacotron2(TacotronAbstract):
                 # B x 1 x speaker_embed_dim
                 speaker_embeddings = torch.unsqueeze(speaker_embeddings, 1)
             encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaker_embeddings)
+
+        if((self.num_styles > 1)&(self.use_style_lookup)):
+            style_embeddings = self.style_embedding(style_ids)[:, None]
+
+            encoder_outputs = self._concat_speaker_embedding(encoder_outputs, style_embeddings)
 
         encoder_outputs = encoder_outputs * input_mask.unsqueeze(2).expand_as(encoder_outputs)
 
@@ -180,14 +198,14 @@ class Tacotron2(TacotronAbstract):
 
     @torch.no_grad()
     def inference(self, text, speaker_ids=None, style_mel=None, speaker_embeddings=None, \
-         pitch_range=None, speaking_rate=None, energy=None):
+         pitch_range=None, speaking_rate=None, energy=None, style_ids = None):
         embedded_inputs = self.embedding(text).transpose(1, 2)
         encoder_outputs = self.encoder.inference(embedded_inputs)
 
         if self.gst:
             # B x gst_dim
             encoder_outputs, gst_outputs, logits = self.compute_gst(encoder_outputs,
-                                               mel_specs,
+                                               style_mel,
                                                speaker_embeddings if self.gst_use_speaker_embedding else None, 
                                                self.agg_style_space, 
                                                pitch_range, speaking_rate, energy)
@@ -211,6 +229,11 @@ class Tacotron2(TacotronAbstract):
                 speaker_embeddings = self.speaker_embedding(speaker_ids)[:, None]
             encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaker_embeddings)
 
+        if((self.num_styles > 1)&(self.use_style_lookup)):
+            style_embeddings = self.style_embedding(style_ids)[:, None]
+
+            encoder_outputs = self._concat_speaker_embedding(encoder_outputs, style_embeddings)
+
         decoder_outputs, alignments, stop_tokens = self.decoder.inference(
             encoder_outputs)
         postnet_outputs = self.postnet(decoder_outputs)
@@ -220,7 +243,7 @@ class Tacotron2(TacotronAbstract):
         return decoder_outputs, postnet_outputs, alignments, stop_tokens, logits
 
     def inference_truncated(self, text, speaker_ids=None, style_mel=None, speaker_embeddings=None, \
-         pitch_range=None, speaking_rate=None, energy=None):
+         pitch_range=None, speaking_rate=None, energy=None, style_ids = None):
         """
         Preserve model states for continuous inference
         """
@@ -230,7 +253,7 @@ class Tacotron2(TacotronAbstract):
         if self.gst:
             # B x gst_dim
             encoder_outputs, gst_outputs, logits = self.compute_gst(encoder_outputs,
-                                               mel_specs,
+                                               style_mel,
                                                speaker_embeddings if self.gst_use_speaker_embedding else None, 
                                                self.agg_style_space, 
                                                pitch_range, speaking_rate, energy)
@@ -239,7 +262,7 @@ class Tacotron2(TacotronAbstract):
         else:
             logits = None
 
-        # prosodic features 
+        # prosodic features
         if not self.agg_style_space:
             if pitch_range is not None:
                 encoder_outputs = self._concat_speaker_embedding(encoder_outputs, pitch_range.unsqueeze(1))
@@ -253,6 +276,11 @@ class Tacotron2(TacotronAbstract):
             if not self.embeddings_per_sample:
                 speaker_embeddings = self.speaker_embedding(speaker_ids)[:, None]
             encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaker_embeddings)
+
+        if((self.num_styles > 1)&(self.use_style_lookup)):
+            style_embeddings = self.style_embedding(style_ids)[:, None]
+
+            encoder_outputs = self._concat_speaker_embedding(encoder_outputs, style_embeddings)
 
         mel_outputs, alignments, stop_tokens = self.decoder.inference_truncated(
             encoder_outputs)

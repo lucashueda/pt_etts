@@ -41,7 +41,9 @@ class TacotronAbstract(ABC, nn.Module):
                  use_only_reference = False,
                  lookup_speaker_dim = 512,
                  num_prosodic_features = 0,
-                 agg_style_space = True):
+                 agg_style_space = True,
+                 use_style_lookup = False,
+                 lookup_style_dim = 64):
         """ Abstract Tacotron class """
         super().__init__()
         self.num_chars = num_chars
@@ -54,7 +56,7 @@ class TacotronAbstract(ABC, nn.Module):
         self.gst_style_tokens = gst_style_tokens
         self.gst_use_speaker_embedding = gst_use_speaker_embedding
         self.num_speakers = num_speakers
-        self.num_styles = num_styles 
+        self.num_styles = num_styles
         self.bidirectional_decoder = bidirectional_decoder
         self.double_decoder_consistency = double_decoder_consistency
         self.ddc_r = ddc_r
@@ -77,6 +79,8 @@ class TacotronAbstract(ABC, nn.Module):
         self.lookup_speaker_dim = lookup_speaker_dim
         self.num_prosodic_features = num_prosodic_features
         self.agg_style_space = agg_style_space
+        self.use_style_lookup = use_style_lookup
+        self.lookup_style_dim = lookup_style_dim
 
         # layers
         self.embedding = None
@@ -232,12 +236,13 @@ class TacotronAbstract(ABC, nn.Module):
         if agg_style_space:
 
             if pitch_range is not None:
-                gst_outputs = self._concat_speaker_embedding(gst_outputs, pitch_range.unsqueeze(1))
+                gst_outputs = torch.cat((gst_outputs, pitch_range.unsqueeze(1).unsqueeze(1)), -1)
             if speaking_rate is not None:
-                gst_outputs = self._concat_speaker_embedding(gst_outputs, speaking_rate.unsqueeze(1))
+                gst_outputs = torch.cat((gst_outputs, speaking_rate.unsqueeze(1).unsqueeze(1)), -1)
             if energy is not None:
-                gst_outputs = self._concat_speaker_embedding(gst_outputs, energy.unsqueeze(1))
+                gst_outputs = torch.cat((gst_outputs, energy.unsqueeze(1).unsqueeze(1)), -1)
                      
+            # print(gst_outputs.shape)
 
         inputs = self._concat_speaker_embedding(inputs, gst_outputs)
         return inputs, gst_outputs, logits

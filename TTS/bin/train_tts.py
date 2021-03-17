@@ -9,9 +9,9 @@ import time
 import traceback
 
 
-sys.path.insert(1, '/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts')
+# sys.path.insert(1, '/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts')
 
-# sys.path.insert(1, 'D:\\Mestrado\\Emotion Audio Synthesis (TTS)\\repo_final\\pt_etts')
+sys.path.insert(1, 'D:\\Mestrado\\Emotion Audio Synthesis (TTS)\\repo_final\\pt_etts')
 
 
 import numpy as np
@@ -119,7 +119,7 @@ def format_data(data, speaker_mapping=None, style_mapping = None):
         speaker_embeddings = None
         speaker_ids = None
 
-    if c.use_style_embedding:
+    if((c.use_style_embedding) | (c.use_style_lookup)):
         style_targets = [
                 style_mapping[style_target] for style_target in style_targets
             ]
@@ -134,12 +134,12 @@ def format_data(data, speaker_mapping=None, style_mapping = None):
             style_targets = torch.FloatTensor(style_targets)
             
             del style_targets_
-        else: # Style target will be just the indice 
+        else: # Style target will be just the indice
             style_targets = torch.LongTensor(style_targets) # To use in CrossEntropyLoss need to be LongTensor
     else:
         style_targets = None
 
-    # Prosodic features          
+    # Prosodic features
     if pitch_range is not None:
         pitch_range = torch.LongTensor(pitch_range)
     
@@ -171,7 +171,7 @@ def format_data(data, speaker_mapping=None, style_mapping = None):
         if style_targets is not None:
             style_targets = style_targets.cuda(non_blocking=True)
 
-        # Prosodic features          
+        # Prosodic features
         if pitch_range is not None:
             pitch_range = pitch_range.cuda(non_blocking=True)
         
@@ -221,11 +221,11 @@ def train(model, criterion, optimizer, optimizer_st, scheduler,
         if c.bidirectional_decoder or c.double_decoder_consistency:
             decoder_output, postnet_output, alignments, stop_tokens, decoder_backward_output, alignments_backward, logits = model(
                 text_input, text_lengths, mel_input, mel_lengths, speaker_ids=speaker_ids, speaker_embeddings=speaker_embeddings,
-                pitch_range = pitch_range, speaking_rate=speaking_rate, energy=energy)
+                pitch_range = pitch_range, speaking_rate=speaking_rate, energy=energy, style_ids = style_targets)
         else:
             decoder_output, postnet_output, alignments, stop_tokens, logits = model(
                 text_input, text_lengths, mel_input, mel_lengths, speaker_ids=speaker_ids, speaker_embeddings=speaker_embeddings,
-                pitch_range = pitch_range, speaking_rate=speaking_rate, energy=energy)
+                pitch_range = pitch_range, speaking_rate=speaking_rate, energy=energy, style_ids = style_targets)
             decoder_backward_output = None
             alignments_backward = None
 
@@ -408,11 +408,11 @@ def evaluate(model, criterion, ap, global_step, epoch, speaker_mapping=None, sty
             if c.bidirectional_decoder or c.double_decoder_consistency:
                 decoder_output, postnet_output, alignments, stop_tokens, decoder_backward_output, alignments_backward, logits = model(
                     text_input, text_lengths, mel_input, speaker_ids=speaker_ids, speaker_embeddings=speaker_embeddings,
-                    pitch_range = pitch_range, speaking_rate=speaking_rate, energy=energy)
+                    pitch_range = pitch_range, speaking_rate=speaking_rate, energy=energy, style_ids = style_targets)
             else:
                 decoder_output, postnet_output, alignments, stop_tokens, logits = model(
                     text_input, text_lengths, mel_input, speaker_ids=speaker_ids, speaker_embeddings=speaker_embeddings,
-                    pitch_range = pitch_range, speaking_rate=speaking_rate, energy=energy)
+                    pitch_range = pitch_range, speaking_rate=speaking_rate, energy=energy, style_ids = style_targets)
                 decoder_backward_output = None
                 alignments_backward = None
 
@@ -531,9 +531,10 @@ def evaluate(model, criterion, ap, global_step, epoch, speaker_mapping=None, sty
                 style_wav[str(i)] = 0
         style_wav = c.get("gst_style_input")
 
-        pitch_range = None     
+        pitch_range = None
         speaking_rate = None
-        energy = None   
+        energy = None 
+        style_id = 0 if c.use_style_lookup else None
 
         for idx, test_sentence in enumerate(test_sentences):
             try:
@@ -544,6 +545,7 @@ def evaluate(model, criterion, ap, global_step, epoch, speaker_mapping=None, sty
                     use_cuda,
                     ap,
                     speaker_id=speaker_id,
+                    style_id = style_id,
                     speaker_embedding=speaker_embedding,
                     style_wav=style_wav,
                     pitch_range = pitch_range, 
@@ -637,7 +639,7 @@ def main(args):  # pylint: disable=redefined-outer-name
 
 
     # parse styles
-    if c.use_style_embedding:
+    if((c.use_style_embedding) | (c.use_style_lookup)):
         styles = get_styles(meta_data_train)
         if args.restore_path:
             prev_out_path = os.path.dirname(args.restore_path)
@@ -822,7 +824,13 @@ if __name__ == '__main__':
     if 'agg_style_space' not in c.keys():
         c['agg_style_space'] = False
     if 'lookup_speaker_dim' not in c.keys():
-        c['lookup_speaker_dim'] = 512 
+        c['lookup_speaker_dim'] = 512
+    if 'use_style_lookup' not in c.keys():
+        c['use_style_lookup'] = False
+    if 'lookup_style_dim' not in c.keys():
+        c['lookup_style_dim'] = 64
+
+    # print(c['use_style_lookup'])
 
     if c.apex_amp_level == 'O1':
         print("   >  apex AMP level: ", c.apex_amp_level)
@@ -847,11 +855,12 @@ if __name__ == '__main__':
         new_fields = {}
         if args.restore_path:
             new_fields["restore_path"] = args.restore_path
-        new_fields["github_branch"] = get_git_branch()
-        copy_config_file(args.config_path,
-                         os.path.join(OUT_PATH, 'config.json'), new_fields)
-        os.chmod(AUDIO_PATH, 0o775)
-        os.chmod(OUT_PATH, 0o775)
+
+        # new_fields["github_branch"] = get_git_branch()
+        # copy_config_file(args.config_path,
+        #                  os.path.join(OUT_PATH, 'config.json'), new_fields)
+        # os.chmod(AUDIO_PATH, 0o775)
+        # os.chmod(OUT_PATH, 0o775)
 
         LOG_DIR = OUT_PATH
         tb_logger = TensorboardLogger(LOG_DIR, model_name='TTS')

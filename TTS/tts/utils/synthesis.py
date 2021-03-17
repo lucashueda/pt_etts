@@ -45,22 +45,22 @@ def compute_style_mel(style_wav, ap, cuda=False):
     return style_mel
 
 
-def run_model_torch(model, inputs, CONFIG, truncated, speaker_id=None, style_mel=None, speaker_embeddings=None, \
+def run_model_torch(model, inputs, CONFIG, truncated, speaker_id=None, style_id = None, style_mel=None, speaker_embeddings=None, \
     pitch_range = None, speaking_rate = None, energy=None):
     if 'tacotron' in CONFIG.model.lower():
         if CONFIG.use_gst:
             decoder_output, postnet_output, alignments, stop_tokens, logits = model.inference(
                 inputs, style_mel=style_mel, speaker_ids=speaker_id, speaker_embeddings=speaker_embeddings, \
-                    pitch_range=pitch_range, speaking_rate=speaking_rate, energy = energy)
+                    pitch_range=pitch_range, speaking_rate=speaking_rate, energy = energy, style_ids=style_id)
         else:
             if truncated:
                 decoder_output, postnet_output, alignments, stop_tokens, logits = model.inference_truncated(
                     inputs, speaker_ids=speaker_id, speaker_embeddings=speaker_embeddings, pitch_range = pitch_range, \
-                        speaking_rate = speaking_rate, energy = energy)
+                        speaking_rate = speaking_rate, energy = energy, style_ids = style_id)
             else:
                 decoder_output, postnet_output, alignments, stop_tokens, logits = model.inference(
                     inputs, speaker_ids=speaker_id, speaker_embeddings=speaker_embeddings, pitch_range = pitch_range, \
-                        speaking_rate = speaking_rate, energy = energy)
+                        speaking_rate = speaking_rate, energy = energy, style_ids = style_id)
     elif 'glow' in CONFIG.model.lower():
         inputs_lengths = torch.tensor(inputs.shape[1:2]).to(inputs.device)  # pylint: disable=not-callable
         postnet_output, _, _, _, alignments, _, _ = model.inference(inputs, inputs_lengths)
@@ -185,6 +185,7 @@ def synthesis(model,
               use_cuda,
               ap,
               speaker_id=None,
+              style_id = None,
               style_wav=None,
               pitch_range =None,
               speaking_rate=None,
@@ -230,6 +231,9 @@ def synthesis(model,
     if backend == 'torch':
         if speaker_id is not None:
             speaker_id = id_to_torch(speaker_id, cuda=use_cuda)
+        
+        if style_id is not None:
+            style_id = id_to_torch(style_id, cude = use_cuda)
 
         if speaker_embedding is not None:
             speaker_embedding = embedding_to_torch(speaker_embedding, cuda=use_cuda)
@@ -251,7 +255,7 @@ def synthesis(model,
     if backend == 'torch':
         decoder_output, postnet_output, alignments, stop_tokens, logits = run_model_torch(
             model, inputs, CONFIG, truncated, speaker_id, style_mel, speaker_embeddings=speaker_embedding,
-            pitch_range = pitch_range, speaking_rate = speaking_rate, energy = energy)
+            pitch_range = pitch_range, speaking_rate = speaking_rate, energy = energy, style_ids = style_id)
         postnet_output, decoder_output, alignment, stop_tokens = parse_outputs_torch(
             postnet_output, decoder_output, alignments, stop_tokens)
     elif backend == 'tf':
