@@ -162,9 +162,9 @@ if __name__ == '__main__':
 
         try:
             if(os.path.isfile(expected_wav_file)):                    
-                train_speaking_rate.append(get_cpqd_lab_speaking_rate(expected_wav_file, expected_lab_file))                
+                # train_speaking_rate.append(get_cpqd_lab_speaking_rate(expected_wav_file, expected_lab_file))                
                 train_pitch_range.append(get_pitch_range(expected_wav_file))
-                train_energy.append(get_energy(expected_wav_file, sr = None, top_level_db=15, frame_length = 512, hop_length=128))
+                # train_energy.append(get_energy(expected_wav_file, sr = None, top_level_db=15, frame_length = 512, hop_length=128))
                 
                 train_texts.append(train['text'].values[i])
                 train_wav_dirs.append(expected_wav_file) 
@@ -181,12 +181,12 @@ if __name__ == '__main__':
 
         try:
             if(os.path.isfile(expected_wav_file)):                 
-                val_speaking_rate.append(get_cpqd_lab_speaking_rate(expected_wav_file, expected_lab_file))  
-                print('passou spk')              
+                # val_speaking_rate.append(get_cpqd_lab_speaking_rate(expected_wav_file, expected_lab_file))  
+                # print('passou spk')              
                 val_pitch_range.append(get_pitch_range(expected_wav_file))
                 print('passou pich')
-                val_energy.append(get_energy(expected_wav_file, sr = None, top_level_db=15, frame_length = 512, hop_length=128))
-                print('passou energy')
+                # val_energy.append(get_energy(expected_wav_file, sr = None, top_level_db=15, frame_length = 512, hop_length=128))
+                # print('passou energy')
 
                 val_texts.append(val['text'].values[i])
                 val_wav_dirs.append(expected_wav_file) 
@@ -197,15 +197,15 @@ if __name__ == '__main__':
 
 
 
-    print(len(val_speaking_rate))
-    print(len(train_speaking_rate))
+    print(len(train_pitch_range))
+    print(len(val_pitch_range))
 
     # Normalizing prosodic values
-    mean_speaking_rate = np.mean(np.array(train_speaking_rate))
-    std_speaking_rate = np.std(np.array(train_speaking_rate))
+    # mean_speaking_rate = np.mean(np.array(train_speaking_rate))
+    # std_speaking_rate = np.std(np.array(train_speaking_rate))
 
-    train_speaking_rate = np.clip((np.array(train_speaking_rate) - mean_speaking_rate)/std_speaking_rate, -1, 1)
-    val_speaking_rate = np.clip((np.array(val_speaking_rate) - mean_speaking_rate)/std_speaking_rate, -1, 1)
+    # train_speaking_rate = np.clip((np.array(train_speaking_rate) - mean_speaking_rate)/std_speaking_rate, -1, 1)
+    # val_speaking_rate = np.clip((np.array(val_speaking_rate) - mean_speaking_rate)/std_speaking_rate, -1, 1)
 
     mean_pitch_range = np.mean(np.array(train_pitch_range))
     std_pitch_range = np.std(np.array(train_pitch_range))
@@ -213,20 +213,22 @@ if __name__ == '__main__':
     train_pitch_range = np.clip((np.array(train_pitch_range) - mean_pitch_range)/std_pitch_range, -1, 1)
     val_pitch_range = np.clip((np.array(val_pitch_range) - mean_pitch_range)/std_pitch_range, -1, 1)
 
-    mean_energy = np.mean(np.array(train_energy))
-    std_energy = np.std(np.array(train_energy))
+    # mean_energy = np.mean(np.array(train_energy))
+    # std_energy = np.std(np.array(train_energy))
 
-    train_energy = np.clip((np.array(train_energy) - mean_energy)/std_energy, -1, 1)
-    val_energy = np.clip((np.array(val_energy) - mean_energy)/std_energy, -1, 1)
+    # train_energy = np.clip((np.array(train_energy) - mean_energy)/std_energy, -1, 1)
+    # val_energy = np.clip((np.array(val_energy) - mean_energy)/std_energy, -1, 1)
 
     with open('/'.join(args.input_directory.split('/')[:-1]) + 'prosodic_stat.txt', 'w') as f:
         f.write(f'mean pitch range: {mean_pitch_range}')
-        f.write(f'mean speaking_rate: {mean_speaking_rate}')
-        f.write(f'mean energy: {mean_energy}')
+        # f.write(f'mean speaking_rate: {mean_speaking_rate}')
+        # f.write(f'mean energy: {mean_energy}')
 
     # print(len(wav_dirs), len(texts), len(emb_ids), len(style_targets), total_time/3600)
-    df_train = pd.DataFrame({'wav_path': train_wav_dirs, 'text': train_texts, 'emb_id': train_emb, 'style_target': train_style, 'pitch_range': train_pitch_range, 'energy': train_energy, 'speaking_rate': train_speaking_rate})
-    df_val = pd.DataFrame({'wav_path': val_wav_dirs, 'text': val_texts, 'emb_id': val_emb, 'style_target': val_style, 'pitch_range': val_pitch_range, 'energy': val_energy, 'speaking_rate': val_speaking_rate})
+    # df_train = pd.DataFrame({'wav_path': train_wav_dirs, 'text': train_texts, 'emb_id': train_emb, 'style_target': train_style, 'pitch_range': train_pitch_range, 'energy': train_energy, 'speaking_rate': train_speaking_rate})
+    # df_val = pd.DataFrame({'wav_path': val_wav_dirs, 'text': val_texts, 'emb_id': val_emb, 'style_target': val_style, 'pitch_range': val_pitch_range, 'energy': val_energy, 'speaking_rate': val_speaking_rate})
+    df_train = pd.DataFrame({'wav_path': train_wav_dirs, 'text': train_texts, 'emb_id': train_emb, 'style_target': train_style, 'pitch_range': train_pitch_range})
+    df_val = pd.DataFrame({'wav_path': val_wav_dirs, 'text': val_texts, 'emb_id': val_emb, 'style_target': val_style, 'pitch_range': val_pitch_range})
     
 
 
