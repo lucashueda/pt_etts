@@ -179,8 +179,7 @@ if __name__ == '__main__':
         expected_lab_file = wav[:-4] + '.lab'
 
         try:
-            if(os.path.isfile(expected_wav_file)):
-                print(expected_wav_file)                   
+            if(os.path.isfile(expected_wav_file)):                 
                 val_speaking_rate.append(get_cpqd_lab_speaking_rate(expected_wav_file, expected_lab_file))                
                 val_pitch_range.append(get_pitch_range(expected_wav_file))
                 val_energy.append(get_energy(expected_wav_file, sr = None, top_level_db=15, frame_length = 512, hop_length=128))
@@ -193,6 +192,9 @@ if __name__ == '__main__':
             print('deu ruim val')
 
 
+
+    print(len(val_speaking_rate))
+    print(len(train_speaking_rate))
 
     # Normalizing prosodic values
     mean_speaking_rate = np.mean(np.array(train_speaking_rate))
