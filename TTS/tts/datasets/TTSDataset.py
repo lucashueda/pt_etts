@@ -117,10 +117,10 @@ class MyDataset(Dataset):
         item = self.items[idx]
 
         if len(item) == 5:
-            text, wav_file, speaker_name, style_target, attn_file = item
-            pitch_range = None
+            text, wav_file, speaker_name, style_target, pitch_range = item
             energy = None  
             speaking_rate = None
+            attn = None
         elif len(item) == 4:
             text, wav_file, speaker_name, style_target = item
             attn = None
