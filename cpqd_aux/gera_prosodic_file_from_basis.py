@@ -177,13 +177,17 @@ if __name__ == '__main__':
     for i, wav in enumerate(val['wav_path'].values):
         expected_wav_file = wav
         expected_lab_file = wav[:-4] + '.lab'
+        print(expected_lab_file)
 
         try:
             if(os.path.isfile(expected_wav_file)):                 
-                val_speaking_rate.append(get_cpqd_lab_speaking_rate(expected_wav_file, expected_lab_file))                
+                val_speaking_rate.append(get_cpqd_lab_speaking_rate(expected_wav_file, expected_lab_file))  
+                print('passou spk')              
                 val_pitch_range.append(get_pitch_range(expected_wav_file))
+                print('passou pich')
                 val_energy.append(get_energy(expected_wav_file, sr = None, top_level_db=15, frame_length = 512, hop_length=128))
-                
+                print('passou energy')
+
                 val_texts.append(val['text'].values[i])
                 val_wav_dirs.append(expected_wav_file) 
                 val_emb.append(val['emb_id'].values[i]) # Since we dont have embedding just put that to generate correct format
