@@ -172,6 +172,23 @@ if __name__ == '__main__':
                         pass
 
 
+    # Normalizing prosodic values
+    mean_speaking_rate = np.mean(np.array(speaking_rate))
+    std_speaking_rate = np.std(np.array(speaking_rate))
+
+    speaking_rate = np.clip((np.array(speaking_rate) - mean_speaking_rate)/std_speaking_rate, -1, 1)
+
+    mean_pitch_range = np.mean(np.array(pitch_range))
+    std_pitch_range = np.std(np.array(pitch_range))
+
+    pitch_range = np.clip((np.array(pitch_range) - mean_pitch_range)/std_pitch_range, -1, 1)
+
+    mean_energy = np.mean(np.array(energy))
+    std_energy = np.std(np.array(energy))
+
+    energy = np.clip((np.array(energy) - mean_energy)/std_energy, -1, 1)
+
+
     # print(len(wav_dirs), len(texts), len(emb_ids), len(style_targets), total_time/3600)
     df = pd.DataFrame({'wav_path':wav_dirs, 'text': texts, 'emb_id': emb_ids, 'style_target': style_targets, 'pitch_range': pitch_range, 'energy': energy, 'speaking_rate': speaking_rate})
     
