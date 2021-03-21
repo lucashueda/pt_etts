@@ -127,8 +127,8 @@ if __name__ == '__main__':
     train_file = args.input_directory + '_train.csv'
     val_file = args.input_directory + '_val.csv'
 
-    train = pd.read_csV(train_file, sep = '|', encoding = 'latin-1')
-    val = pd.read_csV(val_file, sep = '|', encoding = 'latin-1')
+    train = pd.read_csv(train_file, sep = '|', encoding = 'latin-1')
+    val = pd.read_csv(val_file, sep = '|', encoding = 'latin-1')
 
     train_wav_dirs = []
     val_wav_dirs = []
