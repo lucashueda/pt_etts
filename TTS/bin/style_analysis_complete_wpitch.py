@@ -174,7 +174,7 @@ if __name__ == '__main__':
         # logits = torch.cat(
         #     torch.split(logits, 1, dim=0),
         #     dim=3).squeeze(0)
-        outputs = torch.cat((outputs, torch.LongTensor(pitch_range).cuda().unsqueeze(1).unsqueeze(1)), -1)
+        outputs = torch.cat((outputs, torch.LongTensor([pitch_range]).cuda().unsqueeze(1).unsqueeze(1)), -1)
 
         #print(style_wav, style_mel.shape, logits, logits.shape)
         train_feats[i] = outputs.squeeze(0).squeeze(0).detach().cpu().numpy()
@@ -190,7 +190,7 @@ if __name__ == '__main__':
         style_mel = compute_style_mel(style_wav, ap, cuda=True)
         style_mel = numpy_to_torch(style_mel, torch.float, cuda=use_cuda)
         outputs , logits = model.cuda().gst_layer(style_mel)
-        outputs = torch.cat((outputs, torch.LongTensor(pitch_range).cuda().unsqueeze(1).unsqueeze(1)), -1)
+        outputs = torch.cat((outputs, torch.LongTensor([pitch_range]).cuda().unsqueeze(1).unsqueeze(1)), -1)
 
         # logits  = torch.cat(
         #     torch.split(logits, 1, dim=0),
