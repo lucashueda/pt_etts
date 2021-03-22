@@ -233,13 +233,35 @@ def synthesis(model,
             speaker_id = id_to_torch(speaker_id, cuda=use_cuda)
         
         if style_id is not None:
-            style_id = id_to_torch(style_id, cude = use_cuda)
+            style_id = id_to_torch(style_id, cuda = use_cuda)
 
         if speaker_embedding is not None:
             speaker_embedding = embedding_to_torch(speaker_embedding, cuda=use_cuda)
 
         if not isinstance(style_mel, dict):
             style_mel = numpy_to_torch(style_mel, torch.float, cuda=use_cuda)
+
+        # Prosodic features
+        if pitch_range is not None:
+            pitch_range = torch.LongTensor(pitch_range)
+
+        if speaking_rate is not None:
+            speaking_rate = torch.LongTensor(speaking_rate)
+
+        if energy is not None:
+            energy = torch.LongTensor(energy)
+
+        if use_cuda:
+            # Prosodic features
+            if pitch_range is not None:
+                pitch_range = pitch_range.cuda(non_blocking=True)
+            
+            if speaking_rate is not None:
+                speaking_rate = speaking_rate.cuda(non_blocking=True)
+
+            if energy is not None:
+                energy = energy.cuda(non_blocking=True)
+
         inputs = numpy_to_torch(inputs, torch.long, cuda=use_cuda)
         inputs = inputs.unsqueeze(0)
     elif backend == 'tf':
@@ -254,8 +276,8 @@ def synthesis(model,
     # synthesize voice
     if backend == 'torch':
         decoder_output, postnet_output, alignments, stop_tokens, logits = run_model_torch(
-            model, inputs, CONFIG, truncated, speaker_id, style_mel, speaker_embeddings=speaker_embedding,
-            pitch_range = pitch_range, speaking_rate = speaking_rate, energy = energy, style_ids = style_id)
+            model, inputs, CONFIG, truncated, speaker_id, style_id, style_mel, speaker_embeddings=speaker_embedding,
+            pitch_range = pitch_range, speaking_rate = speaking_rate, energy = energy)
         postnet_output, decoder_output, alignment, stop_tokens = parse_outputs_torch(
             postnet_output, decoder_output, alignments, stop_tokens)
     elif backend == 'tf':

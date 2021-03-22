@@ -224,7 +224,7 @@ class TacotronAbstract(ABC, nn.Module):
             # print('entered here')
             logits = None
             gst_outputs = torch.zeros(1, 1, self.gst_embedding_dim).to(device)
-        elif style_input.shape[2] == self.gst_embedding_dim:
+        elif(style_input.shape[2] == (self.gst_embedding_dim + self.num_prosodic_features)):
             # print('entered correctly')
             logits = None
             gst_outputs = style_input
@@ -233,7 +233,7 @@ class TacotronAbstract(ABC, nn.Module):
             gst_outputs, logits = self.gst_layer(style_input, speaker_embedding) # pylint: disable=not-callable
         
         # Adding prosodic features to the space if agg_style_space is True
-        if agg_style_space:
+        if((agg_style_space)&(not style_input.shape[2] == (self.gst_embedding_dim + self.num_prosodic_features))):
 
             if pitch_range is not None:
                 gst_outputs = torch.cat((gst_outputs, pitch_range.unsqueeze(1).unsqueeze(1)), -1)
