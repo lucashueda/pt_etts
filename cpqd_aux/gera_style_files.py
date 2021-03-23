@@ -73,7 +73,10 @@ if __name__ == '__main__':
                                     texts.append(line[N+2:])
                                     wav_dirs.append(expected_wav_file) 
                                     emb_ids.append(args.speaker_id) # Since we dont have embedding just put that to generate correct format
-                                    style_targets.append('t_' + file)
+                                    if(args.style_name is None):
+                                        style_targets.append('t_' + file[:12])
+                                    else:
+                                        style_targets.append(args.style_name)
                     except:
                         print('deu except')
                         pass

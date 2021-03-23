@@ -221,19 +221,23 @@ class TacotronAbstract(ABC, nn.Module):
                 # print(gst_outputs_att.shape)
                 gst_outputs = gst_outputs + gst_outputs_att * v_amplifier
         elif style_input is None:
-            # print('entered here')
+            print('entered None')
             logits = None
             gst_outputs = torch.zeros(1, 1, self.gst_embedding_dim).to(device)
         elif(style_input.shape[2] == (self.gst_embedding_dim + self.num_prosodic_features)):
-            # print('entered correctly')
+            print('entered correctly')
             logits = None
             gst_outputs = style_input
             print(gst_outputs, style_input)
+        elif(style_input.shape[2] == self.gst_embedding_dim):
+            logits = None
+            gst_outputs = style_input
+            print('entered just re not pitch')
         else:
             gst_outputs, logits = self.gst_layer(style_input, speaker_embedding) # pylint: disable=not-callable
         
         # Adding prosodic features to the space if agg_style_space is True
-        if((agg_style_space)&(not style_input.shape[2] == (self.gst_embedding_dim + self.num_prosodic_features))):
+        if(agg_style_space):
 
             if pitch_range is not None:
                 gst_outputs = torch.cat((gst_outputs, pitch_range.unsqueeze(1).unsqueeze(1)), -1)

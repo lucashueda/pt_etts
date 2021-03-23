@@ -221,6 +221,8 @@ def synthesis(model,
             style_mel = style_wav
         elif isinstance(style_wav, str): 
             style_mel = compute_style_mel(style_wav, ap, cuda=use_cuda)
+        elif style_wav.shape[2] == CONFIG['gst']['gst_embedding_dim'] + CONFIG['num_prosodic_features']:
+            style_mel = style_wav
         elif style_wav.shape[2] == CONFIG['gst']['gst_embedding_dim']:
             style_mel = style_wav # just putting
         else:
