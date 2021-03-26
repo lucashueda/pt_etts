@@ -127,6 +127,18 @@ if __name__ == '__main__':
 
     c = load_config(args.config_path)
 
+    ## Defining default c keys, HARD CODED
+    if 'num_prosodic_features' not in c.keys():
+        c['num_prosodic_features'] = 0
+    if 'agg_style_space' not in c.keys():
+        c['agg_style_space'] = False
+    if 'lookup_speaker_dim' not in c.keys():
+        c['lookup_speaker_dim'] = 512
+    if 'use_style_lookup' not in c.keys():
+        c['use_style_lookup'] = False
+    if 'lookup_style_dim' not in c.keys():
+        c['lookup_style_dim'] = 64
+        
     use_cuda = True
 
     global meta_data_train, meta_data_eval, symbols, phonemes
