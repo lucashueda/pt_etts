@@ -29,8 +29,8 @@ def get_pitch_range(audio_path, sr = None, pmin = 5, pmax = 95):
     _f0, t = pw.dio(x.astype(np.double), fs)    # raw pitch extractor
     f0 = pw.stonemask(x.astype(np.double), _f0, t, fs)  # pitch refinement
     
-    lower_bound = np.percentile(f0[f0>0], pmin)
-    upper_bound = np.percentile(f0[f0>0], pmax)
+    lower_bound = np.percentile(np.log(f0[f0>0]), pmin)
+    upper_bound = np.percentile(np.log(f0[f0>0]), pmax)
     
     pitch_range = upper_bound - lower_bound
     
@@ -207,11 +207,11 @@ if __name__ == '__main__':
     # train_speaking_rate = np.clip((np.array(train_speaking_rate) - mean_speaking_rate)/std_speaking_rate, -1, 1)
     # val_speaking_rate = np.clip((np.array(val_speaking_rate) - mean_speaking_rate)/std_speaking_rate, -1, 1)
 
-    mean_pitch_range = np.mean(np.array(train_pitch_range))
-    std_pitch_range = np.std(np.array(train_pitch_range))
+    # mean_pitch_range = np.mean(np.array(train_pitch_range))
+    # std_pitch_range = np.std(np.array(train_pitch_range))
 
-    train_pitch_range = np.clip((np.array(train_pitch_range) - mean_pitch_range)/std_pitch_range, -1, 1)
-    val_pitch_range = np.clip((np.array(val_pitch_range) - mean_pitch_range)/std_pitch_range, -1, 1)
+    # train_pitch_range = np.clip((np.array(train_pitch_range) - mean_pitch_range)/std_pitch_range, -1, 1)
+    # val_pitch_range = np.clip((np.array(val_pitch_range) - mean_pitch_range)/std_pitch_range, -1, 1)
 
     # mean_energy = np.mean(np.array(train_energy))
     # std_energy = np.std(np.array(train_energy))
@@ -219,8 +219,8 @@ if __name__ == '__main__':
     # train_energy = np.clip((np.array(train_energy) - mean_energy)/std_energy, -1, 1)
     # val_energy = np.clip((np.array(val_energy) - mean_energy)/std_energy, -1, 1)
 
-    with open('/'.join(args.input_directory.split('/')[:-1]) + 'prosodic_stat.txt', 'w') as f:
-        f.write(f'mean pitch range: {mean_pitch_range}')
+    # with open('/'.join(args.input_directory.split('/')[:-1]) + 'prosodic_stat.txt', 'w') as f:
+    #     f.write(f'mean pitch range: {mean_pitch_range}')
         # f.write(f'mean speaking_rate: {mean_speaking_rate}')
         # f.write(f'mean energy: {mean_energy}')
 
