@@ -48,8 +48,8 @@ if __name__ == '__main__':
             print('not in format')
 
 
-    stats_train = df_full_train.groupby('emb_id').agg({'pitch_range': np.mean()}).reset_index()
-    std_train = df_full_train.groupby('emb_id').agg({'pitch_range': np.std()}).reset_index()
+    stats_train = df_full_train.groupby('emb_id').agg({'pitch_range': np.mean}).reset_index()
+    std_train = df_full_train.groupby('emb_id').agg({'pitch_range': np.std}).reset_index()
     stats_train['std_pitch_range'] = std_train['pitch_range']
 
     stats_path = os.path.join(args.folder_path, 'stats.csv')
