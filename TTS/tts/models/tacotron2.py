@@ -42,7 +42,9 @@ class Tacotron2(TacotronAbstract):
                  num_prosodic_features = 0,
                  agg_style_space = True,
                  use_style_lookup = False,
-                 lookup_style_dim = 64):
+                 lookup_style_dim = 64,
+                 use_prosodic_linear = False,
+                 prosodic_dim = 64):
         super(Tacotron2,
               self).__init__(num_chars, num_speakers, num_styles, r, postnet_output_dim,
                              decoder_output_dim, attn_type, attn_win,
@@ -54,7 +56,8 @@ class Tacotron2(TacotronAbstract):
                              speaker_embedding_dim, gst, gst_embedding_dim,
                              gst_num_heads, gst_style_tokens, gst_use_speaker_embedding,
                              gst_use_linear_style_target, use_only_reference, lookup_speaker_dim,
-                             num_prosodic_features, agg_style_space, use_style_lookup, lookup_style_dim)
+                             num_prosodic_features, agg_style_space, use_style_lookup, lookup_style_dim,
+                             use_prosodic_linear, prosodic_dim)
 
         # speaker embedding layer
         if self.num_speakers > 1:
@@ -68,15 +71,20 @@ class Tacotron2(TacotronAbstract):
         if self.num_speakers > 1:
             self.decoder_in_features += speaker_embedding_dim # add speaker embedding dim
 
-        # Add prosodic features in decoder_in_features, default is 0
-        self.decoder_in_features += self.num_prosodic_features
-
         # Add style embedding look up, make sure to not use gst_use_linear_style_target if using style look up 
         if((self.num_styles > 1)&(self.use_style_lookup)):
             style_embedding_dim = self.lookup_style_dim
             self.style_embedding = nn.Embedding(self.num_styles, style_embedding_dim)
             self.style_embedding.weight.data.normal_(0, 0.3)
             self.decoder_in_features += style_embedding_dim
+
+        # If use linear prosodic info 
+        if(self.use_prosodic_linear):
+            self.prosodic_linear = nn.Linear(self.num_prosodic_features, self.prosodic_dim, bias=False)
+            self.decoder_in_features += self.prosodic_dim
+        else:
+            # Add prosodic features in decoder_in_features, default is 0
+            self.decoder_in_features += self.num_prosodic_features
 
 
         # embedding layer
@@ -149,13 +157,34 @@ class Tacotron2(TacotronAbstract):
 
         # prosodic features 
         if((not self.agg_style_space) & (self.num_prosodic_features > 0)):
-            if pitch_range is not None:
-                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, pitch_range.unsqueeze(1).unsqueeze(1))
-            if speaking_rate is not None:
-                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaking_rate.unsqueeze(1).unsqueeze(1))
-            if energy is not None:
-                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, energy.unsqueeze(1).unsqueeze(1))
-                                          
+
+            if(self.use_prosodic_linear):
+
+                # Concat prosodic features 
+
+                prosody_feats = torch.zeros((text.shape[0], self.num_prosodic_features)).to(text.device)
+
+                i = 0
+                if pitch_range is not None:
+                    prosody_feats[:, i] = pitch_range
+                    i += 1
+                if speaking_rate is not None:
+                    prosody_feats[:, i] = speaking_rate
+                    i += 1
+                if energy is not None:
+                    prosody_feats[:, i] = energy
+                    i += 1
+                    
+                prosodic_encoded = self.prosodic_linear(prosody_feats.unsqueeze(1))
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, prosodic_encoded)
+            else:
+                if pitch_range is not None:
+                    encoder_outputs = self._concat_speaker_embedding(encoder_outputs, pitch_range.unsqueeze(1).unsqueeze(1))
+                if speaking_rate is not None:
+                    encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaking_rate.unsqueeze(1).unsqueeze(1))
+                if energy is not None:
+                    encoder_outputs = self._concat_speaker_embedding(encoder_outputs, energy.unsqueeze(1).unsqueeze(1))
+                                            
 
         if self.num_speakers > 1:
             if not self.embeddings_per_sample:
@@ -214,15 +243,36 @@ class Tacotron2(TacotronAbstract):
         else:
             logits = None
 
-        # prosodic features 
-        if not self.agg_style_space:
-            if pitch_range is not None:
-                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, pitch_range.unsqueeze(1))
-            if speaking_rate is not None:
-                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaking_rate.unsqueeze(1))
-            if energy is not None:
-                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, energy.unsqueeze(1))
-                      
+        # prosodic features
+        if((not self.agg_style_space) & (self.num_prosodic_features > 0)):
+
+            if(self.use_prosodic_linear):
+
+                # Concat prosodic features 
+
+                prosody_feats = torch.zeros((text.shape[0], self.num_prosodic_features)).to(text.device)
+
+                i = 0
+                if pitch_range is not None:
+                    prosody_feats[:, i] = pitch_range
+                    i += 1
+                if speaking_rate is not None:
+                    prosody_feats[:, i] = speaking_rate
+                    i += 1
+                if energy is not None:
+                    prosody_feats[:, i] = energy
+                    i += 1
+                    
+                prosodic_encoded = self.prosodic_linear(prosody_feats.unsqueeze(1))
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, prosodic_encoded)
+            else:
+                if pitch_range is not None:
+                    encoder_outputs = self._concat_speaker_embedding(encoder_outputs, pitch_range.unsqueeze(1).unsqueeze(1))
+                if speaking_rate is not None:
+                    encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaking_rate.unsqueeze(1).unsqueeze(1))
+                if energy is not None:
+                    encoder_outputs = self._concat_speaker_embedding(encoder_outputs, energy.unsqueeze(1).unsqueeze(1))
+                              
 
         if self.num_speakers > 1:
             if not self.embeddings_per_sample:
@@ -262,15 +312,36 @@ class Tacotron2(TacotronAbstract):
         else:
             logits = None
 
-        # prosodic features
-        if not self.agg_style_space:
-            if pitch_range is not None:
-                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, pitch_range.unsqueeze(1))
-            if speaking_rate is not None:
-                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaking_rate.unsqueeze(1))
-            if energy is not None:
-                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, energy.unsqueeze(1))
-                      
+        # prosodic features 
+        if((not self.agg_style_space) & (self.num_prosodic_features > 0)):
+
+            if(self.use_prosodic_linear):
+
+                # Concat prosodic features 
+
+                prosody_feats = torch.zeros((text.shape[0], self.num_prosodic_features)).to(text.device)
+
+                i = 0
+                if pitch_range is not None:
+                    prosody_feats[:, i] = pitch_range
+                    i += 1
+                if speaking_rate is not None:
+                    prosody_feats[:, i] = speaking_rate
+                    i += 1
+                if energy is not None:
+                    prosody_feats[:, i] = energy
+                    i += 1
+                    
+                prosodic_encoded = self.prosodic_linear(prosody_feats.unsqueeze(1))
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, prosodic_encoded)
+            else:
+                if pitch_range is not None:
+                    encoder_outputs = self._concat_speaker_embedding(encoder_outputs, pitch_range.unsqueeze(1).unsqueeze(1))
+                if speaking_rate is not None:
+                    encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaking_rate.unsqueeze(1).unsqueeze(1))
+                if energy is not None:
+                    encoder_outputs = self._concat_speaker_embedding(encoder_outputs, energy.unsqueeze(1).unsqueeze(1))
+                                
             
         if self.num_speakers > 1:
             if not self.embeddings_per_sample:

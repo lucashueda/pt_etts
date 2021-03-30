@@ -43,7 +43,9 @@ class TacotronAbstract(ABC, nn.Module):
                  num_prosodic_features = 0,
                  agg_style_space = True,
                  use_style_lookup = False,
-                 lookup_style_dim = 64):
+                 lookup_style_dim = 64,
+                 use_prosodic_linear = False,
+                 prosodic_dim = 64):
         """ Abstract Tacotron class """
         super().__init__()
         self.num_chars = num_chars
@@ -81,6 +83,8 @@ class TacotronAbstract(ABC, nn.Module):
         self.agg_style_space = agg_style_space
         self.use_style_lookup = use_style_lookup
         self.lookup_style_dim = lookup_style_dim
+        self.use_prosodic_linear = use_prosodic_linear
+        self.prosodic_dim = prosodic_dim
 
         # layers
         self.embedding = None
