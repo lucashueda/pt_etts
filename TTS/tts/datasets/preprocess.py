@@ -373,7 +373,7 @@ def style_reader(root_path, meta_file):
 
     items = []
 
-    with open(meta_path, 'r', encoding='latin-1') as f:
+    with open(meta_path, 'r', encoding='iso-8859-1') as f:
         for line in f:
             cols = line.split('|')
             if(cols[1] == 'text'): # It indicates that the first row is the header so we need to skip
@@ -405,7 +405,7 @@ def style_prosodic_reader(root_path, meta_file):
 
     items = []
 
-    with open(meta_path, 'r', encoding='latin-1') as f:
+    with open(meta_path, 'r', encoding='iso-8859-1') as f:
         for line in f:
             cols = line.split('|')
             if(cols[1] == 'text'): # It indicates that the first row is the header so we need to skip
@@ -440,7 +440,7 @@ def pitch_prosodic_reader(root_path, meta_file):
 
     items = []
 
-    with open(meta_path, 'r', encoding='latin-1') as f:
+    with open(meta_path, 'r', encoding='iso-8859-1') as f:
         for line in f:
             cols = line.split('|')
             if(cols[1] == 'text'): # It indicates that the first row is the header so we need to skip
