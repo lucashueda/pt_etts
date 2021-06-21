@@ -604,7 +604,7 @@ def main(args):  # pylint: disable=redefined-outer-name
     # parse speakers
     if c.use_speaker_embedding:
         speakers = get_speakers(meta_data_train)
-        if args.restore_path:
+        if ((args.restore_path) & (args.strict == 1)):
             if c.use_external_speaker_embedding_file: # if restore checkpoint and use External Embedding file
                 prev_out_path = os.path.dirname(args.restore_path)
                 speaker_mapping = load_speaker_mapping(prev_out_path)
