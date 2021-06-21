@@ -790,9 +790,9 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         '--stict',
-        type = bool,
-        default=True, 
-        help = 'Wheter load weights with strick or not'
+        type = int,
+        default=1, 
+        help = 'Wheter load weights with strict (1) or not (0)'
     )
     parser.add_argument('--debug',
                         type=bool,
