@@ -106,7 +106,8 @@ class TacotronAbstract(ABC, nn.Module):
 
         # global style token
         if self.gst:
-            self.decoder_in_features += gst_embedding_dim # add gst embedding dim
+            if (self.style_agg == 'concatenate'):
+                self.decoder_in_features += gst_embedding_dim # add gst embedding dim
             self.gst_layer = None
 
         # model states

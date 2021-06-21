@@ -70,11 +70,11 @@ class Tacotron2(TacotronAbstract):
                 self.speaker_embedding.weight.data.normal_(0, 0.3)
 
         # speaker and gst embeddings is concat in decoder input
-        if self.num_speakers > 1:
+        if ((self.num_speakers > 1)&(self.multi_speaker_agg == 'concatenate')):
             self.decoder_in_features += speaker_embedding_dim # add speaker embedding dim
 
         # Add style embedding look up, make sure to not use gst_use_linear_style_target if using style look up 
-        if((self.num_styles > 1)&(self.use_style_lookup)):
+        if((self.num_styles > 1)&(self.use_style_lookup)&(self.style_agg == 'concatenate')):
             style_embedding_dim = self.lookup_style_dim
             self.style_embedding = nn.Embedding(self.num_styles, style_embedding_dim)
             self.style_embedding.weight.data.normal_(0, 0.3)
