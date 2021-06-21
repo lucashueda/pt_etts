@@ -789,7 +789,7 @@ if __name__ == '__main__':
         required='--continue_path' not in sys.argv
     )
     parser.add_argument(
-        '--stict',
+        '--strict',
         type = int,
         default=1, 
         help = 'Wheter load weights with strict (1) or not (0)'
