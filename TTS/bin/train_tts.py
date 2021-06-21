@@ -9,9 +9,9 @@ import time
 import traceback
 
 
-# sys.path.insert(1, '/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts')
+sys.path.insert(1, '/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts')
 
-sys.path.insert(1, 'D:\\Mestrado\\Emotion Audio Synthesis (TTS)\\repo_final\\pt_etts')
+# sys.path.insert(1, 'D:\\Mestrado\\Emotion Audio Synthesis (TTS)\\repo_final\\pt_etts')
 
 
 import numpy as np
@@ -872,11 +872,11 @@ if __name__ == '__main__':
             new_fields["restore_path"] = args.restore_path
 
         # Need to ocmment the next 5 lines if you want to debug on windows
-        # new_fields["github_branch"] = get_git_branch()
-        # copy_config_file(args.config_path,
-        #                  os.path.join(OUT_PATH, 'config.json'), new_fields)
-        # os.chmod(AUDIO_PATH, 0o775)
-        # os.chmod(OUT_PATH, 0o775)
+        new_fields["github_branch"] = get_git_branch()
+        copy_config_file(args.config_path,
+                         os.path.join(OUT_PATH, 'config.json'), new_fields)
+        os.chmod(AUDIO_PATH, 0o775)
+        os.chmod(OUT_PATH, 0o775)
 
         LOG_DIR = './runs/' + OUT_PATH
         tb_logger = TensorboardLogger(LOG_DIR, model_name='TTS')
