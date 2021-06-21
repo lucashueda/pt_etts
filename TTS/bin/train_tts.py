@@ -9,9 +9,9 @@ import time
 import traceback
 
 
-sys.path.insert(1, '/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts')
+# sys.path.insert(1, '/l/disk1/awstebas/lhueda/github/repo_final/repo_final_final/repo_final_final_final/pt_etts')
 
-# sys.path.insert(1, 'D:\\Mestrado\\Emotion Audio Synthesis (TTS)\\repo_final\\pt_etts')
+sys.path.insert(1, 'D:\\Mestrado\\Emotion Audio Synthesis (TTS)\\repo_final\\pt_etts')
 
 
 import numpy as np
@@ -782,6 +782,12 @@ if __name__ == '__main__':
         help='Path to config file for training.',
         required='--continue_path' not in sys.argv
     )
+    parser.add_argument(
+        '--stict',
+        type = bool,
+        default=True, 
+        help = 'Wheter load weights with strick or not'
+    )
     parser.add_argument('--debug',
                         type=bool,
                         default=False,
@@ -829,6 +835,15 @@ if __name__ == '__main__':
         c['use_style_lookup'] = False
     if 'lookup_style_dim' not in c.keys():
         c['lookup_style_dim'] = 64
+    if 'use_prosodic_linear' not in c.keys():
+        c['use_prosodic_linear'] = False
+    if 'prosodic_dim' not in c.keys():
+        c['prosodic_dim'] = 2
+    if 'multi_speaker_agg' not in c.keys():
+        c['multi_speaker_agg'] = 'concatenate'
+    if 'style_agg' not in c.keys():
+        c['style_agg'] = 'concatenate'
+    
 
     # print(c['use_style_lookup'])
 
@@ -857,13 +872,13 @@ if __name__ == '__main__':
             new_fields["restore_path"] = args.restore_path
 
         # Need to ocmment the next 5 lines if you want to debug on windows
-        new_fields["github_branch"] = get_git_branch()
-        copy_config_file(args.config_path,
-                         os.path.join(OUT_PATH, 'config.json'), new_fields)
-        os.chmod(AUDIO_PATH, 0o775)
-        os.chmod(OUT_PATH, 0o775)
+        # new_fields["github_branch"] = get_git_branch()
+        # copy_config_file(args.config_path,
+        #                  os.path.join(OUT_PATH, 'config.json'), new_fields)
+        # os.chmod(AUDIO_PATH, 0o775)
+        # os.chmod(OUT_PATH, 0o775)
 
-        LOG_DIR = OUT_PATH
+        LOG_DIR = './runs/' + OUT_PATH
         tb_logger = TensorboardLogger(LOG_DIR, model_name='TTS')
 
         # write model desc to tensorboard

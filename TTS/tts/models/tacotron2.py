@@ -44,7 +44,9 @@ class Tacotron2(TacotronAbstract):
                  use_style_lookup = False,
                  lookup_style_dim = 64,
                  use_prosodic_linear = False,
-                 prosodic_dim = 64):
+                 prosodic_dim = 64,
+                 multi_speaker_agg = 'concatenate',
+                 style_agg = 'concatenate'):
         super(Tacotron2,
               self).__init__(num_chars, num_speakers, num_styles, r, postnet_output_dim,
                              decoder_output_dim, attn_type, attn_win,
@@ -57,7 +59,7 @@ class Tacotron2(TacotronAbstract):
                              gst_num_heads, gst_style_tokens, gst_use_speaker_embedding,
                              gst_use_linear_style_target, use_only_reference, lookup_speaker_dim,
                              num_prosodic_features, agg_style_space, use_style_lookup, lookup_style_dim,
-                             use_prosodic_linear, prosodic_dim)
+                             use_prosodic_linear, prosodic_dim, multi_speaker_agg, style_agg)
 
         # speaker embedding layer
         if self.num_speakers > 1:
@@ -149,7 +151,7 @@ class Tacotron2(TacotronAbstract):
                                                mel_specs,
                                                speaker_embeddings if self.gst_use_speaker_embedding else None, 
                                                self.agg_style_space, 
-                                               pitch_range, speaking_rate, energy)
+                                               pitch_range, speaking_rate, energy, self.style_agg)
             if self.gst_use_linear_style_target:
                 logits = self.linear_style_target_layer(gst_outputs)
         else:
@@ -193,7 +195,11 @@ class Tacotron2(TacotronAbstract):
             else:
                 # B x 1 x speaker_embed_dim
                 speaker_embeddings = torch.unsqueeze(speaker_embeddings, 1)
-            encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaker_embeddings)
+            
+            if(self.multi_speaker_agg == 'concatenate'):
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaker_embeddings)
+            else:
+                encoder_outputs = self._add_speaker_embedding(encoder_outputs, speaker_embeddings)
 
         if((self.num_styles > 1)&(self.use_style_lookup)):
             style_embeddings = self.style_embedding(style_ids)[:, None]
@@ -237,7 +243,7 @@ class Tacotron2(TacotronAbstract):
                                                style_mel,
                                                speaker_embeddings if self.gst_use_speaker_embedding else None, 
                                                self.agg_style_space, 
-                                               pitch_range, speaking_rate, energy)
+                                               pitch_range, speaking_rate, energy,  self.style_agg)
             if self.gst_use_linear_style_target:
                 logits = self.linear_style_target_layer(gst_outputs)
         else:
@@ -277,7 +283,10 @@ class Tacotron2(TacotronAbstract):
         if self.num_speakers > 1:
             if not self.embeddings_per_sample:
                 speaker_embeddings = self.speaker_embedding(speaker_ids)[:, None]
-            encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaker_embeddings)
+            if(self.multi_speaker_agg == 'concatenate'):
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaker_embeddings)
+            else:
+                encoder_outputs = self._add_speaker_embedding(encoder_outputs, speaker_embeddings)
 
         if((self.num_styles > 1)&(self.use_style_lookup)):
             style_embeddings = self.style_embedding(style_ids)[:, None]
@@ -306,7 +315,7 @@ class Tacotron2(TacotronAbstract):
                                                style_mel,
                                                speaker_embeddings if self.gst_use_speaker_embedding else None, 
                                                self.agg_style_space, 
-                                               pitch_range, speaking_rate, energy)
+                                               pitch_range, speaking_rate, energy,  self.style_agg)
             if self.gst_use_linear_style_target:
                 logits = self.linear_style_target_layer(gst_outputs)
         else:
@@ -346,8 +355,11 @@ class Tacotron2(TacotronAbstract):
         if self.num_speakers > 1:
             if not self.embeddings_per_sample:
                 speaker_embeddings = self.speaker_embedding(speaker_ids)[:, None]
-            encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaker_embeddings)
-
+            if(self.multi_speaker_agg == 'concatenate'):
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, speaker_embeddings)
+            else:
+                encoder_outputs = self._add_speaker_embedding(encoder_outputs, speaker_embeddings)
+                
         if((self.num_styles > 1)&(self.use_style_lookup)):
             style_embeddings = self.style_embedding(style_ids)[:, None]
 

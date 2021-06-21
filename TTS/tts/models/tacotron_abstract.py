@@ -45,7 +45,9 @@ class TacotronAbstract(ABC, nn.Module):
                  use_style_lookup = False,
                  lookup_style_dim = 64,
                  use_prosodic_linear = False,
-                 prosodic_dim = 64):
+                 prosodic_dim = 64,
+                 multi_speaker_agg = 'concatenate',
+                 style_agg = 'concatenate'):
         """ Abstract Tacotron class """
         super().__init__()
         self.num_chars = num_chars
@@ -85,6 +87,8 @@ class TacotronAbstract(ABC, nn.Module):
         self.lookup_style_dim = lookup_style_dim
         self.use_prosodic_linear = use_prosodic_linear
         self.prosodic_dim = prosodic_dim
+        self.multi_speaker_agg = multi_speaker_agg
+        self.style_agg = style_agg
 
         # layers
         self.embedding = None
@@ -202,7 +206,7 @@ class TacotronAbstract(ABC, nn.Module):
                 self.speaker_embeddings).squeeze(1)
 
     def compute_gst(self, inputs, style_input, speaker_embedding=None, agg_style_space = False, \
-        pitch_range = None, speaking_rate = None , energy = None):
+        pitch_range = None, speaking_rate = None , energy = None, style_agg = 'concatenate'):
         """ Compute global style token """
         device = inputs.device
 
@@ -252,7 +256,11 @@ class TacotronAbstract(ABC, nn.Module):
                      
             # print(gst_outputs.shape)
 
-        inputs = self._concat_speaker_embedding(inputs, gst_outputs)
+        if(style_agg == 'concatenate'):
+            inputs = self._concat_speaker_embedding(inputs, gst_outputs)
+        else: # then it must be "add"
+            inputs = self._add_speaker_embedding(inputs, gst_outputs)
+            
         return inputs, gst_outputs, logits
 
     @staticmethod

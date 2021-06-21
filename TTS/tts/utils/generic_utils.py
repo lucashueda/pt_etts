@@ -127,7 +127,9 @@ def setup_model(num_chars, num_speakers, num_styles, c, speaker_embedding_dim=No
                         use_style_lookup = c.use_style_lookup,
                         lookup_style_dim = c.lookup_style_dim,
                         use_prosodic_linear = c.use_prosodic_linear,
-                        prosodic_dim = c.prosodic_dim)
+                        prosodic_dim = c.prosodic_dim, 
+                        multi_speaker_agg = c.multi_speaker_agg,
+                        style_agg = c.style_agg)
     elif c.model.lower() == "glow_tts":
         model = MyModel(num_chars=num_chars,
                         hidden_channels=192,
