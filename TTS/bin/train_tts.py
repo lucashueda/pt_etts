@@ -643,7 +643,7 @@ def main(args):  # pylint: disable=redefined-outer-name
     # parse styles
     if((c.use_style_embedding) | (c.use_style_lookup)):
         styles = get_styles(meta_data_train)
-        if (args.restore_path & args.strict):
+        if ((args.restore_path) & (args.strict == 1)):
             prev_out_path = os.path.dirname(args.restore_path)
             style_mapping = load_style_mapping(prev_out_path)
             style_embedding_dim = None
@@ -701,7 +701,7 @@ def main(args):  # pylint: disable=redefined-outer-name
             if c.reinit_layers:
                 raise RuntimeError
             
-            if args.strict:
+            if args.strict == 1:
                 model.load_state_dict(checkpoint['model'])
             else:
                 model.load_state_dict(checkpoint['model'], strict = False)
