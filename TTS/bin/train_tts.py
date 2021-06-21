@@ -604,24 +604,29 @@ def main(args):  # pylint: disable=redefined-outer-name
     # parse speakers
     if c.use_speaker_embedding:
         speakers = get_speakers(meta_data_train)
-        if ((args.restore_path) & (args.strict == 1)):
-            if c.use_external_speaker_embedding_file: # if restore checkpoint and use External Embedding file
-                prev_out_path = os.path.dirname(args.restore_path)
-                speaker_mapping = load_speaker_mapping(prev_out_path)
-                if not speaker_mapping:
-                    print("WARNING: speakers.json was not found in restore_path, trying to use CONFIG.external_speaker_embedding_file")
-                    speaker_mapping = load_speaker_mapping(c.external_speaker_embedding_file)
+        if args.restore_path:
+            if (args.strict == 1):
+                if c.use_external_speaker_embedding_file: # if restore checkpoint and use External Embedding file
+                    prev_out_path = os.path.dirname(args.restore_path)
+                    speaker_mapping = load_speaker_mapping(prev_out_path)
                     if not speaker_mapping:
-                        raise RuntimeError("You must copy the file speakers.json to restore_path, or set a valid file in CONFIG.external_speaker_embedding_file")
-                speaker_embedding_dim = len(speaker_mapping[list(speaker_mapping.keys())[0]]['embedding'])
-            elif not c.use_external_speaker_embedding_file: # if restore checkpoint and don't use External Embedding file
-                prev_out_path = os.path.dirname(args.restore_path)
-                speaker_mapping = load_speaker_mapping(prev_out_path)
+                        print("WARNING: speakers.json was not found in restore_path, trying to use CONFIG.external_speaker_embedding_file")
+                        speaker_mapping = load_speaker_mapping(c.external_speaker_embedding_file)
+                        if not speaker_mapping:
+                            raise RuntimeError("You must copy the file speakers.json to restore_path, or set a valid file in CONFIG.external_speaker_embedding_file")
+                    speaker_embedding_dim = len(speaker_mapping[list(speaker_mapping.keys())[0]]['embedding'])
+                elif not c.use_external_speaker_embedding_file: # if restore checkpoint and don't use External Embedding file
+                    prev_out_path = os.path.dirname(args.restore_path)
+                    speaker_mapping = load_speaker_mapping(prev_out_path)
+                    speaker_embedding_dim = None
+                    assert all([speaker in speaker_mapping
+                                for speaker in speakers]), "As of now you, you cannot " \
+                                                        "introduce new speakers to " \
+                                                        "a previously trained model."
+                                                    
+            else: # if start new train and don't use External Embedding file
+                speaker_mapping = {name: i for i, name in enumerate(speakers)}
                 speaker_embedding_dim = None
-                assert all([speaker in speaker_mapping
-                            for speaker in speakers]), "As of now you, you cannot " \
-                                                    "introduce new speakers to " \
-                                                    "a previously trained model."
         elif c.use_external_speaker_embedding_file and c.external_speaker_embedding_file: # if start new train using External Embedding file
             speaker_mapping = load_speaker_mapping(c.external_speaker_embedding_file)
             speaker_embedding_dim = len(speaker_mapping[list(speaker_mapping.keys())[0]]['embedding'])
@@ -643,14 +648,18 @@ def main(args):  # pylint: disable=redefined-outer-name
     # parse styles
     if((c.use_style_embedding) | (c.use_style_lookup)):
         styles = get_styles(meta_data_train)
-        if ((args.restore_path) & (args.strict == 1)):
-            prev_out_path = os.path.dirname(args.restore_path)
-            style_mapping = load_style_mapping(prev_out_path)
-            style_embedding_dim = None
-            assert all([style in style_mapping
-                        for style in styles]), "As of now you, you cannot " \
-                                                "introduce new styles to " \
-                                                "a previously trained model."
+        if args.restore_path:
+            if (args.strict == 1):
+                prev_out_path = os.path.dirname(args.restore_path)
+                style_mapping = load_style_mapping(prev_out_path)
+                style_embedding_dim = None
+                assert all([style in style_mapping
+                            for style in styles]), "As of now you, you cannot " \
+                                                    "introduce new styles to " \
+                                                    "a previously trained model."
+            else: # if start new train and don't use External Embedding file
+                style_mapping = {name: i for i, name in enumerate(styles)}
+                style_embedding_dim = None
         else: # if start new train and don't use External Embedding file
             style_mapping = {name: i for i, name in enumerate(styles)}
             style_embedding_dim = None
