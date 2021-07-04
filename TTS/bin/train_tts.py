@@ -713,7 +713,14 @@ def main(args):  # pylint: disable=redefined-outer-name
             if args.strict == 1:
                 model.load_state_dict(checkpoint['model'])
             else:
-                model.load_state_dict(checkpoint['model'], strict = False)
+                print(" > Partial model initialization customized.")
+                # model.load_state_dict(checkpoint['model'], strict = False)
+                model_dict = model.state_dict()
+                model_dict = set_init_dict(model_dict, checkpoint['model'], c)
+                # torch.save(model_dict, os.path.join(OUT_PATH, 'state_dict.pt'))
+                # print("State Dict saved for debug in: ", os.path.join(OUT_PATH, 'state_dict.pt'))
+                model.load_state_dict(model_dict)
+                del model_dict
         except KeyError:
             print(" > Partial model initialization.")
             model_dict = model.state_dict()
