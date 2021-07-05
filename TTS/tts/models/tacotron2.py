@@ -79,6 +79,7 @@ class Tacotron2(TacotronAbstract):
             self.decoder_in_features += style_embedding_dim
 
         if((self.num_styles > 1)&(self.use_style_lookup)):
+            style_embedding_dim = self.lookup_style_dim
             self.style_embedding = nn.Embedding(self.num_styles, style_embedding_dim)
             self.style_embedding.weight.data.normal_(0, 0.3)
 
