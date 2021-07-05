@@ -76,9 +76,12 @@ class Tacotron2(TacotronAbstract):
         # Add style embedding look up, make sure to not use gst_use_linear_style_target if using style look up 
         if((self.num_styles > 1)&(self.use_style_lookup)&(self.style_agg == 'concatenate')):
             style_embedding_dim = self.lookup_style_dim
+            self.decoder_in_features += style_embedding_dim
+
+        if((self.num_styles > 1)&(self.use_style_lookup)):
             self.style_embedding = nn.Embedding(self.num_styles, style_embedding_dim)
             self.style_embedding.weight.data.normal_(0, 0.3)
-            self.decoder_in_features += style_embedding_dim
+
 
         # If use linear prosodic info 
         if(self.use_prosodic_linear):
