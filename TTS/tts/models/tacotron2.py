@@ -204,7 +204,10 @@ class Tacotron2(TacotronAbstract):
         if((self.num_styles > 1)&(self.use_style_lookup)):
             style_embeddings = self.style_embedding(style_ids)[:, None]
 
-            encoder_outputs = self._concat_speaker_embedding(encoder_outputs, style_embeddings)
+            if(self.style_agg == 'concatenate'):
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, style_embeddings)
+            else:
+                encoder_outputs = self._add_speaker_embedding(encoder_outputs, style_embeddings)
 
         encoder_outputs = encoder_outputs * input_mask.unsqueeze(2).expand_as(encoder_outputs)
 
@@ -291,7 +294,10 @@ class Tacotron2(TacotronAbstract):
         if((self.num_styles > 1)&(self.use_style_lookup)):
             style_embeddings = self.style_embedding(style_ids)[:, None]
 
-            encoder_outputs = self._concat_speaker_embedding(encoder_outputs, style_embeddings)
+            if(self.style_agg == 'concatenate'):
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, style_embeddings)
+            else:
+                encoder_outputs = self._add_speaker_embedding(encoder_outputs, style_embeddings)
 
         decoder_outputs, alignments, stop_tokens = self.decoder.inference(
             encoder_outputs)
@@ -363,7 +369,10 @@ class Tacotron2(TacotronAbstract):
         if((self.num_styles > 1)&(self.use_style_lookup)):
             style_embeddings = self.style_embedding(style_ids)[:, None]
 
-            encoder_outputs = self._concat_speaker_embedding(encoder_outputs, style_embeddings)
+            if(self.style_agg == 'concatenate'):
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, style_embeddings)
+            else:
+                encoder_outputs = self._add_speaker_embedding(encoder_outputs, style_embeddings)
 
         mel_outputs, alignments, stop_tokens = self.decoder.inference_truncated(
             encoder_outputs)
